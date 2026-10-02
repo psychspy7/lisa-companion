@@ -10,7 +10,7 @@ Open **LISA.exe** on Windows 10 or 11, 64-bit. No Python installation is needed.
 
 The first launch uses **Free demo**, which has clearly labelled preset replies and your installed Windows voice. Try “chai”, “kiss”, “sit”, “motivate me”, “I am sad”, or “goodnight”. Turn on **Lisa’s voice** for spoken replies. Free demo is a visual and interaction preview, not a language model. It cannot transcribe voice input.
 
-Uncheck **Free demo** to use OpenAI. Add your own OpenAI key in **Settings**, unless a local approved `.env.local` is available beside the app or in one of its three parent directories. API credits and internet are required. ChatGPT subscription billing is separate from API billing. This development account returned `credit_balance_exhausted`, so live AI chat, speech and transcription could not be verified end to end in this build.
+Uncheck **Free demo** to use OpenAI. Add your own OpenAI key in **Settings**, unless a local approved `.env.local` is available beside the app or in one of its three parent directories. API credits and internet are required. ChatGPT subscription billing is separate from API billing. If your API allowance is unavailable, use Free demo while configuring billing. Live AI chat, speech and transcription need verification with a funded API account.
 
 **Talk** opens the microphone only when pressed in OpenAI mode. Press **Finish talking** to submit the recording, or **Stop/Escape** to discard it. Recording is limited to 30 seconds. Talk and Stop interrupt Lisa’s speech. Closing the app releases audio streams and exits the process. Voice recordings are held in memory and sent to OpenAI for transcription, then discarded. Text, saved notes, and voice text are sent to OpenAI when using AI mode. Camera stays off.
 
