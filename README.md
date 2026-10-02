@@ -1,5 +1,7 @@
 # LISA
 
+Source and Windows releases: https://github.com/psychspy7/lisa-companion
+
 A standalone Windows companion app starring Lisa: a clearly adult fictional anime character with midnight-blue hair, lavender tips, blue eyes, cat-ear accessories, and a warm, playful personality. She naturally calls you **Sir**.
 
 ## Try the test build
