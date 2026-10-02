@@ -55,7 +55,7 @@ def download_release(info, destination: Path):
                 if not block:
                     break
                 total += len(block)
-                if total > 200_000_000:
+                if total > 1_500_000_000:
                     raise RuntimeError("The update exceeded the size limit.")
                 digest.update(block)
                 writer.write(block)

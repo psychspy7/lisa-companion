@@ -1,58 +1,50 @@
-# LISA
+# LISA — your anime companion for Windows
 
-Source and Windows releases: https://github.com/psychspy7/lisa-companion
+LISA is a standalone Windows app created by Virat with the help of Kitty Corp organisation. Closing the app quits it and releases the microphone. Version 0.3.0 is a test release.
 
-A standalone Windows companion app starring Lisa: a clearly adult fictional anime character with midnight-blue hair, lavender tips, blue eyes, cat-ear accessories, and a warm, playful personality. She naturally calls you **Sir**.
+## Run
 
-## Try the test build
+Download `LISA.exe` and run it from a writable folder. Use the **Update** button for future GitHub releases. Personal settings, keys, saved notes and optional history stay in `%LOCALAPPDATA%\LISA` across updates.
 
-Open **LISA.exe** on Windows 10 or 11, 64-bit. No Python installation is needed. Close the window to quit completely. Lisa has no tray process, startup service, camera access, or background microphone listener.
+The app opens fullscreen. **F11** toggles fullscreen; **Esc** stops speech and leaves fullscreen. Drag the divider to resize chat, choose **Focus** to hide it, and use the zoom slider. Drag Lisa to reposition her; double-click to reset. **Ctrl+H** toggles chat. Press Mic to start recording and again to submit; recordings stop after 30 seconds. Stop interrupts speech and discards late replies. No background listening or camera.
 
-The first launch uses **Free demo**, which has clearly labelled preset replies and your installed Windows voice. Try “chai”, “kiss”, “sit”, “motivate me”, “I am sad”, or “goodnight”. Turn on **Lisa’s voice** for spoken replies. Free demo is a visual and interaction preview, not a language model. It cannot transcribe voice input.
+## Configure services
 
-For real conversation, open **Settings → Chat & voice** and enter your **Gemini API key** and **ElevenLabs API key**. Click **Test chat**, **Load voices**, choose a voice, and **Preview voice**. You can also enter a Voice ID directly. Click **Save & use AI**, then turn on **Lisa’s voice** in the main window. Text chat only needs Gemini; listening and speaking use ElevenLabs. No OpenAI key is needed for this version. Blank key fields keep existing keys. New keys are encrypted for your Windows account, separately for each provider. Enter secrets inside Settings, never in a chat message or public repository.
+You chose to enter keys in Settings later. No API keys are embedded in the app or public repository.
 
-Internet and provider allowance are required. Gemini free-tier limits and ElevenLabs feature access depend on your account. A restricted ElevenLabs key needs access to text-to-speech, speech-to-text, and voices; sound effects permission is only needed for the optional chime. Replace expired keys in Settings. Tests/previews make real requests using your allowance; the app never retries quota errors automatically. Live service verification must be completed with your own keys. This release was checked with mocked provider responses because the supplied screenshots conceal the credentials.
+| Purpose | Service | Setup |
+| --- | --- | --- |
+| Chat | Groq, or Gemini | API key and a model available to your account |
+| Spoken replies | ElevenLabs | API key, Voice ID and speech model |
+| Voice fallback / alternate | Fish Audio | API key, voice model ID; `s2.1-pro-free` is selectable |
+| Microphone transcription | Groq, ElevenLabs or Fish | Same provider key; Groq defaults to Whisper Large V3 Turbo |
+| Action videos | Vidu | API key, then Generate in Motion Studio |
+| Free voice preview | Installed Windows voice | No key; choose `windows` for primary voice |
 
-**Talk** opens the microphone only when pressed in AI mode with both keys available. Press **Finish talking** to submit the recording, or **Stop/Escape** to discard it. Recording is limited to 30 seconds. Talk and Stop interrupt Lisa’s speech, and late network results are discarded after interruption. Closing the app releases audio streams and exits the process. Submitted voice recordings go to ElevenLabs for transcription. Chat text, transcribed text, recent conversation and your saved notes go to Gemini. Lisa’s reply text goes to ElevenLabs when voice is enabled. Recordings are not saved to disk. Providers may retain requests under their account policies; local history being off does not change provider retention. Camera stays off.
+Save a Groq key, then use **Load my available Groq models**. Llama 3.3 70B is the preferred character model when your account can access it. Groq's current public documentation lists Llama models as Enterprise, so free accounts may need another available model. Lisa never silently switches a paid chat model. Gemini Flash-Lite remains selectable; the supplied account table gives it a larger daily allowance than regular Flash. Provider quotas, permissions and prices can change.
 
-## Included in 0.2.0
+Enable **Speak Lisa's replies** after choosing a voice. ElevenLabs failure tries Fish once only when fallback is enabled and its key and voice ID are set. The status names the fallback. Offline preview is labelled and uses preset responses, not a language model. Keys are protected with Windows DPAPI for the current Windows user.
 
-- Four coordinated outfits for morning, afternoon, evening and night; selection by local PC time or manually.
-- 36 illustrated poses: smile, shy, tea, sitting, wave, yawn, stretch, thinking, listening, commanding, angry, smirk, excited, laughing, surprised, proud, cheering, teasing, kiss, affectionate, elegant sitting, thumbs up, blushing, welcoming, apologetic, reassuring, peace, crying, sad, sleepy, goodnight, caring, pensive, self hug, cozy sitting and peaceful.
-- Breathing/sway, software blinks on suitable unobscured faces, and audio-level mouth movement. Poses change as illustrations. This is a sprite prototype, not a fully rigged Live2D or 3D model. Some expressions already have closed eyes or covered mouths and suppress facial overlays.
-- Gemini chat and ElevenLabs speech/transcription for English, Hindi and Hinglish, with editable models, a voice selector and connection tests.
-- Optional long-term notes in **Memory**, with add/remove controls. Chat history is off by default and optional in Settings.
-- Local Windows DPAPI encryption for keys entered in Settings. No API key, personal memory or conversation is bundled.
-- Soft UI chimes, configurable motion and sound, and an update button. Optionally generate one short ElevenLabs chime in **Comfort & updates**; it is cached on this PC and reused without further API calls.
+## Character and motion
 
-Models default to `gemini-3.8-flash`, `eleven_v4_turbo` and `scribe_v2`; these are editable as provider access changes. For lower-cost speech, you can choose `eleven_flash_v2_5` if your account supports it. Voice ID is left for you to choose. Expressive v4/v3 models receive a gentle delivery cue for some moods; other models receive plain reply text. Voice is synthesized and disclosed in the interface. Windows demo voice quality and Hindi pronunciation depend on the voices already installed. Audio services are provided by ElevenLabs.
+Four matching full-body main portraits: morning casual, afternoon gym, evening black dress and night sleepwear. All 40 transparent assets are **2160 × 3840**, locally AI upscaled with Real-ESRGAN. This is upscaled 4K, not native 4K generation. The 36 expression artworks include sitting, commanding, angry, flying kiss, crying, tea and many others. Each expression has its own matching wardrobe; it is not available in every outfit.
 
-## Updates
+Qt Quick uses graphic transforms for gentle breathing and sway, with fades between expressions. The old painted eye/mouth overlays are removed. These are illustrated poses and subtle motion, **not a fully rigged Live2D/3D model or phoneme lip sync**. Real action videos are supported through Vidu generation or MP4/WebM import. **No Vidu-generated clips are bundled yet because credentials were deferred.**
 
-Settings accepts a GitHub repository as `owner/name`; this build uses `psychspy7/lisa-companion`. **Check for updates** reads its latest public stable release. Each version must include **LISA.exe** and **SHA256SUMS.txt**. Lisa verifies the downloaded SHA-256, asks before installing, closes, replaces its executable using a hidden helper, and restarts. Personal data stays in a separate directory. A `.bak` copy of the previous executable is kept. A private repository requires signing in through the browser and manual downloading; this test updater currently uses unauthenticated public release downloads.
+Motion Studio submits one explicit 4-second 1080p silent clip per Generate click, after showing the selection and asking before spending credits. It downloads completed jobs to a private local cache and resumes pending jobs when you reopen Lisa with a configured Vidu key. Generated clips use a fixed dark background. Jobs are not submitted automatically during chat. You can import clips without an API key. API connection contracts are tested with mocked responses; live Groq, Fish and Vidu calls still need testing with your credentials.
 
-The executable is unsigned. Checksums detect corruption, but do not replace a code-signing certificate. Only configure a release repository you control or trust.
+## Personality, memory and PC actions
 
-## Build from source
+The Personality tab lets you write Lisa's style: warm close-friend conversation, Hinglish, playful roasts and mock bossiness, gentler listening when upset, and focused help for tasks. The app supplies this creator answer: **I am made by Virat by the help of Kitty Corp organisation.** A style prompt does not bypass provider policies.
 
-Use Python 3.12 on Windows with Tcl/Tk installed:
+Memory saves only notes you explicitly add. Chat history is off by default. Every PC action has a review dialog. Supported actions: open Calculator/Notepad/Explorer/browser, open a public HTTPS page, copy text, or save a `.txt` note to a location you choose. Arbitrary commands, deletions, purchases and messaging are unsupported. The model proposes actions; executable code is never taken from its reply.
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-.\build.ps1
-```
+## Build
 
-The build includes the artwork and audio dependency. `dist/LISA.exe` is the distributable. Run `python app.py` for development, `python -m unittest discover -s tests -v` for checks, or `python app.py --self-test` to render all poses and check startup/interruption without opening the microphone. Set `LISA_DATA_DIR` to a temporary folder for tests.
+Python 3.12 on Windows: `python -m pip install -r requirements.txt`, then `./build.ps1`. The GitHub Actions workflow builds tagged releases and publishes `LISA.exe` plus a SHA-256 checksum. `python app.py --self-test` renders the app and checks shutdown; set `LISA_DATA_DIR` to an isolated test directory when using it. Automated tests use fake keys and mocked network responses.
 
-The included GitHub Actions workflow builds and publishes a stable release when you push a `v*` tag. Keep `core.VERSION` and `version.json` in agreement. Publishing requires an approved repository and Actions permissions.
+Source and update releases: https://github.com/psychspy7/lisa-companion
 
-## Local data
+Provider references: [Groq models](https://console.groq.com/docs/models), [Groq structured replies](https://console.groq.com/docs/structured-outputs), [Fish speech](https://docs.fish.audio/api-reference/endpoint/openapi-v1/text-to-speech), [Fish emotions](https://docs.fish.audio/developer-guide/core-features/emotions), [Vidu image-to-video](https://platform.vidu.com/docs/image-to-video), [Vidu results](https://platform.vidu.com/docs/get-generation).
 
-Settings, manually saved memory, optional chat history, cached chime and encrypted keys are in `%LOCALAPPDATA%\LISA`. Updating from 0.1 keeps saved notes and settings; Gemini and ElevenLabs keys must be added separately. A key encrypted for one Windows account cannot simply be copied to another. **Remove saved API keys** deletes locally saved credentials. Developers can alternatively use `GEMINI_API_KEY` and `ELEVENLABS_API_KEY` environment variables or a private `.env.local` beside the app/in up to three parent directories. Environment-provided keys are not removed by the Settings button. Deleting a memory note removes it from subsequent requests; it cannot recall content already sent to a provider. Environment files, keys, logs, local data, executables and build output are excluded by `.gitignore`.
-
-## Next visual milestone
-
-Replace sprite pose switches with a layered rig for smooth seated/standing transitions, accurate face deformation and phoneme-based lip sync. The current atlas files remain editable references for that upgrade.
+See ASSETS.md and THIRD_PARTY_NOTICES.md for artwork provenance and component licenses.
