@@ -82,14 +82,24 @@ Wait-Process -Id {os.getpid()} -ErrorAction SilentlyContinue
 $lisaTarget = {quote(target)}
 $lisaSource = {quote(source)}
 $lisaBackup = $lisaTarget + '.bak'
-Copy-Item -LiteralPath $lisaTarget -Destination $lisaBackup -Force
-try {{
-  Copy-Item -LiteralPath $lisaSource -Destination $lisaTarget -Force
-  Start-Process -FilePath $lisaTarget
-}} catch {{
-  Copy-Item -LiteralPath $lisaBackup -Destination $lisaTarget -Force
-  Start-Process -FilePath $lisaTarget
+$lisaInstalled = $false
+for ($lisaAttempt = 0; $lisaAttempt -lt 40; $lisaAttempt++) {{
+  try {{
+    Copy-Item -LiteralPath $lisaTarget -Destination $lisaBackup -Force
+    Copy-Item -LiteralPath $lisaSource -Destination $lisaTarget -Force
+    $lisaInstalled = $true
+    break
+  }} catch {{
+    Start-Sleep -Milliseconds 250
+  }}
 }}
+if (-not $lisaInstalled) {{
+  if (Test-Path -LiteralPath $lisaBackup) {{
+    Copy-Item -LiteralPath $lisaBackup -Destination $lisaTarget -Force -ErrorAction SilentlyContinue
+  }}
+  [IO.File]::WriteAllText({quote(helper_directory / 'update-error.txt')}, 'Lisa could not replace the executable. Download the latest LISA.exe from the release page and run it from a writable folder.')
+}}
+Start-Process -FilePath $lisaTarget
 """, encoding="utf-8-sig")
     subprocess.Popen(["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-WindowStyle", "Hidden", "-File", str(helper)],
                      creationflags=subprocess.CREATE_NO_WINDOW)

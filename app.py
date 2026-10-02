@@ -1,4 +1,4 @@
-"""LISA 0.1: a standalone Windows companion app. Run app.py or packaged LISA.exe."""
+"""LISA: a standalone Windows companion app. Run app.py or packaged LISA.exe."""
 from __future__ import annotations
 from datetime import datetime
 import json
@@ -12,7 +12,8 @@ from tkinter import ttk, messagebox
 import webbrowser
 from audio import Audio
 from character import Stage
-from core import Credentials, Store, OpenAIClient, MOODS, LABELS, OUTFITS, VERSION, outfit_for_hour, parse_repo, resource
+from core import Credentials, Store, MOODS, LABELS, OUTFITS, VERSION, outfit_for_hour, parse_repo, resource
+from providers import GeminiClient, ElevenLabsClient
 import updates
 import demo
 
@@ -40,7 +41,10 @@ class LisaApp(tk.Tk):
         self.minsize(920,650)
         self.configure(bg=BG)
         self.store=Store()
-        self.credentials=Credentials(self.store.directory)
+        self.credentials=Credentials(self.store.directory,"gemini")
+        self.voice_credentials=Credentials(self.store.directory,"elevenlabs")
+        if test_mode:
+            self.store.settings.update(demo_enabled=True,voice_enabled=False,sound_enabled=False)
         self.audio=Audio()
         self.events=queue.Queue()
         self.ticket=0
@@ -58,7 +62,7 @@ class LisaApp(tk.Tk):
         self.add_chat("Lisa","Hi, Sir. Welcome to our little corner of the universe. What’s on your mind?")
         if self.store.history:
             self.add_chat("System","Your saved conversation is available as context. Use Clear chat to start fresh.")
-        self.status.set("Free demo • preset replies • microphone off" if self.demo_var.get() else ("Ready • key connected" if self.credentials.get() else "Ready • add your API key in Settings"))
+        self.status.set("Free demo • preset replies • microphone off" if self.demo_var.get() else ("Gemini ready • microphone off" if self.credentials.get() else "Ready • add your Gemini key in Settings"))
         self.after(80,self.poll)
 
     def build_ui(self):
@@ -142,7 +146,7 @@ class LisaApp(tk.Tk):
         button(bottom,"Clear chat",self.clear_chat).pack(side="right",padx=5)
         self.demo_var=tk.BooleanVar(value=self.store.settings["demo_enabled"])
         tk.Checkbutton(right,text="Free demo · preset replies + Windows voice",variable=self.demo_var,command=self.toggle_demo,bg=PANEL,fg=MUTED,selectcolor=SOFT,activebackground=PANEL,activeforeground=FG,font=("Segoe UI",9)).grid(row=7,column=0,sticky="w",padx=14)
-        tk.Label(right,text="AI voice in OpenAI mode · Mic off until Talk · Camera off",bg=PANEL,fg="#89799d",font=("Segoe UI",8),anchor="w").grid(row=8,column=0,sticky="ew",padx=18,pady=(0,13))
+        tk.Label(right,text="Gemini chat · ElevenLabs AI voice · Mic off until Talk",bg=PANEL,fg="#89799d",font=("Segoe UI",8),anchor="w").grid(row=8,column=0,sticky="ew",padx=18,pady=(0,13))
 
     def add_chat(self,who,text):
         self.chat.configure(state="normal")
@@ -180,7 +184,14 @@ class LisaApp(tk.Tk):
         self.pose_label.set(outfit.title()+" • "+LABELS[mood])
         self.outfit_var.set(outfit.title())
         if sound and self.store.settings["sound_enabled"] and not self.test_mode:
-            self.audio.chime()
+            cached=self.store.directory/"chime.wav"
+            if self.store.settings["custom_chime"] and cached.exists() and not self.audio.playing and not self.audio.recording:
+                try:
+                    self.audio.play_wav(cached.read_bytes(),0.3)
+                except Exception:
+                    self.audio.chime()
+            else:
+                self.audio.chime()
 
     def toggle_voice(self):
         self.store.settings["voice_enabled"]=self.voice_var.get()
@@ -192,14 +203,14 @@ class LisaApp(tk.Tk):
         self.interrupt()
         self.store.settings["demo_enabled"]=self.demo_var.get()
         self.store.save()
-        self.status.set("Free demo • preset replies • microphone off" if self.demo_var.get() else "OpenAI mode • API credits required")
+        self.status.set("Free demo • preset replies • microphone off" if self.demo_var.get() else "Gemini + ElevenLabs • microphone off")
 
     def send(self):
         text=self.input.get("1.0","end").strip()
         if not text or self.busy:
             return
         if not self.demo_var.get() and not self.credentials.get():
-            self.status.set("Add an OpenAI key in Settings first.")
+            self.status.set("Add a Gemini key in Settings first.")
             self.settings_dialog()
             return
         self.interrupt()
@@ -217,7 +228,7 @@ class LisaApp(tk.Tk):
         if self.demo_var.get():
             self.worker("reply",ticket,lambda:demo.reply(text,list(self.store.memories)))
         else:
-            client=OpenAIClient(self.credentials.get(),self.store.settings)
+            client=GeminiClient(self.credentials.get(),self.store.settings)
             self.worker("reply",ticket,lambda:client.chat(text,history,list(self.store.memories)))
 
     def worker(self,kind,ticket,call):
@@ -256,8 +267,11 @@ class LisaApp(tk.Tk):
                     if self.demo_var.get():
                         self.worker("speech",ticket,lambda text=result["reply"], cancel=self.cancel_speech:demo.speech(text,self.store.directory,cancel))
                     else:
-                        client=OpenAIClient(self.credentials.get(),self.store.settings)
-                        self.worker("speech",ticket,lambda c=client, text=result["reply"]:c.speech(text))
+                        if not self.voice_credentials.get() or not self.store.settings["eleven_voice_id"]:
+                            self.status.set("Reply ready • add ElevenLabs key and choose a voice in Settings to hear Lisa")
+                        else:
+                            client=ElevenLabsClient(self.voice_credentials.get(),self.store.settings)
+                            self.worker("speech",ticket,lambda c=client, text=result["reply"], mood=result["mood"]:c.speech(text,mood))
             elif kind=="speech":
                 try:
                     self.audio.play_wav(result,self.store.settings["volume"])
@@ -312,14 +326,14 @@ class LisaApp(tk.Tk):
                 return
             self.busy=True
             self.send_button.configure(state="disabled")
-            client=OpenAIClient(self.credentials.get(),self.store.settings)
+            client=ElevenLabsClient(self.voice_credentials.get(),self.store.settings)
             self.worker("transcript",self.ticket,lambda:client.transcribe(wav))
         else:
             if self.demo_var.get():
-                self.status.set("Voice input needs OpenAI mode and API credits. Free demo supports typing and Windows voice.")
+                self.status.set("Voice input uses ElevenLabs. Save your keys in Settings and switch off Free demo first.")
                 return
-            if not self.credentials.get():
-                self.status.set("Add your OpenAI key before using voice chat.")
+            if not self.credentials.get() or not self.voice_credentials.get():
+                self.status.set("Add Gemini and ElevenLabs keys before using voice chat.")
                 self.settings_dialog()
                 return
             self.interrupt()
@@ -392,53 +406,200 @@ class LisaApp(tk.Tk):
         button(row,"Save note",add,True).pack(side="right")
 
     def settings_dialog(self):
-        dialog=self.popup("Lisa • Settings","620x730")
-        tk.Label(dialog,text="Make yourself at home",bg=PANEL,fg=FG,font=("Segoe UI",20,"bold")).pack(anchor="w",padx=22,pady=(20,10))
-        fields=tk.Frame(dialog,bg=PANEL)
-        fields.pack(fill="x",padx=22)
-        fields.grid_columnconfigure(1,weight=1)
+        dialog=self.popup("Lisa • Settings","660x720")
+        dialog.minsize(620,680)
+        tk.Label(dialog,text="Make yourself at home",bg=PANEL,fg=FG,font=("Segoe UI",20,"bold")).pack(anchor="w",padx=22,pady=(18,10))
+        tabs=ttk.Notebook(dialog)
+        tabs.pack(fill="both",expand=True,padx=22)
+        connection=tk.Frame(tabs,bg=PANEL)
+        personal=tk.Frame(tabs,bg=PANEL)
+        tabs.add(connection,text="Chat & voice")
+        tabs.add(personal,text="Comfort & updates")
         entries={}
-        for row,(key,label) in enumerate([("model","Chat model"),("tts_model","Speech model"),("stt_model","Transcription model"),("voice","Voice"),("repository","Update repository")]):
-            tk.Label(fields,text=label,bg=PANEL,fg=MUTED,font=("Segoe UI",10),anchor="w").grid(row=row,column=0,sticky="w",pady=7,padx=(0,12))
-            var=tk.StringVar(value=self.store.settings[key])
-            entries[key]=var
-            tk.Entry(fields,textvariable=var,bg=SOFT,fg=FG,insertbackground=FG,relief="flat",font=("Segoe UI",10)).grid(row=row,column=1,sticky="ew",ipady=6)
-        tk.Label(dialog,text="OpenAI voice costs extra. Text chat works with voice off. Models are editable for future updates.",bg=PANEL,fg=MUTED,font=("Segoe UI",9),wraplength=570,justify="left").pack(anchor="w",padx=22,pady=8)
-        tk.Label(dialog,text="OpenAI API key",bg=PANEL,fg=FG,font=("Segoe UI",11,"bold")).pack(anchor="w",padx=22,pady=(10,4))
-        key=tk.Entry(dialog,show="●",bg=SOFT,fg=FG,insertbackground=FG,relief="flat",font=("Segoe UI",11))
-        key.pack(fill="x",padx=22,ipady=8)
-        tk.Label(dialog,text="Leave blank to keep the existing key. New keys are encrypted for your Windows account.",bg=PANEL,fg=MUTED,font=("Segoe UI",9),wraplength=570).pack(anchor="w",padx=22,pady=6)
+        keys={}
+        def label(parent,text):
+            tk.Label(parent,text=text,bg=PANEL,fg=MUTED,font=("Segoe UI",9),wraplength=570,justify="left").pack(anchor="w",pady=5)
+        def field(parent,name,title,masked=False,value=""):
+            label(parent,title)
+            var=tk.StringVar(value=value)
+            tk.Entry(parent,textvariable=var,show="●" if masked else "",bg=SOFT,fg=FG,insertbackground=FG,relief="flat",font=("Segoe UI",10)).pack(fill="x",ipady=6)
+            (keys if masked else entries)[name]=var
+        for page in (connection,personal):
+            page.configure(padx=16,pady=10)
+        field(connection,"gemini","Gemini API key • "+("saved" if self.credentials.get() else "needed"),True)
+        field(connection,"elevenlabs","ElevenLabs API key • "+("saved" if self.voice_credentials.get() else "needed"),True)
+        label(connection,"Blank keeps the saved key. Keys are encrypted for this Windows account. Enter them here, never in chat.")
+        models=tk.Frame(connection,bg=PANEL)
+        models.pack(fill="x",pady=4)
+        models.grid_columnconfigure(1,weight=1)
+        for row,(name,title) in enumerate([("gemini_model","Gemini model"),("eleven_model","Voice model"),("eleven_stt_model","Listening model")]):
+            tk.Label(models,text=title,bg=PANEL,fg=MUTED,font=("Segoe UI",9)).grid(row=row,column=0,sticky="w",padx=(0,12),pady=6)
+            var=tk.StringVar(value=self.store.settings[name])
+            entries[name]=var
+            tk.Entry(models,textvariable=var,bg=SOFT,fg=FG,insertbackground=FG,relief="flat",font=("Segoe UI",10)).grid(row=row,column=1,sticky="ew",ipady=5)
+        field(connection,"eleven_voice_id","ElevenLabs Voice ID",value=self.store.settings["eleven_voice_id"])
+        voice_selection=tk.StringVar(value="Load voices, then choose Lisa’s voice")
+        voice_box=ttk.Combobox(connection,textvariable=voice_selection,state="readonly")
+        voice_box.pack(fill="x",pady=(8,3))
+        available={}
+        voice_box.bind("<<ComboboxSelected>>",lambda event:entries["eleven_voice_id"].set(available.get(voice_selection.get(),"")))
+        operations=tk.Frame(connection,bg=PANEL)
+        operations.pack(fill="x",pady=6)
+        feedback=tk.StringVar(value="Tests and previews use your API allowance. Voice replies are optional.")
+        tk.Label(connection,textvariable=feedback,bg=PANEL,fg=FG,font=("Segoe UI",9),wraplength=570,justify="left").pack(anchor="w",pady=5)
+        job_buttons=[]
+        jobs=queue.Queue()
+        active=[False]
+        def settings_snapshot():
+            values=dict(self.store.settings)
+            values.update({k:v.get().strip() for k,v in entries.items()})
+            return values
+        def get_key(provider):
+            credential=self.credentials if provider=="gemini" else self.voice_credentials
+            value=keys[provider].get().strip() or credential.get()
+            if not value:
+                raise ValueError("Enter your "+provider+" key first.")
+            credential.validate(value)
+            return value
+        def job(title,call,success):
+            if active[0]:
+                return
+            self.interrupt()
+            job_ticket=self.ticket
+            active[0]=True
+            feedback.set(title+"…")
+            for item in job_buttons:
+                item.configure(state="disabled")
+            def run():
+                try:
+                    jobs.put((True,call()))
+                except Exception as exc:
+                    jobs.put((False,str(exc)))
+            threading.Thread(target=run,daemon=True).start()
+            def poll_job():
+                if self.closing or not dialog.winfo_exists():
+                    return
+                try:
+                    ok,result=jobs.get_nowait()
+                except queue.Empty:
+                    dialog.after(80,poll_job)
+                    return
+                active[0]=False
+                for item in job_buttons:
+                    item.configure(state="normal")
+                if job_ticket!=self.ticket:
+                    feedback.set("Cancelled. The result was discarded.")
+                    return
+                if ok:
+                    try:
+                        success(result)
+                    except Exception as exc:
+                        feedback.set(str(exc))
+                else:
+                    feedback.set(result)
+            dialog.after(80,poll_job)
+        def test_chat():
+            try:
+                client=GeminiClient(get_key("gemini"),settings_snapshot())
+                job("Testing Gemini",lambda:client.chat("Say a short hello to Sir.",[],[]),lambda result:feedback.set("Gemini connected • "+result["reply"]))
+            except Exception as exc:
+                feedback.set(str(exc))
+        def load_voices():
+            try:
+                client=ElevenLabsClient(get_key("elevenlabs"),settings_snapshot())
+                def loaded(voices):
+                    available.clear()
+                    available.update({v["name"]+" • "+v["voice_id"]:v["voice_id"] for v in voices})
+                    voice_box.configure(values=list(available))
+                    feedback.set("Choose a voice from the list, then Preview voice." if voices else "No voices found. Add a voice in your ElevenLabs library or enter its Voice ID.")
+                job("Loading your voices",client.voices,loaded)
+            except Exception as exc:
+                feedback.set(str(exc))
+        def preview_voice():
+            try:
+                client=ElevenLabsClient(get_key("elevenlabs"),settings_snapshot())
+                def play(data):
+                    self.audio.play_wav(data,self.store.settings["volume"])
+                    self.status.set("Lisa is speaking • Stop to interrupt")
+                    feedback.set("Voice connected • hearing Lisa’s preview")
+                job("Preparing voice preview",lambda:client.speech("Hello, Sir. I’m Lisa. Ready for a little chat?"),play)
+            except Exception as exc:
+                feedback.set(str(exc))
+        for title,call in [("Test chat",test_chat),("Load voices",load_voices),("Preview voice",preview_voice)]:
+            item=button(operations,title,call)
+            item.pack(side="left",padx=(0,6))
+            job_buttons.append(item)
+        language=tk.StringVar(value=self.store.settings["language"])
+        label(personal,"Conversation language")
+        ttk.Combobox(personal,textvariable=language,values=["Auto","English","Hindi","Hinglish"],state="readonly",width=15).pack(anchor="w",pady=(0,12))
         motion=tk.BooleanVar(value=self.store.settings["motion"])
         sounds=tk.BooleanVar(value=self.store.settings["sound_enabled"])
         history=tk.BooleanVar(value=self.store.settings["save_history"])
-        for text,var in [("Animate breathing, blinking and speech",motion),("Soft interface sounds",sounds),("Save chat history on this PC",history)]:
-            tk.Checkbutton(dialog,text=text,variable=var,bg=PANEL,fg=FG,selectcolor=SOFT,activebackground=PANEL,activeforeground=FG,font=("Segoe UI",10)).pack(anchor="w",padx=18,pady=3)
-        language=tk.StringVar(value=self.store.settings["language"])
-        lang_row=tk.Frame(dialog,bg=PANEL)
-        lang_row.pack(fill="x",padx=22,pady=10)
-        tk.Label(lang_row,text="Language",bg=PANEL,fg=MUTED,font=("Segoe UI",10)).pack(side="left",padx=(0,12))
-        ttk.Combobox(lang_row,textvariable=language,values=["Auto","English","Hindi","Hinglish"],state="readonly",width=15).pack(side="left")
-        tk.Label(dialog,text=f"LISA {VERSION} • Test build\nCamera is disabled. Closing the window fully quits Lisa and releases the microphone.",bg=PANEL,fg=MUTED,font=("Segoe UI",9),justify="left",wraplength=570).pack(anchor="w",padx=22,pady=10)
+        custom=tk.BooleanVar(value=self.store.settings["custom_chime"])
+        for title,var in [("Animate breathing, blinking and speech",motion),("Soft interface sounds",sounds),("Use my generated chime",custom),("Save chat history on this PC",history)]:
+            tk.Checkbutton(personal,text=title,variable=var,bg=PANEL,fg=FG,selectcolor=SOFT,activebackground=PANEL,activeforeground=FG,font=("Segoe UI",10)).pack(anchor="w",pady=4)
+        label(personal,"Optional: generate one short ElevenLabs chime. It uses your sound-effects allowance once, then plays from this PC.")
+        def generate_chime():
+            try:
+                client=ElevenLabsClient(get_key("elevenlabs"),settings_snapshot())
+                def generated(data):
+                    (self.store.directory/"chime.wav").write_bytes(data)
+                    custom.set(True)
+                    self.audio.play_wav(data,0.3)
+                    feedback.set("Chime saved on this PC. Save Settings to use it.")
+                tabs.select(connection)
+                job("Generating one chime",client.sound_effect,generated)
+            except Exception as exc:
+                tabs.select(connection)
+                feedback.set(str(exc))
+        chime_button=button(personal,"Generate a chime",generate_chime)
+        chime_button.pack(anchor="w",pady=6)
+        job_buttons.append(chime_button)
+        field(personal,"repository","Update repository",value=self.store.settings["repository"])
+        label(personal,f"LISA {VERSION} • Test build\nCamera stays off. Closing the window quits Lisa and releases the microphone. Chat and saved notes go to Gemini; submitted recordings go to ElevenLabs. Providers may retain requests under their account policies.")
+        def forget_keys():
+            self.credentials.forget()
+            self.voice_credentials.forget()
+            for var in keys.values():
+                var.set("")
+            feedback.set("Saved keys removed. Environment-provided keys, if any, remain available.")
+            self.status.set("Saved API keys removed")
+        button(personal,"Remove saved API keys",forget_keys).pack(anchor="w",pady=8)
         row=tk.Frame(dialog,bg=PANEL)
-        row.pack(fill="x",padx=22,pady=(5,20))
-        def save():
+        row.pack(fill="x",padx=22,pady=16)
+        def save(use_ai=False):
+            if active[0]:
+                feedback.set("Wait for the current test to finish before saving.")
+                tabs.select(connection)
+                return
             try:
                 values={k:v.get().strip() for k,v in entries.items()}
                 if values["repository"]:
                     values["repository"]=parse_repo(values["repository"])
-                if not all(values[k] for k in ("model","tts_model","stt_model","voice")):
-                    raise ValueError("Model and voice fields cannot be empty.")
-                if key.get().strip():
-                    self.credentials.save(key.get())
+                if not all(values[k] for k in ("gemini_model","eleven_model","eleven_stt_model")):
+                    raise ValueError("Model fields cannot be empty.")
+                for provider,credential in [("gemini",self.credentials),("elevenlabs",self.voice_credentials)]:
+                    if keys[provider].get().strip():
+                        credential.validate(keys[provider].get())
+                if use_ai:
+                    get_key("gemini")
+                for provider,credential in [("gemini",self.credentials),("elevenlabs",self.voice_credentials)]:
+                    if keys[provider].get().strip():
+                        credential.save(keys[provider].get())
+                self.interrupt()
                 self.store.settings.update(values)
-                self.store.settings.update(motion=motion.get(),sound_enabled=sounds.get(),save_history=history.get(),language=language.get())
+                self.store.settings.update(motion=motion.get(),sound_enabled=sounds.get(),save_history=history.get(),language=language.get(),custom_chime=custom.get())
+                if use_ai:
+                    self.demo_var.set(False)
+                    self.store.settings["demo_enabled"]=False
                 self.store.save()
-                self.status.set("Settings saved • key connected" if self.credentials.get() else "Settings saved • key needed")
+                self.status.set("Gemini ready • microphone off" if not self.demo_var.get() and self.credentials.get() else "Settings saved • Free demo")
                 dialog.destroy()
             except Exception as exc:
                 messagebox.showerror("Settings",str(exc),parent=dialog)
-        button(row,"API billing",lambda:webbrowser.open("https://platform.openai.com/settings/organization/billing/overview")).pack(side="left")
-        button(row,"Save",save,True).pack(side="right")
+        button(row,"Voice library",lambda:webbrowser.open("https://elevenlabs.io/app/voice-library")).pack(side="left")
+        button(row,"Save & use AI",lambda:save(True),True).pack(side="right")
+        button(row,"Save",save).pack(side="right",padx=6)
 
     def check_update(self):
         repo=self.store.settings["repository"]

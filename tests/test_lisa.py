@@ -57,6 +57,21 @@ class SafetyAndLifecycle(unittest.TestCase):
         self.assertFalse(audio.playing)
         self.assertEqual(audio.chunks,[])
 
+    def test_submitting_recording_clears_audio_buffer_and_closes_mic(self):
+        audio=Audio()
+        stream=MagicMock()
+        audio.input_stream=stream
+        audio.recording=True
+        audio.frames=200
+        audio.chunks=[b"\x00\x00"*200]
+        self.assertTrue(audio.stop_recording().startswith(b"RIFF"))
+        self.assertEqual(audio.chunks,[])
+        self.assertEqual(audio.frames,0)
+        self.assertFalse(audio.recording)
+        self.assertIsNone(audio.input_stream)
+        stream.stop.assert_called_once()
+        stream.close.assert_called_once()
+
     def test_chat_request_and_refusal(self):
         client=OpenAIClient("sk-fake",DEFAULTS)
         response={"output":[{"content":[{"type":"output_text","text":json.dumps({"reply":"Hello, Sir.","mood":"smile"})}]}]}

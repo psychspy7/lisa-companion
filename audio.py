@@ -51,7 +51,10 @@ class Audio:
             finally:
                 try: stream.close()
                 except Exception: pass
-        return wav_from_pcm(b"".join(self.chunks))
+        wav = wav_from_pcm(b"".join(self.chunks))
+        self.chunks.clear()
+        self.frames = 0
+        return wav
 
     def stop_playback(self):
         with self.lock:
@@ -98,6 +101,12 @@ class Audio:
             except Exception:
                 self.playing = False
                 self.level = 0.0
+                if self.output_stream:
+                    try:
+                        self.output_stream.close()
+                    except Exception:
+                        pass
+                    self.output_stream = None
                 raise RuntimeError("Audio output unavailable. Check your speakers or turn voice off.") from None
 
     def chime(self):

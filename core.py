@@ -1,4 +1,4 @@
-"""Local data, credentials and the deliberately small OpenAI client."""
+"""Local data, protected credentials and shared character settings."""
 from __future__ import annotations
 import base64
 import ctypes
@@ -14,7 +14,7 @@ import urllib.request
 import uuid
 import wave
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 MOODS = ["smile", "shy", "tea", "sitting", "wave", "yawn", "stretch", "thinking", "listening",
          "commanding", "angry", "smirk", "excited", "laughing", "surprised", "proud", "cheering", "teasing",
          "kiss", "affectionate", "elegant_sitting", "thumbs_up", "blushing", "welcoming", "apologetic", "reassuring", "peace",
@@ -49,7 +49,9 @@ def data_directory() -> Path:
 DEFAULTS = {"model": "gpt-4o-mini", "tts_model": "gpt-4o-mini-tts", "stt_model": "gpt-4o-mini-transcribe",
             "voice": "coral", "voice_enabled": False, "sound_enabled": True, "auto_outfit": True,
             "outfit": "morning", "motion": True, "fps": 16, "repository": "", "save_history": False,
-            "volume": 0.75, "language": "Auto", "demo_enabled": True}
+            "volume": 0.75, "language": "Auto", "demo_enabled": True,
+            "gemini_model": "gemini-3.8-flash", "eleven_model": "eleven_v4_turbo",
+            "eleven_stt_model": "scribe_v2", "eleven_voice_id": "", "custom_chime": False}
 
 
 class Store:
@@ -113,8 +115,13 @@ def dpapi(data: bytes, decrypt=False) -> bytes:
 
 
 class Credentials:
-    def __init__(self, directory: Path):
-        self.path = directory / "openai.key"
+    PROVIDERS = {"openai": "OPENAI_API_KEY", "gemini": "GEMINI_API_KEY", "elevenlabs": "ELEVENLABS_API_KEY"}
+
+    def __init__(self, directory: Path, provider="openai"):
+        if provider not in self.PROVIDERS:
+            raise ValueError("Unknown API provider.")
+        self.provider = provider
+        self.path = directory / (provider + ".key")
         self.session_key = ""
 
     def get(self):
@@ -125,7 +132,8 @@ class Credentials:
                 return dpapi(self.path.read_bytes(), True).decode()
             except Exception:
                 pass
-        key = os.environ.get("OPENAI_API_KEY", "").strip()
+        variable = self.PROVIDERS[self.provider]
+        key = os.environ.get(variable, "").strip()
         if key:
             return key
         # Local development/test setup only. Never bundle this file in the executable.
@@ -134,16 +142,22 @@ class Credentials:
             env = folder / ".env.local"
             if env.is_file():
                 for line in env.read_text(encoding="utf-8-sig").splitlines():
-                    if line.strip().startswith("OPENAI_API_KEY="):
+                    if line.strip().startswith(variable + "="):
                         return line.split("=", 1)[1].strip().strip("\"'")
         return ""
 
     def save(self, key):
         key = key.strip()
-        if not key.startswith("sk-"):
-            raise ValueError("Enter a valid OpenAI API key.")
+        self.validate(key)
         self.path.write_bytes(dpapi(key.encode()))
         self.session_key = key
+
+    def validate(self, key):
+        key = key.strip()
+        if len(key) < 16 or not key.isascii() or any(c.isspace() for c in key):
+            raise ValueError("Enter the complete API key, without spaces.")
+        if self.provider == "openai" and not key.startswith("sk-"):
+            raise ValueError("Enter a valid OpenAI API key.")
 
     def forget(self):
         self.path.unlink(missing_ok=True)
