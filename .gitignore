@@ -1,0 +1,13 @@
+.env*
+!.env.example
+__pycache__/
+*.pyc
+.venv/
+build/
+dist/
+*.spec
+local-data/
+*.key
+*.log
+*.exe
+*.zip
