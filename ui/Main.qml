@@ -156,8 +156,13 @@ ApplicationWindow {
                     Layout.fillWidth:true; height:composer.implicitHeight+22; radius:15; color:"#222231"; border.color:composer.activeFocus?"#b49acf":"#494153"; border.width:1
                     TextArea { id:composer; objectName:"composer"; anchors.fill:parent; anchors.margins:8; color:"#ede5f5"; placeholderText:"Tell me what’s on your mind…"; placeholderTextColor:"#81768f"; wrapMode:TextEdit.Wrap; font.pixelSize:14; selectByMouse:true; background:null; implicitHeight:Math.min(104,Math.max(44,contentHeight+14)); Keys.onReturnPressed:function(event){ if(!(event.modifiers & Qt.ShiftModifier)){if(!lisa.busy){lisa.send(text);text="";}event.accepted=true;} } }
                 }
-                RowLayout { Layout.fillWidth:true; spacing:8; SmallButton { text:lisa.recording?"■ Send voice":"● Mic"; enabled:!lisa.busy||lisa.recording; onClicked:lisa.mic() } SmallButton { text:"Stop"; onClicked:lisa.stop() } Item { Layout.fillWidth:true } SmallButton { text:"Send ↗"; enabled:!lisa.busy; onClicked:{lisa.send(composer.text);composer.text="";} } }
-                Text { Layout.fillWidth:true; text:"Mic only listens while you record. Shift + Enter adds a line."; color:"#766e85"; font.pixelSize:9; wrapMode:Text.Wrap }
+                RowLayout {
+                    Layout.fillWidth:true; spacing:8
+                    SmallButton { objectName:"conversationButton"; Layout.fillWidth:true; text:lisa.conversation?"■ End talk":"◉ Start talk"; onClicked:lisa.toggleConversation() }
+                    Rectangle { visible:lisa.conversation; Layout.preferredWidth:60; height:5;radius:3;color:"#353044";Rectangle { width:parent.width*lisa.inputLevel;height:5;radius:3;color:"#baa0dc";Behavior on width { NumberAnimation { duration:70 } } } }
+                }
+                RowLayout { Layout.fillWidth:true; spacing:8; SmallButton { text:lisa.recording?"Send voice":lisa.conversation?"Interrupt":"● Mic"; enabled:!lisa.busy||lisa.recording||lisa.conversation; onClicked:lisa.mic() } SmallButton { text:"Stop"; onClicked:lisa.stop() } Item { Layout.fillWidth:true } SmallButton { text:"Send ↗"; enabled:!lisa.busy; onClicked:{lisa.send(composer.text);composer.text="";} } }
+                Text { Layout.fillWidth:true; text:lisa.conversation?"Talk is on. Pause to send; Lisa listens again after replying.":"Start talk for hands-free conversation. Mic records one message."; color:lisa.conversation?"#bcadd2":"#766e85"; font.pixelSize:10; wrapMode:Text.Wrap }
             }
         }
     }
@@ -174,7 +179,7 @@ ApplicationWindow {
     }
     Rectangle {
         visible:!root.chatVisible; anchors.horizontalCenter:parent.horizontalCenter; anchors.bottom:parent.bottom; anchors.bottomMargin:99; width:Math.min(660,parent.width-100); height:55; radius:16; color:"#ee202030"; border.color:"#595069"
-        RowLayout { anchors.fill:parent; anchors.margins:8; TextField { id:focusComposer; Layout.fillWidth:true; placeholderText:"I’m listening, Sir…"; color:"#eee7f7"; font.pixelSize:14; background:null; onAccepted:{lisa.send(text);text="";} } SmallButton { text:lisa.recording?"Send voice":"Mic"; onClicked:lisa.mic() } SmallButton { text:"Stop"; onClicked:lisa.stop() } SmallButton { text:"↗"; enabled:!lisa.busy; onClicked:{lisa.send(focusComposer.text);focusComposer.text="";} } }
+        RowLayout { anchors.fill:parent; anchors.margins:8; TextField { id:focusComposer; Layout.fillWidth:true; placeholderText:lisa.conversation?lisa.status:"Tell me, Sir…"; color:"#eee7f7"; font.pixelSize:14; background:null; onAccepted:{lisa.send(text);text="";} } SmallButton { text:lisa.conversation?"End talk":"Start talk"; onClicked:lisa.toggleConversation() } SmallButton { text:lisa.recording?"Send voice":lisa.conversation?"Interrupt":"Mic"; onClicked:lisa.mic() } SmallButton { text:"Stop"; onClicked:lisa.stop() } SmallButton { text:"↗"; enabled:!lisa.busy; onClicked:{lisa.send(focusComposer.text);focusComposer.text="";} } }
     }
     Popup {
         id:wardrobe; anchors.centerIn:Overlay.overlay; width:420; height:270; modal:true; padding:22; closePolicy:Popup.CloseOnEscape|Popup.CloseOnPressOutside

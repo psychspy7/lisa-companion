@@ -8,6 +8,7 @@ STYLE="""QWidget{background:#171823;color:#eeeaf8;font:14px 'Segoe UI';} QLineEd
 class SettingsDialog(QDialog):
     def __init__(self,backend):
         super().__init__(); self.backend=backend;self.fields={};self.keys={}
+        self.finished.connect(lambda result:backend.stop())
         self.setWindowTitle("Lisa · Settings");self.resize(770,750);self.setStyleSheet(STYLE)
         layout=QVBoxLayout(self);layout.setContentsMargins(22,20,22,20);layout.setSpacing(14)
         title=QLabel("Make Lisa yours");title.setStyleSheet("font-size:24px;font-weight:600;");layout.addWidget(title)
@@ -30,28 +31,49 @@ class SettingsDialog(QDialog):
             self.keys[provider]=control;box.addWidget(control)
             remove=QPushButton("Forget");remove.clicked.connect(lambda: self.forget(provider,control));box.addWidget(remove);form.addRow(title,row)
         chat=page("Chat")
-        field(chat,"chat_provider","Chat service",["groq","gemini"])
-        key(chat,"groq","Groq API key");model=field(chat,"groq_model","Groq model",["llama-3.3-70b-versatile","llama-3.1-8b-instant","openai/gpt-oss-120b"])
-        load=QPushButton("Load my available Groq models");chat.addRow(load)
-        load.clicked.connect(lambda: self.load_models(model,load))
-        key(chat,"gemini","Google AI Studio key")
-        field(chat,"gemini_model","Gemini model",["gemini-3.5-flash-lite","gemini-3.1-flash-lite","gemini-2.5-flash-lite","gemini-3.8-flash"])
+        field(chat,"chat_provider","Preferred chat service",["groq","gemini","openrouter","meta"])
+        check(chat,"chat_fallback","Automatically try configured backups: Groq → Gemini → OpenRouter → Meta")
+        for provider,title,models in (
+            ("groq","Groq",["openai/gpt-oss-120b","openai/gpt-oss-20b","qwen/qwen3.8-27b"]),
+            ("gemini","Google AI Studio",["gemini-3.5-flash-lite","gemini-3.8-flash","gemini-2.5-flash-lite"]),
+            ("openrouter","OpenRouter",["openrouter/free"]),
+            ("meta","Meta Llama",[""])):
+            key(chat,provider,title+" API key")
+            model=field(chat,provider+"_model",title+" model",models)
+            row=QWidget();box=QHBoxLayout(row);box.setContentsMargins(0,0,0,0)
+            load=QPushButton("Load models");test=QPushButton("Test connection")
+            load.setObjectName(provider+"LoadModels");test.setObjectName(provider+"TestConnection")
+            box.addWidget(load);box.addWidget(test);chat.addRow(row)
+            load.clicked.connect(lambda checked=False,p=provider,m=model,b=load:self.load_models(m,b,p))
+            test.clicked.connect(lambda checked=False,p=provider,b=test:self.test_connection(p,b))
         field(chat,"language","Conversation language",["Auto","English","Hindi","Hinglish"])
         check(chat,"demo_enabled","Use clearly labelled offline preview when chat key is missing")
-        label=QLabel("Model availability depends on your account. Choose an available model after loading the list.");label.setWordWrap(True);chat.addRow(label)
+        label=QLabel("A key alone does not guarantee model access or quota. Test each service separately. OpenRouter defaults to its free router; paid models use your account credits. Meta requires a Llama developer key, not a Facebook/WhatsApp token. Backups receive the same chat context and saved notes.");label.setWordWrap(True);chat.addRow(label)
         voice=page("Voice")
         check(voice,"voice_enabled","Speak Lisa's replies")
         field(voice,"voice_provider","Primary voice",["elevenlabs","fish","windows"])
-        check(voice,"voice_fallback","Try Fish once if ElevenLabs fails (needs a Fish key and Voice ID)")
+        check(voice,"voice_fallback","Try the other configured cloud voice if the primary fails")
+        check(voice,"windows_voice_fallback","Use the free Windows voice when cloud voices fail or are not configured")
         key(voice,"elevenlabs","ElevenLabs API key")
         eleven=field(voice,"eleven_voice_id","ElevenLabs Voice ID")
-        field(voice,"eleven_model","ElevenLabs model",["eleven_v4_turbo","eleven_v3","eleven_multilingual_v2","eleven_flash_v2_5"])
+        eleven_model=field(voice,"eleven_model","ElevenLabs model",["eleven_flash_v2_5","eleven_multilingual_v2","eleven_v3","eleven_v4_turbo"])
+        models_e=QPushButton("Load ElevenLabs speech models");voice.addRow(models_e);models_e.clicked.connect(lambda:self.load_models(eleven_model,models_e,"elevenlabs"))
+        field(voice,"eleven_stt_model","ElevenLabs transcription",["scribe_v2","scribe_v1"])
         load_e=QPushButton("Choose an ElevenLabs voice");voice.addRow(load_e);load_e.clicked.connect(lambda:self.load_voices("elevenlabs",eleven,load_e))
         key(voice,"fish","Fish Audio API key");fish=field(voice,"fish_voice_id","Fish voice model ID")
         field(voice,"fish_model","Fish TTS model",["s2.1-pro-free","s2.1-pro"])
         load_f=QPushButton("Choose a Fish voice");voice.addRow(load_f);load_f.clicked.connect(lambda:self.load_voices("fish",fish,load_f))
-        field(voice,"stt_provider","Microphone transcription",["groq","elevenlabs","fish"])
+        field(voice,"stt_provider","Preferred transcription",["groq","gemini","elevenlabs","fish"])
+        check(voice,"stt_fallback","Use configured transcription backups if the preferred service fails")
         field(voice,"groq_stt_model","Groq transcription",["whisper-large-v3-turbo","whisper-large-v3"])
+        field(voice,"gemini_stt_model","Gemini audio model",["gemini-3.5-flash-lite","gemini-3.8-flash","gemini-2.5-flash-lite"])
+        field(voice,"fish_stt_model","Fish transcription model",["transcribe-1-pro"])
+        for provider in ("elevenlabs","fish"):
+            test=QPushButton("Test "+provider+" voice · uses a short greeting")
+            voice.addRow(test);test.clicked.connect(lambda checked=False,p=provider,b=test:self.test_connection(p,b,voice=True))
+        field(voice,"speech_pause","Pause before auto-send (seconds)")
+        field(voice,"speech_threshold","Mic sensitivity threshold (0.003–0.15)")
+        label=QLabel("Start talk enables hands-free turns: speak, pause, hear Lisa, speak again. Mic pauses during her reply to avoid echo. Mic / Interrupt lets you cut her off; Stop ends the session. Increase the threshold for a noisy room, lower it for a quiet voice.");label.setWordWrap(True);voice.addRow(label)
         motion=page("Motion")
         key(motion,"vidu","Vidu API key")
         field(motion,"vidu_model","Vidu video model",["viduq3-pro-fast","viduq3-turbo","viduq3-pro"])
@@ -70,14 +92,15 @@ class SettingsDialog(QDialog):
         check(privacy,"sound_enabled","Soft interface chime")
         field(privacy,"repository","Update repository")
         update=QPushButton("Check for an update");privacy.addRow(update);update.setEnabled(not backend.updateInProgress);update.clicked.connect(lambda:(self.reject(),backend.checkUpdate()))
-        label=QLabel("Microphone starts only when you press Mic, stops when submitted, and closes completely on quit. No camera. Keys are encrypted by Windows for your account. Memory is saved only through Memory.");label.setWordWrap(True);privacy.addRow(label)
+        label=QLabel("Microphone opens only after Mic or Start talk. Continuous talk listens between replies until you press Stop or quit. Every launch starts with the mic off. No camera. Keys are encrypted by Windows for your account. Memory is saved only through Memory.");label.setWordWrap(True);privacy.addRow(label)
         self.status=QLabel("");self.status.setWordWrap(True);layout.addWidget(self.status)
         buttons=QDialogButtonBox(QDialogButtonBox.StandardButton.Save|QDialogButtonBox.StandardButton.Cancel);buttons.accepted.connect(self.save);buttons.rejected.connect(self.reject);layout.addWidget(buttons)
 
     def save_keys(self):
         pending=[(p,c.text().strip()) for p,c in self.keys.items() if c.text().strip()]
         for p,value in pending:self.backend.keys[p].validate(value)
-        for p,value in pending:self.backend.keys[p].save(value);self.keys[p].clear()
+        for p,value in pending:
+            self.backend.keys[p].save(value);self.keys[p].clear();self.keys[p].setPlaceholderText("Saved securely · enter to replace")
         if pending:self.backend.refresh()
 
     def forget(self,provider,control):
@@ -86,21 +109,44 @@ class SettingsDialog(QDialog):
     def save(self):
         try:
             self.save_keys()
-            for key,control in self.fields.items():
-                value=control.isChecked() if isinstance(control,QCheckBox) else control.currentText() if isinstance(control,QComboBox) else control.toPlainText()[:8000] if isinstance(control,QTextEdit) else control.text().strip()
-                self.backend.store.settings[key]=value
+            values=self.values()
+            for name,low,high in (("speech_pause",.45,2.5),("speech_threshold",.003,.15)):
+                try:value=float(values[name])
+                except ValueError:raise ValueError("Enter a number for "+name.replace("_"," ")+".")
+                if not low<=value<=high:raise ValueError(name.replace("_"," ").title()+f" must be {low}–{high}.")
+            self.backend.store.settings.update(values)
             self.backend.store.save();self.backend.refresh();self.accept()
         except (ValueError,RuntimeError) as exc:self.status.setText(str(exc))
 
-    def load_models(self,model,button):
-        try:self.save_keys()
+    def values(self):
+        return {key:control.isChecked() if isinstance(control,QCheckBox) else control.currentText().strip() if isinstance(control,QComboBox) else control.toPlainText()[:8000] if isinstance(control,QTextEdit) else control.text().strip() for key,control in self.fields.items()}
+
+    def test_connection(self,provider,button,voice=False):
+        try:
+            self.save_keys();settings=dict(self.backend.store.settings,**self.values());client=self.backend.client(provider,settings)
         except (ValueError,RuntimeError) as exc:self.status.setText(str(exc));return
-        button.setEnabled(False);self.status.setText("Checking Groq…")
+        button.setEnabled(False);self.status.setText("Testing "+provider+"…")
+        if voice:self.backend.stop()
+        token=self.backend.generation
         def done(result):
             button.setEnabled(True)
             if isinstance(result,Exception):self.status.setText(str(result));return
-            current=model.currentText();model.clear();model.addItems(result);model.setCurrentText(current if current in result else result[0] if result else current);self.status.setText("Loaded models. Pick one your account can use.")
-        self.backend.work(lambda:self.backend.client("groq").models(),done)
+            self.status.setText(provider+" connected successfully"+(" · voice ready" if voice else " · "+settings[provider+"_model"]))
+            if voice and token==self.backend.generation:
+                try:self.backend.audio.play_wav(result,float(settings["volume"]))
+                except RuntimeError as exc:self.status.setText(str(exc))
+        self.backend.work(lambda:client.speech("Hello, Sir. I’m Lisa.","smile") if voice else client.chat("Say hello in one short sentence.",[],[]),done)
+
+    def load_models(self,model,button,provider="groq"):
+        try:self.save_keys()
+        except (ValueError,RuntimeError) as exc:self.status.setText(str(exc));return
+        button.setEnabled(False);self.status.setText("Checking "+provider+"…")
+        def done(result):
+            button.setEnabled(True)
+            if isinstance(result,Exception):self.status.setText(str(result));return
+            if not result:self.status.setText("No models returned for this account.");return
+            current=model.currentText();model.clear();model.addItems(result);model.setCurrentText(current if current in result else result[0]);self.status.setText("Loaded models. Select one, then Test connection to check access and quota.")
+        self.backend.work(lambda:self.backend.client(provider).models(),done)
 
     def load_voices(self,provider,control,button):
         try:self.save_keys()

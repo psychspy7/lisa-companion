@@ -1,9 +1,9 @@
-LISA 1.0 fixes the old test application's fragile update flow and introduces a clean per-user Windows installer. Download LISA-Setup.exe, close the old Lisa, and install this version once if the old Update button fails.
+LISA 1.1 repairs API configuration and adds hands-free conversation.
 
-- Optional desktop shortcut, Start Menu entry and Windows uninstall support. Create a desktop shortcut later in Settings.
-- Installed runtime files stay together, removing the unpacking step on each launch. Unused legacy sprite sheets and Tkinter are excluded from the Windows bundles.
-- Verified update downloads, visible progress and actionable errors. Installed editions update through the installer; portable editions use a replacement helper with recovery. LISA.exe remains available for older updaters.
-- A separate fullscreen app on first launch and upgrade, with an adjustable character stage, chat divider, Focus mode, zoom and character positioning.
-- A sharper default Lisa personality: playful sarcasm, warm support and focused task help. Custom prompts, encrypted credentials, saved memories and optional history are preserved.
+- Retired default Groq models migrate to a supported default. Gemini JSON MIME and model-specific settings are corrected; provider requests identify Lisa with an application user agent.
+- Automatic chat backups: preferred service, then configured Groq, Gemini, OpenRouter and Meta Llama. Only configured services are called; the app names the successful provider. OpenRouter defaults to its free router. Meta uses the official direct Llama API and requires its own developer key and available model.
+- Load available models and Test connection independently in Settings. API errors distinguish authentication, permissions, retired models, quota/rate limits and connection issues without revealing credentials. Encrypted key saves are atomic.
+- Start talk: speak, pause, hear Lisa, speak again. Local end-of-turn detection ignores silence and retains pre-roll. Groq, Gemini, ElevenLabs and Fish transcription backups; cloud voice backup plus optional free Windows voice fallback. Mic pauses during replies; Interrupt cuts speech off. End talk, Stop, Esc, Settings and quit close the microphone. Sessions never start automatically.
+- Per-user Windows installation, optional desktop shortcut, fullscreen UI and verified update support remain intact. Existing keys, custom prompts, memories and history settings are preserved.
 
-Four outfits and 36 illustrated expressions remain upscaled 2160 × 3840 artwork. Motion includes breathing, sway, expression transitions and support for imported or Vidu-generated clips; no generated clips or full character rigging are bundled. Groq/Gemini chat and ElevenLabs/Fish voice require your own keys in Settings. Live provider calls remain unverified until credentials are configured. Closing Lisa stops microphone access.
+Use Update in Lisa, or close Lisa and run LISA-Setup.exe. Add complete keys in Settings, choose models and voice IDs, then test each service. No keys are embedded. Automated provider and conversation tests use simulated services; authenticated live calls remain unverified because no relevant credentials are saved in the current Lisa data folder.

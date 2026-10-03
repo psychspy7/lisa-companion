@@ -15,7 +15,7 @@ import uuid
 import wave
 from persona import DEFAULT_PERSONALITY, LEGACY_PERSONALITY
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 MOODS = ["smile", "shy", "tea", "sitting", "wave", "yawn", "stretch", "thinking", "listening",
          "commanding", "angry", "smirk", "excited", "laughing", "surprised", "proud", "cheering", "teasing",
          "kiss", "affectionate", "elegant_sitting", "thumbs_up", "blushing", "welcoming", "apologetic", "reassuring", "peace",
@@ -56,11 +56,16 @@ DEFAULTS = {"model": "gpt-4o-mini", "tts_model": "gpt-4o-mini-tts", "stt_model":
             "volume": 0.75, "language": "Auto", "demo_enabled": True,
             "gemini_model": "gemini-3.8-flash", "eleven_model": "eleven_v4_turbo",
             "eleven_stt_model": "scribe_v2", "eleven_voice_id": "", "custom_chime": False}
-DEFAULTS.update(chat_provider="groq",groq_model="llama-3.3-70b-versatile",gemini_model="gemini-3.5-flash-lite",
+DEFAULTS.update(chat_provider="groq",groq_model="openai/gpt-oss-120b",gemini_model="gemini-3.5-flash-lite",
                 voice_provider="elevenlabs",voice_fallback=True,fish_model="s2.1-pro-free",fish_voice_id="",
                 stt_provider="groq",groq_stt_model="whisper-large-v3-turbo",fish_stt_model="transcribe-1-pro",
                 personality_prompt=DEFAULT_PERSONALITY,
                 pc_actions=True,fullscreen=True,zoom=1.0,chat_width=390,ui_version=4,vidu_model="viduq3-pro-fast",motion_quality="balanced")
+DEFAULTS.update(chat_fallback=True, openrouter_model="openrouter/free", meta_model="",
+                stt_fallback=True, gemini_stt_model="gemini-3.5-flash-lite",
+                windows_voice_fallback=True, speech_threshold="0.018", speech_pause="0.85", api_version=1)
+# Flash is economical and does not require the newest voice model's account access.
+DEFAULTS["eleven_model"] = "eleven_flash_v2_5"
 
 
 class Store:
@@ -72,6 +77,12 @@ class Store:
         if not isinstance(saved_settings, dict):
             saved_settings = {}
         self.settings.update(saved_settings)
+        if saved_settings.get("api_version", 0) < 1:
+            if self.settings.get("groq_model") in ("llama-3.3-70b-versatile", "llama-3.1-8b-instant"):
+                self.settings["groq_model"] = DEFAULTS["groq_model"]
+            if self.settings.get("eleven_model") == "eleven_v4_turbo":
+                self.settings["eleven_model"] = DEFAULTS["eleven_model"]
+            self.settings["api_version"] = 1
         if saved_settings.get("ui_version", 0) < 3:
             self.settings.update(chat_provider="groq", stt_provider="groq")
         if saved_settings.get("ui_version", 0) < 4:
@@ -133,7 +144,7 @@ def dpapi(data: bytes, decrypt=False) -> bytes:
 
 
 class Credentials:
-    PROVIDERS = {"openai": "OPENAI_API_KEY", "gemini": "GEMINI_API_KEY", "elevenlabs": "ELEVENLABS_API_KEY", "groq":"GROQ_API_KEY", "fish":"FISH_API_KEY", "vidu":"VIDU_API_KEY"}
+    PROVIDERS = {"openai": "OPENAI_API_KEY", "gemini": "GEMINI_API_KEY", "elevenlabs": "ELEVENLABS_API_KEY", "groq":"GROQ_API_KEY", "fish":"FISH_API_KEY", "vidu":"VIDU_API_KEY", "openrouter":"OPENROUTER_API_KEY", "meta":"LLAMA_API_KEY"}
 
     def __init__(self, directory: Path, provider="openai"):
         if provider not in self.PROVIDERS:
@@ -168,12 +179,17 @@ class Credentials:
     def save(self, key):
         key = key.strip()
         self.validate(key)
-        self.path.write_bytes(dpapi(key.encode()))
+        encrypted=dpapi(key.encode())
+        try:
+            temp=self.path.with_suffix(".key.tmp")
+            temp.write_bytes(encrypted);temp.replace(self.path)
+        except OSError:
+            raise RuntimeError("Windows could not save this key. Check that Lisa's personal data folder is writable.") from None
         self.session_key = key
 
     def validate(self, key):
         key = key.strip()
-        if len(key) < 16 or not key.isascii() or any(c.isspace() for c in key):
+        if len(key) < 16 or not key.isascii() or any(c.isspace() for c in key) or any(c in key for c in ('*','•','…','"',"'",'`')):
             raise ValueError("Enter the complete API key, without spaces.")
         if self.provider == "openai" and not key.startswith("sk-"):
             raise ValueError("Enter a valid OpenAI API key.")
@@ -184,7 +200,9 @@ class Credentials:
 
 
 class ApiError(RuntimeError):
-    pass
+    def __init__(self, message, *, status=None, category="unknown"):
+        super().__init__(message)
+        self.status, self.category = status, category
 
 
 class OpenAIClient:

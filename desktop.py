@@ -12,7 +12,8 @@ from PySide6.QtQuickControls2 import QQuickStyle
 from PySide6.QtMultimedia import QMediaPlayer
 from PySide6.QtWidgets import QApplication,QMessageBox,QFileDialog,QDialog,QVBoxLayout,QHBoxLayout,QLabel,QComboBox,QPushButton,QListWidget,QLineEdit
 from core import Store,Credentials,MOODS,OUTFITS,LABELS,VERSION,ApiError,resource,outfit_for_hour
-from providers import GroqClient,GeminiClient,ElevenLabsClient,FishClient
+from providers import GroqClient,GeminiClient,ElevenLabsClient,FishClient,OpenRouterClient,MetaClient
+from routing import configured_order,run_fallback,CHAT_ORDER,STT_ORDER,NAMES
 from audio import Audio
 from actions import validate_action,explicit_local_action,open_target
 from motion import MotionCache,ViduClient
@@ -26,12 +27,13 @@ class Backend(QObject):
     activityChanged=Signal(); updateChanged=Signal(); downloadProgress=Signal(int,int)
     def __init__(self,app):
         super().__init__();self.app=app;self.store=Store();self.audio=Audio()
-        self.keys={p:Credentials(self.store.directory,p) for p in ("groq","gemini","elevenlabs","fish","vidu")}
+        self.keys={p:Credentials(self.store.directory,p) for p in (*CHAT_ORDER,"elevenlabs","fish","vidu")}
         self.cache=MotionCache(self.store.directory);self.jobs=self.store.load("motion-jobs.json",[])
         self.mood="smile";self.outfit=outfit_for_hour(datetime.now().hour) if self.store.settings["auto_outfit"] else self.store.settings["outfit"]
         self._status="Ready, Sir";self._busy=False;self.closed=False;self.generation=0;self.cancel_event=threading.Event();self.speaking=False
         self._messages=list(self.store.history[-60:]);self.window=None;self.polling=False;self.started_recording=0
         self._mode_name="Offline preview";self._last_audio=None;self._updating=False;self._update_progress=-1;self._update_note="";self._update_state="idle"
+        self._conversation=False;self.conversation_phase="idle";self.resume_at=0.
         self.completed.connect(self.dispatch)
         self.downloadProgress.connect(self.on_update_progress)
         self.timer=QTimer(self);self.timer.timeout.connect(self.tick);self.timer.start(100)
@@ -49,6 +51,10 @@ class Backend(QObject):
     def talking(self):return self.speaking or self.audio.playing
     @Property(float,notify=activityChanged)
     def audioLevel(self):return self.audio.level
+    @Property(bool,notify=activityChanged)
+    def conversation(self):return self._conversation
+    @Property(float,notify=activityChanged)
+    def inputLevel(self):return min(1.,self.audio.input_level*15)
     @Property(str,notify=changed)
     def outfitName(self):return self.outfit.title()
     @Property(str,notify=changed)
@@ -86,7 +92,8 @@ class Backend(QObject):
     def refresh(self):
         self.motion_timer.start(10000)
         provider=self.store.settings["chat_provider"]
-        self._mode_name=provider.title() if self.keys.get(provider) and self.keys[provider].get() else "Offline preview"
+        available=self.provider_order("chat")
+        self._mode_name=(NAMES.get(available[0],available[0])+" · auto backup" if self.store.settings["chat_fallback"] else NAMES.get(available[0],available[0])) if available else "Offline preview"
         if self.store.settings["auto_outfit"] and self.mood=="smile":self.outfit=outfit_for_hour(datetime.now().hour)
         self.changed.emit();self.imageChanged.emit(self.image_url())
     def set_status(self,value):self._status=value;self.changed.emit();self.activityChanged.emit()
@@ -94,10 +101,15 @@ class Backend(QObject):
         self._messages.append({"role":role,"content":text});self._messages=self._messages[-80:];self.messagesChanged.emit()
         self.store.history=list(self._messages);self.store.save()
 
-    def client(self,provider):
-        classes={"groq":GroqClient,"gemini":GeminiClient,"elevenlabs":ElevenLabsClient,"fish":FishClient,"vidu":ViduClient}
+    def client(self,provider,settings=None):
+        classes={"groq":GroqClient,"gemini":GeminiClient,"openrouter":OpenRouterClient,"meta":MetaClient,"elevenlabs":ElevenLabsClient,"fish":FishClient,"vidu":ViduClient}
         if provider not in classes:raise ApiError("Choose a supported service in Settings.")
-        return classes[provider](self.keys[provider].get(),self.store.settings)
+        return classes[provider](self.keys[provider].get(),settings if settings is not None else self.store.settings)
+
+    def provider_order(self,feature):
+        order=CHAT_ORDER if feature=="chat" else STT_ORDER
+        setting="chat_provider" if feature=="chat" else "stt_provider"
+        return configured_order(self.store.settings[setting],order,{p:self.keys[p].get() for p in order},self.store.settings["chat_fallback" if feature=="chat" else "stt_fallback"])
 
     def work(self,fn,callback):
         def run():
@@ -114,30 +126,37 @@ class Backend(QObject):
     def send(self,text):
         text=text.strip()[:4000]
         if not text or self._busy:return
-        self.stop();history=[x for x in self._messages if x["role"] in ("user","assistant")]
+        self.cancel_turn();history=[x for x in self._messages if x["role"] in ("user","assistant")]
         self.add_message("user",text);self._busy=True;self.set_status("Thinking…");token=self.generation
+        self.conversation_phase="thinking"
         local=explicit_local_action(text)
         if local:
             self.finish_reply({"reply":"Let’s open "+local["value"]+", Sir.","mood":"listening","action":local},token);return
         if any(x in text.casefold() for x in ("who made you","who created you","who maded you")):
             self.finish_reply({"reply":"I am made by Virat by the help of Kitty Corp organisation.","mood":"proud"},token);return
-        provider=self.store.settings["chat_provider"]
-        key=self.keys.get(provider)
-        if not key or not key.get():
-            if self.store.settings["demo_enabled"]:self.finish_reply(demo.reply(text,self.store.memories),token)
+        order=self.provider_order("chat")
+        if not order:
+            if self.store.settings["demo_enabled"] and not self._conversation:self.finish_reply(demo.reply(text,self.store.memories),token)
             else:self.finish_reply(ApiError("Add your chat API key in Settings, or enable the offline preview."),token)
             return
-        client=self.client(provider);memories=list(self.store.memories)
-        self.work(lambda:client.chat(text,history,memories),lambda result:self.finish_reply(result,token))
+        clients={p:self.client(p) for p in order};memories=list(self.store.memories);cancel=self.cancel_event
+        def done(result):
+            if token!=self.generation:return
+            if isinstance(result,Exception):self.finish_reply(result,token);return
+            answer,provider,failures=result
+            self.finish_reply(answer,token)
+            self._mode_name=NAMES[provider]+(" · backup" if provider!=self.store.settings["chat_provider"] else "");self.changed.emit()
+            if failures:self.add_message("system","Connected using "+NAMES[provider]+" backup. "+" | ".join(failures))
+        self.work(lambda:run_fallback(order,lambda p:clients[p].chat(text,history,memories),cancel),done)
 
     def finish_reply(self,result,token):
         if token!=self.generation:return
         self._busy=False
-        if isinstance(result,Exception):self.set_status(str(result));return
+        if isinstance(result,Exception):self.pause_conversation(str(result));return
         self.setMood(result["mood"]);self.add_message("assistant",result["reply"]);self.set_status("Ready, Sir")
         action=result.get("action")
         if action:self.review_action(action)
-        if self.store.settings["voice_enabled"]:self.speak(result["reply"],result["mood"],token)
+        if self.store.settings["voice_enabled"] or self._conversation:self.speak(result["reply"],result["mood"],token)
 
     def review_action(self,action):
         kind,value=action.get("type"),action.get("value","")
@@ -162,22 +181,30 @@ class Backend(QObject):
 
     def speak(self,text,mood,token):
         primary=self.store.settings["voice_provider"];cancel=self.cancel_event
-        self.speaking=True;self.set_status("Preparing voice…")
+        self.speaking=True;self.conversation_phase="preparing";self.set_status("Preparing voice…")
+        settings=dict(self.store.settings)
+        clients={p:self.client(p) for p in ("elevenlabs","fish")}
+        configured={p:bool(self.keys[p].get() and settings["eleven_voice_id" if p=="elevenlabs" else "fish_voice_id"]) for p in clients}
         def generate():
             if primary=="windows":return demo.speech(text,self.store.directory,cancel),"Windows voice"
-            try:return self.client(primary).speech(text,mood),primary.title()
-            except ApiError:
-                if primary=="elevenlabs" and self.store.settings["voice_fallback"] and self.keys["fish"].get() and self.store.settings["fish_voice_id"] and not cancel.is_set():
-                    return self.client("fish").speech(text,mood),"Fish fallback"
-                raise
+            if primary not in clients:raise ApiError("Choose a supported voice in Settings.")
+            failure=None
+            for provider in [primary]+([p for p in clients if p!=primary and configured[p]] if settings["voice_fallback"] else []):
+                if cancel.is_set():return b"",""
+                try:return clients[provider].speech(text,mood),provider.title()+(" fallback" if provider!=primary else "")
+                except ApiError as exc:failure=exc
+            if settings["windows_voice_fallback"] and not cancel.is_set():
+                return demo.speech(text,self.store.directory,cancel),"Windows fallback · check cloud voice in Settings"
+            raise failure
         def done(result):
             if token!=self.generation:return
             self.speaking=False
-            if isinstance(result,Exception):self.set_status(str(result));return
+            if isinstance(result,Exception):self.pause_conversation(str(result));return
             wav,label=result
-            if not wav:self.set_status("Ready, Sir");return
-            try:self.audio.play_wav(wav,float(self.store.settings["volume"]));self.set_status("Speaking · "+label)
-            except RuntimeError as exc:self.set_status(str(exc))
+            if not wav:self.schedule_listening();return
+            try:
+                self.audio.play_wav(wav,float(self.store.settings["volume"]));self.conversation_phase="speaking";self.set_status("Speaking · "+label)
+            except RuntimeError as exc:self.pause_conversation(str(exc))
         self.work(generate,done)
 
     @Slot()
@@ -185,35 +212,69 @@ class Backend(QObject):
         self.stop();self.speak("Hello, Sir. I’m Lisa. Ready when you are.","smile",self.generation)
     @Slot()
     def stop(self):
+        self._conversation=False;self.conversation_phase="idle";self.resume_at=0.;self.cancel_turn()
+    def cancel_turn(self):
         self.generation+=1;self.cancel_event.set();self.cancel_event=threading.Event();demo.cancel();self.audio.stop_playback()
         if self.audio.recording:self.audio.stop_recording()
         self._busy=False;self.speaking=False;self.set_status("Ready, Sir")
+    def pause_conversation(self,message):
+        was_active=self._conversation
+        self.stop();self.set_status(("Talk paused · " if was_active else "")+message)
+    @Slot()
+    def toggleConversation(self):
+        if self._conversation:self.stop();return
+        if not self.provider_order("chat") or not self.provider_order("stt"):
+            self.set_status("Add a chat key and a transcription key in Settings, then Test connection. Groq or Gemini can provide both.");return
+        self.stop();self._conversation=True;self.listen_again()
+    def listen_again(self):
+        if not self._conversation or self.closed:return
+        try:
+            self.audio.start_recording(continuous=True,threshold=float(self.store.settings["speech_threshold"]),pause=float(self.store.settings["speech_pause"]))
+            self.started_recording=time.monotonic();self.conversation_phase="listening";self.set_status("Listening · pause to send · Stop ends talk")
+        except (RuntimeError,ValueError) as exc:self.pause_conversation(str(exc))
+    def schedule_listening(self):
+        self.conversation_phase="cooldown";self.resume_at=time.monotonic()+.4
+        self.set_status("Your turn, Sir…" if self._conversation else "Ready, Sir")
+    def submit_recording(self):
+        wav=self.audio.stop_recording();self._busy=True;token=self.generation;cancel=self.cancel_event
+        if len(wav)<=44:
+            self._busy=False
+            if self._conversation:self.schedule_listening()
+            else:self.set_status("No speech recorded. Try again.")
+            return
+        self.conversation_phase="transcribing";self.set_status("Transcribing…")
+        order=self.provider_order("stt");clients={p:self.client(p) for p in order}
+        def done(result):
+            if token!=self.generation:return
+            self._busy=False
+            if isinstance(result,Exception):self.pause_conversation(str(result));return
+            text,provider,failures=result
+            if text:self.send(text)
+            elif self._conversation:self.schedule_listening()
+            else:self.set_status("No speech heard. Try again.")
+        self.work(lambda:run_fallback(order,lambda p:clients[p].transcribe(wav),cancel),done)
     @Slot()
     def mic(self):
         if self.audio.recording:
-            wav=self.audio.stop_recording();self._busy=True;token=self.generation;self.set_status("Transcribing…")
-            def done(result):
-                if token!=self.generation:return
-                self._busy=False
-                if isinstance(result,Exception):self.set_status(str(result));return
-                if result:self.send(result)
-                else:self.set_status("No speech heard. Try again.")
-            client=self.client(self.store.settings["stt_provider"]);self.work(lambda:client.transcribe(wav),done)
+            self.submit_recording()
         else:
+            if self._conversation:
+                self.cancel_turn();self.listen_again();return
             if self._busy:return
-            provider=self.store.settings["stt_provider"]
-            if not self.keys.get(provider) or not self.keys[provider].get():
-                self.set_status("Add your "+provider.title()+" transcription key in Settings before using Mic.");return
+            if not self.provider_order("stt"):
+                self.set_status("Add a Groq, Gemini, ElevenLabs or Fish transcription key in Settings before using Mic.");return
             self.stop()
             try:self.audio.start_recording();self.started_recording=time.monotonic();self.set_status("Listening · press Mic to send")
             except RuntimeError as exc:self.set_status(str(exc))
     def tick(self):
         if self.closed:return
-        if self.audio.recording and time.monotonic()-self.started_recording>=30:self.mic()
-        if self._status.startswith("Speaking") and not self.audio.playing:self.set_status("Ready, Sir")
-        current=(self.audio.recording,self.speaking or self.audio.playing,round(self.audio.level,2))
+        if self.audio.recording and (self.audio.utterance_ready if self._conversation else time.monotonic()-self.started_recording>=30):self.submit_recording()
+        if self.conversation_phase=="speaking" and not self.audio.playing:
+            self.audio.stop_playback();self.schedule_listening()
+        if self._conversation and self.conversation_phase=="cooldown" and time.monotonic()>=self.resume_at:self.listen_again()
+        current=(self.audio.recording,self.speaking or self.audio.playing,round(self.audio.level,2),round(self.inputLevel,2),self._conversation)
         if current!=self._last_audio:self._last_audio=current;self.activityChanged.emit()
-        interval=60 if current[0] or current[1] else 350
+        interval=60 if current[0] or current[1] or self._conversation else 350
         if self.timer.interval()!=interval:self.timer.setInterval(interval)
 
     @Slot(str)
@@ -234,7 +295,7 @@ class Backend(QObject):
         layout={"zoom":round(max(.65,min(1.8,zoom)),3),"chat_width":max(290,min(700,width))}
         if any(self.store.settings.get(k)!=v for k,v in layout.items()):self.store.settings.update(layout);self.store.save()
     @Slot()
-    def settings(self):SettingsDialog(self).exec()
+    def settings(self):self.stop();SettingsDialog(self).exec()
     @Slot()
     def createDesktopShortcut(self):
         try:

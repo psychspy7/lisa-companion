@@ -3,9 +3,38 @@ import io
 import math
 import threading
 import wave
+from collections import deque
 import numpy as np
 import sounddevice as sd
 from core import wav_from_pcm
+
+
+class SpeechGate:
+    """Energy-based end-of-turn detection with bounded silence and a pre-roll."""
+    def __init__(self,threshold=.018,pause=.85,rate=16000):
+        self.threshold=max(.003,min(.15,float(threshold)))
+        self.pause=max(.45,min(2.5,float(pause)));self.rate=rate
+        self.preroll=deque(maxlen=6);self.chunks=[]
+        self.active=False;self.ready=False;self.voiced=0.;self.silence=0.;self.elapsed=0.;self.level=0.
+
+    def feed(self,data,frames):
+        if self.ready:return
+        samples=np.frombuffer(data,dtype=np.int16).astype(np.float32)/32768
+        self.level=float(np.sqrt(np.mean(samples*samples))) if samples.size else 0.
+        duration=frames/self.rate;voice=self.level>=self.threshold
+        if not self.active:
+            self.preroll.append(data)
+            self.voiced=self.voiced+duration if voice else 0.
+            if self.voiced>=.18:
+                self.active=True;self.chunks=list(self.preroll);self.preroll.clear();self.elapsed=self.voiced
+            return
+        self.chunks.append(data);self.elapsed+=duration
+        if voice:self.voiced+=duration;self.silence=0.
+        else:self.silence+=duration
+        if self.elapsed>=20 or self.silence>=self.pause:
+            if self.voiced>=.25:self.ready=True
+            else:
+                self.active=False;self.chunks=[];self.voiced=self.silence=self.elapsed=0.
 
 
 class Audio:
@@ -18,17 +47,25 @@ class Audio:
         self.recording = False
         self.playing = False
         self.lock = threading.RLock()
+        self.gate = None
+        self.input_level = 0.0
 
-    def start_recording(self):
+    def start_recording(self,continuous=False,threshold=.018,pause=.85):
+        if self.input_stream:self.stop_recording()
         self.stop_playback()
         self.chunks = []
         self.frames = 0
         self.recording = True
+        self.gate = SpeechGate(threshold,pause) if continuous else None
+        self.input_level=0.
 
         def collect(data, frames, time_info, status):
-            if self.recording and self.frames < 16000 * 30:
-                self.chunks.append(bytes(data))
-                self.frames += frames
+            with self.lock:
+                if not self.recording:return
+                if self.gate:
+                    self.gate.feed(bytes(data),frames);self.input_level=self.gate.level
+                elif self.frames < 16000 * 30:
+                    self.chunks.append(bytes(data));self.frames += frames
 
         try:
             self.input_stream = sd.RawInputStream(samplerate=16000, channels=1, dtype="int16", callback=collect, blocksize=1024)
@@ -51,10 +88,16 @@ class Audio:
             finally:
                 try: stream.close()
                 except Exception: pass
-        wav = wav_from_pcm(b"".join(self.chunks))
-        self.chunks.clear()
-        self.frames = 0
+        with self.lock:
+            pcm=b"".join(self.gate.chunks if self.gate else self.chunks)
+            wav=wav_from_pcm(pcm)
+            self.gate=None;self.input_level=0.
+            self.chunks.clear();self.frames=0
         return wav
+
+    @property
+    def utterance_ready(self):
+        with self.lock:return bool(self.gate and self.gate.ready)
 
     def stop_playback(self):
         with self.lock:
