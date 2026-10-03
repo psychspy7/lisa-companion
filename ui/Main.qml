@@ -43,7 +43,7 @@ ApplicationWindow {
         Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: "#2d2a3e" }
         RowLayout {
             anchors.fill: parent; anchors.leftMargin: 30; anchors.rightMargin: 24; spacing: 12
-            Rectangle { width: 36; height: 36; radius: 13; color: "#b99edc"; Text { anchors.centerIn: parent; text: "☾"; font.pixelSize: 27; color: "#23182f" } }
+            Image { objectName: "brandLogo"; width: 44; height: 44; source: "../assets/lisa-logo.jpg"; sourceSize.width: Math.min(512,128*Screen.devicePixelRatio); fillMode: Image.PreserveAspectFit; smooth: true; mipmap: true }
             ColumnLayout { spacing: 2; Text { text: "LISA"; color: "#f4effa"; font.family: "Segoe UI"; font.pixelSize: 24; font.letterSpacing: 5 } Text { text: "KITTY CORP  ·  "+lisa.version; color: "#9b8cae"; font.pixelSize: 9; font.letterSpacing: 1.4 } }
             Item { Layout.fillWidth: true }
             Rectangle { visible:root.width>1040; width: modeLabel.implicitWidth+24; height: 30; radius: 15; color: "#262536"; Text { id:modeLabel; anchors.centerIn: parent; text: "●  "+lisa.modeName; color: "#c0b4d4"; font.pixelSize: 11 } }

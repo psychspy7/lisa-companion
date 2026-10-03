@@ -1,5 +1,7 @@
 # Artwork and motion provenance
 
+The application logo uses the user's supplied `lisa.jpg` (October 3, 2026), preserving the complete artwork. `assets/lisa-logo.jpg` is an unchanged copy of the supplied 1254 × 1254 JPEG; `assets/lisa.ico` includes Windows icon sizes from 16 × 16 through 256 × 256. Both Windows bundle specifications include the display logo. The executable, installer, taskbar and shortcuts use this ICO; the app header uses the JPEG.
+
 The four main portraits were created using the built-in OpenAI image generation tool, using the user's selected Lisa references and a shared evening master as the identity reference. Originals are in `assets/portraits/*.png`. They are approximately 941 × 1672 pixels; original generator files are also retained in the user's Codex generated-images folder.
 
 The 36 expressions come from the previously selected four 3 × 3 character atlases, retained as `assets/morning.png`, `afternoon.png`, `evening.png`, and `night.png`. Each group of nine has its own outfit. No external character art pack was used.

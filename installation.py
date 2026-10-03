@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+from core import VERSION
 
 
 def installed_root():
@@ -32,6 +33,9 @@ def create_desktop_shortcut():
     if sys.platform != "win32" or not getattr(sys, "frozen", False):
         raise RuntimeError("Desktop shortcuts are available in the Windows app.")
     target = Path(sys.executable).resolve()
+    icon = target.parent / ("LISA-icon-" + VERSION + ".ico")
+    if not icon.is_file():
+        icon = target
     # Windows' known folder respects a Desktop redirected to OneDrive or another drive.
     script = (
         "$ErrorActionPreference='Stop';"
@@ -43,7 +47,7 @@ def create_desktop_shortcut():
         "$lisaLink=$lisaShell.CreateShortcut($lisaShortcutPath);"
         "$lisaLink.TargetPath=" + ps_quote(target) + ";"
         "$lisaLink.WorkingDirectory=" + ps_quote(target.parent) + ";"
-        "$lisaLink.IconLocation=" + ps_quote(str(target) + ",0") + ";"
+        "$lisaLink.IconLocation=" + ps_quote(str(icon) + ",0") + ";"
         "$lisaLink.Description='Talk to Lisa';$lisaLink.Save();Write-Output $lisaShortcutPath"
     )
     encoded = base64.b64encode(script.encode("utf-16-le")).decode("ascii")

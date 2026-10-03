@@ -1,6 +1,6 @@
 ; Inno Setup 6.7+ / standard per-user install. Private data is outside {app}.
 #ifndef AppVersion
-  #define AppVersion "1.0.0"
+  #define AppVersion "1.1.1"
 #endif
 #ifndef AppSource
   #define AppSource "..\dist\LISA-App"
@@ -27,7 +27,7 @@ MinVersion=10.0
 OutputDir={#OutputPath}
 OutputBaseFilename=LISA-Setup
 SetupIconFile=..\assets\lisa.ico
-UninstallDisplayIcon={app}\LISA.exe
+UninstallDisplayIcon={app}\LISA-icon-{#AppVersion}.ico
 UninstallDisplayName=LISA Companion
 Compression=lzma2/max
 SolidCompression=yes
@@ -55,10 +55,11 @@ Name: "desktopicon"; Description: "Add a LISA shortcut to my Desktop"; GroupDesc
 
 [Files]
 Source: "{#AppSource}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\assets\lisa.ico"; DestDir: "{app}"; DestName: "LISA-icon-{#AppVersion}.ico"; Flags: ignoreversion
 
 [Icons]
-Name: "{code:StartMenuDir}\LISA"; Filename: "{app}\LISA.exe"; WorkingDir: "{app}"; Comment: "Talk to Lisa"
-Name: "{code:DesktopDir}\LISA"; Filename: "{app}\LISA.exe"; WorkingDir: "{app}"; Comment: "Talk to Lisa"; Tasks: desktopicon
+Name: "{code:StartMenuDir}\LISA"; Filename: "{app}\LISA.exe"; WorkingDir: "{app}"; IconFilename: "{app}\LISA-icon-{#AppVersion}.ico"; Comment: "Talk to Lisa"
+Name: "{code:DesktopDir}\LISA"; Filename: "{app}\LISA.exe"; WorkingDir: "{app}"; IconFilename: "{app}\LISA-icon-{#AppVersion}.ico"; Comment: "Talk to Lisa"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\LISA.exe"; Description: "Open Lisa now"; Flags: nowait postinstall skipifsilent; Check: CanLaunch
