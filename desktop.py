@@ -424,4 +424,9 @@ def main():
     elif backend.store.settings["fullscreen"]:backend.window.showFullScreen()
     else:backend.window.show()
     if "--self-test" not in sys.argv:QTimer.singleShot(700,backend.recover_update_status)
-    return app.exec()
+    result=app.exec()
+    backend.close()
+    # Destroy QML while its Python context is still alive, including image jobs.
+    from shiboken6 import delete
+    delete(engine)
+    return result
