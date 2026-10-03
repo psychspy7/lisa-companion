@@ -8,6 +8,8 @@ import re
 import subprocess
 import sys
 import time
+import shutil
+import uuid
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -239,85 +241,55 @@ def read_update_status(helper_directory):
     return {"state": "error", "message": message} if message else {}
 
 
-def _quote(value):
-    return "'" + str(value).replace("'", "''") + "'"
-
-
 def install_update(download: Path, helper_directory: Path):
-    if not getattr(sys, "frozen", False):
-        raise UpdateError("Automatic installation is available in the packaged Windows app.")
-    target, source, directory = Path(sys.executable).resolve(), Path(download).resolve(), Path(helper_directory).resolve()
-    if target.suffix.lower() != ".exe" or source.parent != directory / "updates":
-        raise UpdateError("Invalid update installation location.")
+    """Acknowledge the independent updater before the caller closes Lisa."""
+    if not getattr(sys, 'frozen', False):
+        raise UpdateError('Automatic installation is available in the packaged Windows app.')
+    target,source,directory=Path(sys.executable).resolve(),Path(download).resolve(),Path(helper_directory).resolve()
+    if target.suffix.lower()!='.exe' or source.parent!=directory/'updates':
+        raise UpdateError('Invalid update installation location.')
     try:
-        record = json.loads(source.with_suffix(".json").read_text(encoding="utf-8"))
-        if source.stat().st_size != record["size"] or _hash_file(source) != record["sha256"]:
-            raise UpdateError("The downloaded update changed. Download it again before installing.")
-        kind = record["kind"]
-        if kind not in ("portable", "installer") or (kind == "installer") != installed_edition(target):
-            raise UpdateError("This update does not match your Lisa edition. Please run the latest Lisa Setup.")
-    except (OSError, ValueError, KeyError, TypeError):
-        raise UpdateError("The verified update record is missing. Please download the update again.") from None
-    directory.mkdir(parents=True, exist_ok=True)
-    pending_update_error(directory, clear=True)
-    helper = directory / "install-update.ps1"
-    portable = """
-    $lisaStage = $lisaTarget + '.new'
-    for ($lisaAttempt = 0; $lisaAttempt -lt 60; $lisaAttempt++) {
-      try {
-        Copy-Item -LiteralPath $lisaSource -Destination $lisaStage -Force
-        if ((Get-LisaHash $lisaStage) -ne $lisaExpected) { throw 'The staged update failed its checksum.' }
-        [IO.File]::Replace($lisaStage, $lisaTarget, $lisaBackup, $true)
-        $lisaReplaced = $true
-        break
-      } catch {
-        if ($lisaAttempt -eq 59) { throw }
-        Start-Sleep -Milliseconds 500
-      }
-    }
-    if ((Get-LisaHash $lisaTarget) -ne $lisaExpected) { throw 'The installed update failed its checksum.' }
-"""
-    installer = """
-    $lisaArguments = '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /UPDATE /DIR="' + (Split-Path -Parent $lisaTarget) + '"'
-    $lisaSetup = Start-Process -FilePath $lisaSource -ArgumentList $lisaArguments -WindowStyle Hidden -PassThru -Wait
-    if ($lisaSetup.ExitCode -ne 0) { throw ('Lisa Setup could not finish (exit ' + $lisaSetup.ExitCode + '). Run the latest Lisa Setup manually.') }
-    if (-not (Test-Path -LiteralPath $lisaTarget)) { throw 'Lisa Setup did not install the application. Run the latest Lisa Setup manually.' }
-"""
-    helper.write_text(f"""$ErrorActionPreference = 'Stop'
-$lisaTarget = {_quote(target)}
-$lisaSource = {_quote(source)}
-$lisaExpected = {_quote(record['sha256'])}
-$lisaBackup = $lisaTarget + '.bak'
-$lisaResult = {_quote(directory / 'update-result.json')}
-$lisaReplaced = $false
-function Get-LisaHash($lisaFile) {{
-  $lisaHasher = [Security.Cryptography.SHA256]::Create()
-  $lisaStream = [IO.File]::OpenRead($lisaFile)
-  try {{ return ([BitConverter]::ToString($lisaHasher.ComputeHash($lisaStream))).Replace('-', '').ToLowerInvariant() }}
-  finally {{ $lisaStream.Dispose(); $lisaHasher.Dispose() }}
-}}
-function Write-LisaResult($status, $message) {{
-  @{{status=$status; message=$message; version={_quote(record.get('version',''))}}} | ConvertTo-Json | Set-Content -LiteralPath $lisaResult -Encoding UTF8
-}}
-try {{
-  $lisaParent = Get-Process -Id {os.getpid()} -ErrorAction SilentlyContinue
-  if ($lisaParent) {{ Wait-Process -Id {os.getpid()} -Timeout 90 -ErrorAction SilentlyContinue }}
-  if (Get-Process -Id {os.getpid()} -ErrorAction SilentlyContinue) {{ throw 'Lisa is still running. Close it before installing the update.' }}
-  if ((Get-LisaHash $lisaSource) -ne $lisaExpected) {{ throw 'The update failed its checksum. Download it again.' }}
-{installer if kind == 'installer' else portable}
-  Write-LisaResult 'success' 'Lisa was updated successfully.'
-  Start-Process -FilePath $lisaTarget -WorkingDirectory (Split-Path -Parent $lisaTarget) -WindowStyle Normal
-}} catch {{
-  $lisaFailure = $_.Exception.Message
-  if ($lisaReplaced -and (Test-Path -LiteralPath $lisaBackup)) {{
-    try {{ [IO.File]::Replace($lisaBackup, $lisaTarget, $null, $true) }} catch {{ $lisaFailure += ' Restore Lisa from the latest Setup if it will not open.' }}
-  }}
-  Write-LisaResult 'failed' ('Update failed: ' + $lisaFailure)
-  if (Test-Path -LiteralPath $lisaTarget) {{ Start-Process -FilePath $lisaTarget -WorkingDirectory (Split-Path -Parent $lisaTarget) -WindowStyle Normal }}
-}}
-""", encoding="utf-8-sig")
+        record=json.loads(source.with_suffix('.json').read_text())
+        if source.stat().st_size!=record['size'] or _hash_file(source)!=record['sha256']:
+            raise UpdateError('The downloaded update changed. Download it again before installing.')
+        kind=record['kind']
+        if kind not in ('portable','installer') or (kind=='installer')!=installed_edition(target):
+            raise UpdateError('This update does not match your Lisa edition. Run the latest Lisa Setup.')
+        version_tuple(record['version'])
+    except (OSError,ValueError,KeyError,TypeError):
+        raise UpdateError('The verified update record is missing. Download the update again.') from None
+    from core import resource
+    bundled=resource('updater/LISA-Updater.exe')
+    if not bundled.is_file():
+        raise UpdateError('The updater component is missing. Install the latest Lisa Setup once to repair it.')
+    pending_update_error(directory,clear=True)
+    job_id=uuid.uuid4().hex
+    helper=directory/'updates'/('LISA-Updater-'+job_id+'.exe')
+    manifest=directory/'updates'/('job-'+job_id+'.json')
+    ready=directory/'updates'/('ready-'+job_id+'.json')
     try:
-        subprocess.Popen(["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-WindowStyle", "Hidden", "-File", str(helper)],
-                         creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        shutil.copyfile(bundled,helper)
+        manifest.write_text(json.dumps(dict(record,id=job_id,directory=str(directory),target=str(target),
+            source=str(source),parent_pid=os.getpid())),encoding='utf-8')
+        env=dict(os.environ,PYINSTALLER_RESET_ENVIRONMENT='1')
+        if os.name=='nt':
+            import ctypes
+            ctypes.windll.kernel32.SetDllDirectoryW(None)
+        try:
+            process=subprocess.Popen([str(helper),str(manifest)],cwd=directory/'updates',env=env,
+                creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0)|getattr(subprocess,'CREATE_NEW_PROCESS_GROUP',0))
+        finally:
+            if os.name=='nt' and getattr(sys,'_MEIPASS',None):
+                ctypes.windll.kernel32.SetDllDirectoryW(str(sys._MEIPASS))
+        deadline=time.monotonic()+45
+        while time.monotonic()<deadline:
+            if ready.exists():
+                ack=json.loads(ready.read_text())
+                if ack.get('id')==job_id and ack.get('ready'):
+                    return manifest
+            if process.poll() is not None:
+                raise UpdateError(pending_update_error(directory) or 'Windows could not start the updater. Run the latest Lisa Setup.')
+            time.sleep(.15)
+        raise UpdateError('The updater did not start in time. Lisa stayed open. Run the latest Lisa Setup.')
     except OSError:
-        raise UpdateError("Windows could not start the update installer. Run the latest Lisa Setup manually.") from None
+        raise UpdateError('Windows could not prepare the updater. Check disk space and folder permissions, or run Lisa Setup.') from None

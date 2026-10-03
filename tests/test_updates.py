@@ -105,17 +105,23 @@ class ReliableUpdates(unittest.TestCase):
                     updates.install_update(source,directory)
                 launch.assert_not_called()
 
-    def test_helper_waits_uses_atomic_replace_retries_and_rollback(self):
+    def test_handoff_starts_bundled_helper_and_requires_matching_acknowledgement(self):
         with tempfile.TemporaryDirectory() as folder:
-            directory=Path(folder);(directory/"updates").mkdir();source=directory/"updates/LISA-new.exe";source.write_bytes(b"good")
-            source.with_suffix(".json").write_text(json.dumps({"size":4,"sha256":hashlib.sha256(b"good").hexdigest(),"kind":"portable"}))
-            with patch("updates.sys.frozen",True,create=True),patch("updates.sys.executable",str(directory/"LISA.exe")),patch("updates.subprocess.Popen") as launch:
-                updates.install_update(source,directory)
-            helper=(directory/"install-update.ps1").read_text(encoding="utf-8-sig")
-            self.assertIn("Wait-Process",helper);self.assertIn("-Timeout 90",helper)
-            self.assertIn("[IO.File]::Replace",helper);self.assertIn("-lt 60",helper)
-            self.assertIn("update-result.json",helper);self.assertIn("$lisaReplaced",helper)
-            self.assertIn("Hidden",launch.call_args.args[0])
+            directory=Path(folder);(directory/"updates").mkdir();target=directory/"LISA.exe"
+            source=directory/"updates/LISA-new.exe";source.write_bytes(b"good")
+            source.with_suffix(".json").write_text(json.dumps({"size":4,"sha256":hashlib.sha256(b"good").hexdigest(),"kind":"portable","version":"v1.1.3"}))
+            bundled=directory/"bundled.exe";bundled.write_bytes(b"updater")
+            def launch(command,**kwargs):
+                record=json.loads(Path(command[1]).read_text())
+                self.assertEqual(record["parent_pid"],os.getpid())
+                self.assertEqual(Path(command[0]).read_bytes(),b"updater")
+                self.assertEqual(kwargs["env"]["PYINSTALLER_RESET_ENVIRONMENT"],"1")
+                (directory/"updates"/("ready-"+record["id"]+".json")).write_text(json.dumps({"id":record["id"],"ready":True}))
+                return unittest.mock.MagicMock()
+            with patch("updates.sys.frozen",True,create=True),patch("updates.sys.executable",str(target)),patch("core.resource",return_value=bundled),patch("updates.subprocess.Popen",side_effect=launch):
+                manifest=updates.install_update(source,directory)
+            self.assertTrue(manifest.is_file())
+            self.assertFalse((directory/"install-update.ps1").exists())
 
     def test_failed_install_diagnostics_survive_restart_and_can_be_cleared(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -126,26 +132,18 @@ class ReliableUpdates(unittest.TestCase):
             (directory/"update-error.txt").write_text("Legacy install failed")
             self.assertEqual(updates.pending_update_error(directory),"Legacy install failed")
 
-    @unittest.skipUnless(os.name == "nt", "Windows update helper")
-    def test_actual_windows_helper_replaces_file_and_keeps_backup_without_module_hash_command(self):
-        with tempfile.TemporaryDirectory() as folder:
-            directory=Path(folder);(directory/"updates").mkdir()
-            target=directory/"LISA.exe";target.write_bytes(b"previous version")
-            source=directory/"updates/LISA-new.exe";source.write_bytes(b"new verified version")
-            source.with_suffix(".json").write_text(json.dumps({"size":source.stat().st_size,"sha256":hashlib.sha256(source.read_bytes()).hexdigest(),"kind":"portable"}))
-            with patch("updates.sys.frozen",True,create=True),patch("updates.sys.executable",str(target)),patch("updates.subprocess.Popen"):
-                updates.install_update(source,directory)
-            helper=directory/"install-update.ps1"
-            script=helper.read_text(encoding="utf-8-sig")
-            # The test driver is still running; there is no old app process to await.
-            script=script.replace(f"Get-Process -Id {os.getpid()}","Get-Process -Id 2147483647")
-            script=script.replace(f"Wait-Process -Id {os.getpid()}","Wait-Process -Id 2147483647")
-            # These tiny fixtures are data, so intercept only the final application launch.
-            helper.write_text("function Start-Process { }\n"+script,encoding="utf-8-sig")
-            result=subprocess.run(["powershell.exe","-NoProfile","-ExecutionPolicy","Bypass","-WindowStyle","Hidden","-File",str(helper)],capture_output=True,timeout=30,creationflags=subprocess.CREATE_NO_WINDOW)
-            self.assertEqual(result.returncode,0,result.stderr.decode(errors="replace"))
-            self.assertEqual(updates.read_update_status(directory)["state"],"success")
-            self.assertEqual(target.read_bytes(),b"new verified version")
-            self.assertEqual(target.with_suffix(".exe.bak").read_bytes(),b"previous version")
+    @unittest.skipUnless(os.name == "nt", "Windows process handle")
+    def test_actual_windows_parent_handle_detects_process_exit(self):
+        from updater_worker import Parent
+        import sys
+        process=subprocess.Popen([sys.executable,"-c","import time; time.sleep(10)"],creationflags=subprocess.CREATE_NO_WINDOW)
+        parent=Parent(process.pid)
+        try:
+            self.assertFalse(parent.wait(.01))
+            process.terminate();process.wait(timeout=10)
+            self.assertTrue(parent.wait(1))
+        finally:
+            parent.close()
+            if process.poll() is None:process.terminate();process.wait(timeout=10)
 
 if __name__ == "__main__":unittest.main()

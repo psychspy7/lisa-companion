@@ -1,6 +1,7 @@
 """Qt Quick desktop shell, interruptible provider work and reviewed native tools."""
 from datetime import datetime
 import json
+import os
 from pathlib import Path
 import sys
 import threading
@@ -378,9 +379,11 @@ class Backend(QObject):
             self._update_state="downloading";self._update_note="Downloading "+result["version"]+"…";self.updateChanged.emit();self.set_status(self._update_note)
             def downloaded(path):
                 if isinstance(path,Exception):finish(str(path),"error");return
-                try:
-                    updates.install_update(path,self.store.directory);self._update_state="installing";self._update_note="Installing and restarting Lisa…";self.updateChanged.emit();self.app.quit()
-                except (RuntimeError,OSError,ValueError) as exc:finish(str(exc),"error")
+                self.stop();self.store.save();self._update_state="installing";self._update_note="Preparing the installer…";self.updateChanged.emit()
+                def prepared(result):
+                    if isinstance(result,Exception):finish(str(result),"error");return
+                    self._update_note="Installing and restarting Lisa…";self.updateChanged.emit();self.close();self.app.quit()
+                self.work(lambda:updates.install_update(path,self.store.directory),prepared)
             self.work(lambda:updates.download_release(result,self.store.directory/"updates",lambda received,total:self.downloadProgress.emit(received,total)),downloaded)
         def check():
             from installation import is_installed
@@ -397,6 +400,9 @@ class Backend(QObject):
         if not self._updating:self._update_note="";self.updateChanged.emit()
     def recover_update_status(self):
         record=updates.read_update_status(self.store.directory)
+        if record.get("state")=="restarting":
+            self._update_note="Finishing the update…";self._update_state="installing";self.updateChanged.emit()
+            QTimer.singleShot(1000,self.recover_update_status);return
         if record.get("state") not in ("error","success"):return
         self._update_state=record["state"];self._update_note=record.get("message","Lisa update finished.");self.updateChanged.emit();self.set_status(self._update_note)
         if self._update_state=="error":QMessageBox.warning(None,"Lisa · Update needs attention",self._update_note+"\n\nYou can retry Update or run the latest Lisa installer.")
@@ -424,6 +430,14 @@ def main():
     elif backend.store.settings["fullscreen"]:backend.window.showFullScreen()
     else:backend.window.show()
     if "--self-test" not in sys.argv:QTimer.singleShot(700,backend.recover_update_status)
+    update_ack=os.environ.pop("LISA_UPDATE_ACK","");expected_version=os.environ.pop("LISA_UPDATE_VERSION","")
+    if update_ack and expected_version==VERSION:
+        def acknowledge_update():
+            path=Path(update_ack).resolve()
+            if path.parent==(backend.store.directory/"updates").resolve() and path.name.startswith("launched-"):
+                from updater_worker import write_json
+                write_json(path,{"version":VERSION,"pid":os.getpid(),"qml_loaded":True})
+        QTimer.singleShot(900,acknowledge_update)
     result=app.exec()
     backend.close()
     # Destroy QML while its Python context is still alive, including image jobs.

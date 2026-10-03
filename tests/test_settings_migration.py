@@ -40,7 +40,7 @@ class SettingsMigration(unittest.TestCase):
             folder = Path(directory)
             (folder / "settings.json").write_text('["broken settings"]')
             self.assertTrue(Store(folder).settings["fullscreen"])
-            self.assertEqual(VERSION, "1.1.2")
+            self.assertEqual(VERSION, "1.1.3")
 
 
 if __name__ == "__main__":

@@ -1,8 +1,10 @@
 """Reproducible Windows bundle with only the QML modules Lisa uses."""
 from pathlib import Path
+import os
 from PyInstaller.utils.hooks import collect_all
 
 sound_data,sound_bins,sound_imports=collect_all("sounddevice")
+sound_data.append((os.environ.get('LISA_UPDATER_EXE','dist/LISA-Updater.exe'),'updater'))
 a=Analysis(["app.py"],pathex=[],binaries=sound_bins,
     datas=[("assets/portraits/*.webp","assets/portraits"),("assets/poses/*.webp","assets/poses"),("assets/lisa.ico","assets"),("assets/lisa-logo.jpg","assets"),("ui","ui"),("licenses","licenses"),("THIRD_PARTY_NOTICES.md","."),("version.json",".")]+sound_data,
     hiddenimports=["PySide6.QtQuick","PySide6.QtQml","PySide6.QtMultimedia"]+sound_imports,

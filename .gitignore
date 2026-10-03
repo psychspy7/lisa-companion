@@ -8,6 +8,7 @@ dist/
 *.spec
 !lisa.spec
 !lisa-installed.spec
+!lisa-updater.spec
 local-data/
 *.key
 *.log

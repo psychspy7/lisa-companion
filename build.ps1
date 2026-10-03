@@ -8,6 +8,9 @@ $lisaOriginalPath = $env:PATH
 try {
     # External document runtimes can expose an incompatible ICU DLL with the same name as Windows ICU.
     $env:PATH = (($lisaOriginalPath -split ';') | Where-Object { $_ -notmatch '[\\/]dependencies[\\/]native[\\/]' }) -join ';'
+    & $Python -m PyInstaller --noconfirm --clean --distpath $Output lisa-updater.spec
+    if ($LASTEXITCODE -ne 0) { throw 'Updater build failed' }
+    $env:LISA_UPDATER_EXE = Join-Path $Output 'LISA-Updater.exe'
     & $Python -m PyInstaller --noconfirm --clean --distpath $Output lisa.spec
     if ($LASTEXITCODE -ne 0) { throw 'Portable build failed' }
     & $Python -m PyInstaller --noconfirm --clean --distpath $Output lisa-installed.spec
