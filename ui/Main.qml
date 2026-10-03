@@ -6,11 +6,11 @@ import QtMultimedia
 
 ApplicationWindow {
     id: root
-    visible: true
+    visible: false
     width: 1440; height: 900
     minimumWidth: 900; minimumHeight: 600
     title: "LISA · Kitty Corp"
-    color: "#10111e"
+    color: "#10111c"
     property bool chatVisible: true
     property int preferredChatWidth: 390
     property real zoom: lisa.initialZoom
@@ -19,6 +19,7 @@ ApplicationWindow {
     property real dissolve: 1
     property real characterOffsetX: 0
     property real characterOffsetY: 0
+    property bool ambientMotion: lisa.motionEnabled && root.visible && root.visibility !== Window.Minimized
     Component.onCompleted: root.preferredChatWidth=lisa.chatWidth
     onClosing: lisa.quit()
     Shortcut { sequence: "F11"; onActivated: root.visibility === Window.FullScreen ? root.showNormal() : root.showFullScreen() }
@@ -36,22 +37,21 @@ ApplicationWindow {
         function onImageChanged(url) { if(url === root.currentPortrait) return; root.previousPortrait=root.currentPortrait; root.currentPortrait=url; root.dissolve=0; fade.restart(); }
         function onClipChanged(url) { player.stop(); player.source=url; if(url) player.play(); }
     }
-    NumberAnimation { id: fade; target: root; property: "dissolve"; to: 1; duration: 420; easing.type: Easing.InOutQuad }
+    NumberAnimation { id: fade; target: root; property: "dissolve"; to: 1; duration: 360; easing.type: Easing.InOutSine; onFinished: root.previousPortrait="" }
     header: Rectangle {
         height: 78; color: "#131420"
         Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: "#2d2a3e" }
         RowLayout {
             anchors.fill: parent; anchors.leftMargin: 30; anchors.rightMargin: 24; spacing: 12
             Rectangle { width: 36; height: 36; radius: 13; color: "#b99edc"; Text { anchors.centerIn: parent; text: "☾"; font.pixelSize: 27; color: "#23182f" } }
-            ColumnLayout { spacing: 0; Text { text: "LISA"; color: "#f4effa"; font.family: "Segoe UI"; font.pixelSize: 24; font.letterSpacing: 5 } Text { text: "YOUR LITTLE CORNER OF CALM"; color: "#8f859f"; font.pixelSize: 9; font.letterSpacing: 1.4 } }
+            ColumnLayout { spacing: 2; Text { text: "LISA"; color: "#f4effa"; font.family: "Segoe UI"; font.pixelSize: 24; font.letterSpacing: 5 } Text { text: "KITTY CORP  ·  "+lisa.version; color: "#9b8cae"; font.pixelSize: 9; font.letterSpacing: 1.4 } }
             Item { Layout.fillWidth: true }
-            Rectangle { width: modeLabel.implicitWidth+24; height: 30; radius: 15; color: "#262536"; Text { id:modeLabel; anchors.centerIn: parent; text: "●  "+lisa.modeName; color: "#c0b4d4"; font.pixelSize: 11 } }
-            SmallButton { text: "Memory"; onClicked: lisa.memory() }
-            SmallButton { text: "Motion Studio"; onClicked: lisa.studio() }
-            SmallButton { text: "Update"; onClicked: lisa.checkUpdate() }
+            Rectangle { visible:root.width>1040; width: modeLabel.implicitWidth+24; height: 30; radius: 15; color: "#262536"; Text { id:modeLabel; anchors.centerIn: parent; text: "●  "+lisa.modeName; color: "#c0b4d4"; font.pixelSize: 11 } }
+            SmallButton { objectName:"updateButton"; text: lisa.updateInProgress ? "Updating…" : "Update"; enabled:!lisa.updateInProgress; onClicked: lisa.checkUpdate() }
             SmallButton { text: "Settings"; onClicked: lisa.settings() }
+            SmallButton { text: "More  ⋯"; onClicked: appMenu.open() }
             SmallButton { text: root.visibility===Window.FullScreen ? "↙" : "⛶"; ToolTip.text: "Fullscreen · F11"; ToolTip.visible: hovered; onClicked: root.visibility===Window.FullScreen ? root.showNormal() : root.showFullScreen() }
-            SmallButton { text: "×"; onClicked: lisa.quit() }
+            SmallButton { text: "×"; ToolTip.text:"Quit Lisa";ToolTip.visible:hovered;onClicked: lisa.quit() }
         }
     }
     SplitView {
@@ -68,32 +68,33 @@ ApplicationWindow {
                 gradient: Gradient { GradientStop { position: 0; color: "#25233c" } GradientStop { position: .6; color: "#171c32" } GradientStop { position: 1; color: "#262039" } }
                 border.color: "#383347"
             }
-            // Quiet night window, crisp vector scenery and gentle ambient drift.
+            // Vector scenery keeps the full-screen stage crisp without a large background bitmap.
             Rectangle { x:stage.width*.07; y:45; width:stage.width*.86; height:stage.height*.73; radius: 30; color: "#18213a"; border.color: "#423850"; border.width: 2 }
             Rectangle { x:stage.width*.18; y:stage.height*.11; width:72; height:72; radius:36; color:"#ded0e6"; opacity:.65 }
-            Repeater { model: 44; Rectangle { x: stage.width*(.09+((index*37)%83)/100); y: stage.height*(.08+((index*19)%42)/100); width:index%4===0?3:2; height:width; radius:width; color:"#d8c9ed"; opacity:.12+(index%5)*.07; SequentialAnimation on opacity { running: lisa.motionEnabled; loops: Animation.Infinite; NumberAnimation { to:.12; duration:1800+index*43 } NumberAnimation { to:.48; duration:1900+index*37 } } } }
+            Repeater { model: 24; Rectangle { x: stage.width*(.09+((index*37)%83)/100); y: stage.height*(.08+((index*19)%42)/100); width:index%4===0?3:2; height:width; radius:width; color:"#d8c9ed"; opacity:.12+(index%5)*.07; SequentialAnimation on opacity { running: root.ambientMotion; loops: Animation.Infinite; NumberAnimation { to:.12; duration:1800+index*43 } NumberAnimation { to:.48; duration:1900+index*37 } } } }
             Repeater { model: 19; Rectangle { x:stage.width*.08+index*(stage.width*.045); y:stage.height*.63-((index*31)%75); width:stage.width*.035; height:stage.height*.13+((index*31)%75); color:index%3===0?"#2b2b48":"#25283f"; opacity:.7; Rectangle { x:5; y:12; width:4; height:3; color:"#ad8aaf"; opacity:.6 } Rectangle { x:5; y:30; width:4; height:3; color:"#bea381"; opacity:.45 } } }
             Rectangle { x:stage.width*.34; y:45; width:4; height:stage.height*.73; color:"#423950"; opacity:.6 }
             Rectangle { x:stage.width*.7; y:45; width:4; height:stage.height*.73; color:"#423950"; opacity:.6 }
             Rectangle { x:stage.width*.075; y:stage.height*.78; width:stage.width*.85; height:1; color:"#5a4b69" }
-            Text { x:28; y:24; text:lisa.outfitName.toUpperCase()+"  /  "+lisa.moodName; color:"#b9accb"; font.pixelSize:11; font.letterSpacing:1.2 }
-            Text { x:28; y:49; text: "A little company. A little mischief."; color:"#827a94"; font.pixelSize:12 }
+            Rectangle { x:24;y:20;width:stageLabel.implicitWidth+28;height:30;radius:15;color:"#b5202030";border.color:"#484055";Text { id:stageLabel;anchors.centerIn:parent;text:lisa.outfitName.toUpperCase()+"  /  "+lisa.moodName; color:"#c5b7d8"; font.pixelSize:10; font.letterSpacing:1.1 } }
+            Text { x:28; y:59; text: "A little company. A little mischief."; color:"#92849f"; font.pixelSize:12 }
             Item {
                 id: character
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.bottom: parent.bottom; anchors.bottomMargin:92-root.characterOffsetY
-                width: parent.width; height: parent.height-135
+                width: parent.width; height: parent.height-110
                 transform: Translate { x:root.characterOffsetX }
                 scale: root.zoom
                 transformOrigin: Item.Bottom
-                Image { anchors.fill:parent; source:root.previousPortrait; fillMode:Image.PreserveAspectFit; horizontalAlignment:Image.AlignHCenter; verticalAlignment:Image.AlignBottom; smooth:true; mipmap:true; asynchronous:true; opacity:1-root.dissolve }
+                Image { anchors.fill:parent; source:root.previousPortrait; sourceSize.width:Math.min(2160,Math.max(1024,character.height*.5625*Screen.devicePixelRatio));fillMode:Image.PreserveAspectFit; horizontalAlignment:Image.AlignHCenter; verticalAlignment:Image.AlignBottom; smooth:true; mipmap:true; asynchronous:true; opacity:1-root.dissolve }
                 Image {
                     id: portraitImage
                     objectName: "portraitImage"
                     anchors.fill:parent; source:root.currentPortrait; fillMode:Image.PreserveAspectFit; horizontalAlignment:Image.AlignHCenter; verticalAlignment:Image.AlignBottom
+                    sourceSize.width:Math.min(2160,Math.max(1024,character.height*.5625*Screen.devicePixelRatio))
                     smooth:true; mipmap:true; asynchronous:true; opacity:root.dissolve
                     transform: [Scale { id:breath; origin.x:portraitImage.width*.5; origin.y:portraitImage.height; xScale:1; yScale:1 }, Rotation { id:sway; origin.x:portraitImage.width*.5; origin.y:portraitImage.height; angle:0 }]
-                    SequentialAnimation { running:lisa.motionEnabled; loops:Animation.Infinite; NumberAnimation { target:breath; property:"yScale"; to:1.007; duration:2100; easing.type:Easing.InOutSine } NumberAnimation { target:breath; property:"yScale"; to:1; duration:2300; easing.type:Easing.InOutSine } }
-                    SequentialAnimation { running:lisa.motionEnabled; loops:Animation.Infinite; NumberAnimation { target:sway; property:"angle"; to:.35; duration:3600; easing.type:Easing.InOutSine } NumberAnimation { target:sway; property:"angle"; to:-.35; duration:4000; easing.type:Easing.InOutSine } }
+                    SequentialAnimation { running:root.ambientMotion; loops:Animation.Infinite; NumberAnimation { target:breath; property:"yScale"; to:1.005; duration:2400; easing.type:Easing.InOutSine } NumberAnimation { target:breath; property:"yScale"; to:1; duration:2500; easing.type:Easing.InOutSine } }
+                    SequentialAnimation { running:root.ambientMotion; loops:Animation.Infinite; NumberAnimation { target:sway; property:"angle"; to:.2; duration:4300; easing.type:Easing.InOutSine } NumberAnimation { target:sway; property:"angle"; to:-.2; duration:4600; easing.type:Easing.InOutSine } }
                 }
                 MouseArea {
                     anchors.fill: parent; acceptedButtons:Qt.LeftButton
@@ -101,9 +102,10 @@ ApplicationWindow {
                     onPressed: function(mouse) { var p=mapToItem(stage,mouse.x,mouse.y);startX=p.x;startY=p.y; offsetX=root.characterOffsetX; offsetY=root.characterOffsetY }
                     onPositionChanged: function(mouse) { if(pressed){var p=mapToItem(stage,mouse.x,mouse.y); root.characterOffsetX=Math.max(-stage.width*.35,Math.min(stage.width*.35,offsetX+(p.x-startX))); root.characterOffsetY=Math.max(-100,Math.min(100,offsetY+(p.y-startY))); } }
                     onDoubleClicked: { root.characterOffsetX=0;root.characterOffsetY=0;root.zoom=1 }
+                    onWheel: function(wheel) { root.zoom=Math.max(.65,Math.min(1.8,root.zoom+wheel.angleDelta.y/2400)); lisa.saveLayout(root.zoom,chatPanel.width);wheel.accepted=true }
                 }
             }
-            MediaPlayer { id:player; videoOutput:video; audioOutput:AudioOutput { muted:true } onErrorOccurred: { lisa.stop(); player.stop(); } }
+            MediaPlayer { id:player; videoOutput:video; audioOutput:AudioOutput { muted:true } onErrorOccurred: player.stop() }
             VideoOutput { id:video; anchors.fill:parent; anchors.margins:20; visible:player.playbackState===MediaPlayer.PlayingState; fillMode:VideoOutput.PreserveAspectFit }
             Rectangle {
                 anchors.horizontalCenter:parent.horizontalCenter; anchors.bottom:parent.bottom; anchors.bottomMargin:86; width:210; height:30; radius:15; color:"#c51c1a2b"; border.color:"#494058"
@@ -118,6 +120,7 @@ ApplicationWindow {
                     Text { text:"Zoom"; color:"#b0a5c0"; font.pixelSize:11 }
                     Slider { id:zoomSlider; Layout.fillWidth:true; from:.65;to:1.8; value:root.zoom; onMoved:root.zoom=value; onPressedChanged:if(!pressed)lisa.saveLayout(root.zoom,chatPanel.width) }
                     SmallButton { objectName:"focusButton"; text:root.chatVisible?"Focus ↗":"Chat ↙"; onClicked:root.chatVisible=!root.chatVisible }
+                    SmallButton { text:"↺";ToolTip.text:"Reset character position and zoom";ToolTip.visible:hovered;onClicked:{root.characterOffsetX=0;root.characterOffsetY=0;root.zoom=1;lisa.saveLayout(root.zoom,chatPanel.width)} }
                 }
             }
         }
@@ -160,6 +163,16 @@ ApplicationWindow {
     }
     Timer { id:layoutSave; interval:600; onTriggered: if(chatPanel.width>200)lisa.saveLayout(root.zoom,chatPanel.width) }
     Rectangle {
+        id:updateCard;objectName:"updateCard";visible:lisa.updateNote!=="";z:20;anchors.top:parent.top;anchors.right:parent.right;anchors.margins:26;width:Math.min(430,root.width-52);height:updateContents.implicitHeight+32;radius:16;color:"#f3222233";border.color:lisa.updateState==="error"?"#a96575":"#736084"
+        ColumnLayout {
+            id:updateContents;anchors.fill:parent;anchors.margins:16;spacing:12
+            RowLayout { Layout.fillWidth:true;Text { text:"LISA UPDATES";color:"#d0b5ee";font.pixelSize:10;font.letterSpacing:1.5 } Item { Layout.fillWidth:true } SmallButton { visible:!lisa.updateInProgress;text:"×";padding:4;onClicked:lisa.dismissUpdate() } }
+            Text { Layout.fillWidth:true;text:lisa.updateNote;wrapMode:Text.Wrap;color:"#eee7f7";font.pixelSize:13 }
+            ProgressBar { Layout.fillWidth:true;visible:lisa.updateInProgress;from:0;to:1;value:Math.max(0,lisa.updateProgress);indeterminate:lisa.updateProgress<0 }
+            SmallButton { visible:lisa.updateState==="error"&&!lisa.updateInProgress;text:"Try again";onClicked:lisa.checkUpdate() }
+        }
+    }
+    Rectangle {
         visible:!root.chatVisible; anchors.horizontalCenter:parent.horizontalCenter; anchors.bottom:parent.bottom; anchors.bottomMargin:99; width:Math.min(660,parent.width-100); height:55; radius:16; color:"#ee202030"; border.color:"#595069"
         RowLayout { anchors.fill:parent; anchors.margins:8; TextField { id:focusComposer; Layout.fillWidth:true; placeholderText:"I’m listening, Sir…"; color:"#eee7f7"; font.pixelSize:14; background:null; onAccepted:{lisa.send(text);text="";} } SmallButton { text:lisa.recording?"Send voice":"Mic"; onClicked:lisa.mic() } SmallButton { text:"Stop"; onClicked:lisa.stop() } SmallButton { text:"↗"; enabled:!lisa.busy; onClicked:{lisa.send(focusComposer.text);focusComposer.text="";} } }
     }
@@ -174,4 +187,5 @@ ApplicationWindow {
         ColumnLayout { anchors.fill:parent; Text { text:"A face for every feeling"; color:"#ede4f7"; font.pixelSize:22 } Text { text:"36 expressions · motion clips play when saved"; color:"#a196b1"; font.pixelSize:12 } ScrollView { Layout.fillHeight:true; Layout.fillWidth:true; clip:true; GridLayout { width:parent.width; columns:4; columnSpacing:8; rowSpacing:8; Repeater { model:lisa.moods; SmallButton { required property var modelData; Layout.fillWidth:true; text:modelData.label; onClicked:{lisa.setMood(modelData.id);expressions.close()} } } } } }
     }
     Menu { id:chatMenu; MenuItem { text:"Clear conversation"; onTriggered:lisa.clearChat() } MenuItem { text:"Test voice"; onTriggered:lisa.testVoice() } MenuItem { text:"Hide chat · Ctrl+H"; onTriggered:root.chatVisible=false } }
+    Menu { id:appMenu;x:root.width-width-80;y:12; MenuItem { text:"Memory";onTriggered:lisa.memory() } MenuItem { text:"Motion Studio";onTriggered:lisa.studio() } MenuSeparator {} MenuItem { objectName:"desktopShortcutOption";text:"Add desktop shortcut";onTriggered:lisa.createDesktopShortcut() } MenuItem { text:"Focus / chat · Ctrl+H";onTriggered:root.chatVisible=!root.chatVisible } MenuItem { text:"Fullscreen · F11";onTriggered:root.visibility===Window.FullScreen?root.showNormal():root.showFullScreen() } }
 }

@@ -13,8 +13,9 @@ import urllib.error
 import urllib.request
 import uuid
 import wave
+from persona import DEFAULT_PERSONALITY, LEGACY_PERSONALITY
 
-VERSION = "0.3.0"
+VERSION = "1.0.0"
 MOODS = ["smile", "shy", "tea", "sitting", "wave", "yawn", "stretch", "thinking", "listening",
          "commanding", "angry", "smirk", "excited", "laughing", "surprised", "proud", "cheering", "teasing",
          "kiss", "affectionate", "elegant_sitting", "thumbs_up", "blushing", "welcoming", "apologetic", "reassuring", "peace",
@@ -58,8 +59,8 @@ DEFAULTS = {"model": "gpt-4o-mini", "tts_model": "gpt-4o-mini-tts", "stt_model":
 DEFAULTS.update(chat_provider="groq",groq_model="llama-3.3-70b-versatile",gemini_model="gemini-3.5-flash-lite",
                 voice_provider="elevenlabs",voice_fallback=True,fish_model="s2.1-pro-free",fish_voice_id="",
                 stt_provider="groq",groq_stt_model="whisper-large-v3-turbo",fish_stt_model="transcribe-1-pro",
-                personality_prompt="Be my close friend. Be playful, roast me lightly, be confidently bossy when I’m joking around, and be gentle when I’m upset. When I give a real task, focus and help me do it. Use natural English, Hindi or Hinglish. Call me Sir.",
-                pc_actions=True,fullscreen=True,zoom=1.0,chat_width=390,ui_version=3,vidu_model="viduq3-pro-fast",motion_quality="balanced")
+                personality_prompt=DEFAULT_PERSONALITY,
+                pc_actions=True,fullscreen=True,zoom=1.0,chat_width=390,ui_version=4,vidu_model="viduq3-pro-fast",motion_quality="balanced")
 
 
 class Store:
@@ -67,9 +68,16 @@ class Store:
         self.directory = directory or data_directory()
         self.directory.mkdir(parents=True, exist_ok=True)
         self.settings = dict(DEFAULTS)
-        self.settings.update(self.load("settings.json", {}))
-        if self.settings.get("ui_version", 0) < 3 or "ui_version" not in self.load("settings.json", {}):
-            self.settings.update(chat_provider="groq", stt_provider="groq", fullscreen=True, ui_version=3)
+        saved_settings = self.load("settings.json", {})
+        if not isinstance(saved_settings, dict):
+            saved_settings = {}
+        self.settings.update(saved_settings)
+        if saved_settings.get("ui_version", 0) < 3:
+            self.settings.update(chat_provider="groq", stt_provider="groq")
+        if saved_settings.get("ui_version", 0) < 4:
+            self.settings.update(fullscreen=True, ui_version=4)
+            if self.settings.get("personality_prompt") == LEGACY_PERSONALITY:
+                self.settings["personality_prompt"] = DEFAULT_PERSONALITY
         manifest = json.loads(resource("version.json").read_text(encoding="utf-8"))
         if not self.settings.get("repository"):
             self.settings["repository"] = manifest.get("repository", "")
@@ -139,7 +147,8 @@ class Credentials:
             return self.session_key
         if self.path.exists():
             try:
-                return dpapi(self.path.read_bytes(), True).decode()
+                self.session_key = dpapi(self.path.read_bytes(), True).decode()
+                return self.session_key
             except Exception:
                 pass
         variable = self.PROVIDERS[self.provider]

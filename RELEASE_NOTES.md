@@ -1,7 +1,9 @@
-LISA 0.3.0 rebuilds the desktop interface around Qt Quick: fullscreen launch, a larger character stage, draggable chat divider, Focus mode, zoom and character positioning.
+LISA 1.0 fixes the old test application's fragile update flow and introduces a clean per-user Windows installer. Download LISA-Setup.exe, close the old Lisa, and install this version once if the old Update button fails.
 
-Four new main portraits and the 36-expression library are transparent 2160 × 3840 assets, locally AI upscaled. Breathing, sway and fades replace the old face overlays. Motion Studio supports reviewed Vidu generation and private MP4/WebM imports. No real Vidu clips are included yet; full character rigging and phoneme lip sync are not part of this test release.
+- Optional desktop shortcut, Start Menu entry and Windows uninstall support. Create a desktop shortcut later in Settings.
+- Installed runtime files stay together, removing the unpacking step on each launch. Unused legacy sprite sheets and Tkinter are excluded from the Windows bundles.
+- Verified update downloads, visible progress and actionable errors. Installed editions update through the installer; portable editions use a replacement helper with recovery. LISA.exe remains available for older updaters.
+- A separate fullscreen app on first launch and upgrade, with an adjustable character stage, chat divider, Focus mode, zoom and character positioning.
+- A sharper default Lisa personality: playful sarcasm, warm support and focused task help. Custom prompts, encrypted credentials, saved memories and optional history are preserved.
 
-Groq chat and Whisper transcription join Gemini. ElevenLabs voice can fall back once to Fish Audio, with emotional delivery controls. Personality is editable and includes Virat / Kitty Corp attribution. Add your own provider keys in Settings; no keys are bundled. Live API and video generation tests remain pending your credentials.
-
-Reviewed PC tools can open known apps / HTTPS pages, copy text and save notes. Interruption discards late replies; microphone access ends on submit or quit. Existing encrypted credentials, saved memories and optional history are preserved. Update downloads verify their checksum before replacement.
+Four outfits and 36 illustrated expressions remain upscaled 2160 × 3840 artwork. Motion includes breathing, sway, expression transitions and support for imported or Vidu-generated clips; no generated clips or full character rigging are bundled. Groq/Gemini chat and ElevenLabs/Fish voice require your own keys in Settings. Live provider calls remain unverified until credentials are configured. Closing Lisa stops microphone access.

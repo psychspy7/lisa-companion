@@ -23,6 +23,7 @@ import updates
 
 class Backend(QObject):
     changed=Signal(); messagesChanged=Signal(); imageChanged=Signal(str); clipChanged=Signal(str); completed=Signal(object,object)
+    activityChanged=Signal(); updateChanged=Signal(); downloadProgress=Signal(int,int)
     def __init__(self,app):
         super().__init__();self.app=app;self.store=Store();self.audio=Audio()
         self.keys={p:Credentials(self.store.directory,p) for p in ("groq","gemini","elevenlabs","fish","vidu")}
@@ -30,7 +31,9 @@ class Backend(QObject):
         self.mood="smile";self.outfit=outfit_for_hour(datetime.now().hour) if self.store.settings["auto_outfit"] else self.store.settings["outfit"]
         self._status="Ready, Sir";self._busy=False;self.closed=False;self.generation=0;self.cancel_event=threading.Event();self.speaking=False
         self._messages=list(self.store.history[-60:]);self.window=None;self.polling=False;self.started_recording=0
+        self._mode_name="Offline preview";self._last_audio=None;self._updating=False;self._update_progress=-1;self._update_note="";self._update_state="idle"
         self.completed.connect(self.dispatch)
+        self.downloadProgress.connect(self.on_update_progress)
         self.timer=QTimer(self);self.timer.timeout.connect(self.tick);self.timer.start(100)
         self.motion_timer=QTimer(self);self.motion_timer.timeout.connect(self.poll_job);self.motion_timer.start(10000)
         if not self._messages:self.add_message("assistant","Missed me, Sir? Make yourself comfortable.")
@@ -40,20 +43,28 @@ class Backend(QObject):
     def status(self):return self._status
     @Property(bool,notify=changed)
     def busy(self):return self._busy
-    @Property(bool,notify=changed)
+    @Property(bool,notify=activityChanged)
     def recording(self):return self.audio.recording
-    @Property(bool,notify=changed)
+    @Property(bool,notify=activityChanged)
     def talking(self):return self.speaking or self.audio.playing
-    @Property(float,notify=changed)
+    @Property(float,notify=activityChanged)
     def audioLevel(self):return self.audio.level
     @Property(str,notify=changed)
     def outfitName(self):return self.outfit.title()
     @Property(str,notify=changed)
     def moodName(self):return LABELS[self.mood]
     @Property(str,notify=changed)
-    def modeName(self):
-        provider=self.store.settings["chat_provider"]
-        return provider.title() if self.keys.get(provider) and self.keys[provider].get() else "Offline preview"
+    def modeName(self):return self._mode_name
+    @Property(str,constant=True)
+    def version(self):return VERSION
+    @Property(bool,notify=updateChanged)
+    def updateInProgress(self):return self._updating
+    @Property(float,notify=updateChanged)
+    def updateProgress(self):return self._update_progress
+    @Property(str,notify=updateChanged)
+    def updateNote(self):return self._update_note
+    @Property(str,notify=updateChanged)
+    def updateState(self):return self._update_state
     @Property(str,notify=changed)
     def portrait(self):return self.image_url()
     @Property(bool,notify=changed)
@@ -74,9 +85,11 @@ class Backend(QObject):
     def image_url(self):return QUrl.fromLocalFile(str(self.image_path())).toString()
     def refresh(self):
         self.motion_timer.start(10000)
+        provider=self.store.settings["chat_provider"]
+        self._mode_name=provider.title() if self.keys.get(provider) and self.keys[provider].get() else "Offline preview"
         if self.store.settings["auto_outfit"] and self.mood=="smile":self.outfit=outfit_for_hour(datetime.now().hour)
         self.changed.emit();self.imageChanged.emit(self.image_url())
-    def set_status(self,value):self._status=value;self.changed.emit()
+    def set_status(self,value):self._status=value;self.changed.emit();self.activityChanged.emit()
     def add_message(self,role,text):
         self._messages.append({"role":role,"content":text});self._messages=self._messages[-80:];self.messagesChanged.emit()
         self.store.history=list(self._messages);self.store.save()
@@ -198,7 +211,10 @@ class Backend(QObject):
         if self.closed:return
         if self.audio.recording and time.monotonic()-self.started_recording>=30:self.mic()
         if self._status.startswith("Speaking") and not self.audio.playing:self.set_status("Ready, Sir")
-        self.changed.emit()
+        current=(self.audio.recording,self.speaking or self.audio.playing,round(self.audio.level,2))
+        if current!=self._last_audio:self._last_audio=current;self.activityChanged.emit()
+        interval=60 if current[0] or current[1] else 350
+        if self.timer.interval()!=interval:self.timer.setInterval(interval)
 
     @Slot(str)
     def setMood(self,mood):
@@ -215,9 +231,18 @@ class Backend(QObject):
         if self.store.settings["sound_enabled"]:self.audio.chime()
     @Slot(float,int)
     def saveLayout(self,zoom,width):
-        self.store.settings.update(zoom=max(.65,min(1.8,zoom)),chat_width=max(290,min(700,width)));self.store.save()
+        layout={"zoom":round(max(.65,min(1.8,zoom)),3),"chat_width":max(290,min(700,width))}
+        if any(self.store.settings.get(k)!=v for k,v in layout.items()):self.store.settings.update(layout);self.store.save()
     @Slot()
     def settings(self):SettingsDialog(self).exec()
+    @Slot()
+    def createDesktopShortcut(self):
+        try:
+            from installation import create_desktop_shortcut
+            path=create_desktop_shortcut();self.set_status("Desktop shortcut created")
+            QMessageBox.information(None,"Lisa · Desktop shortcut","Lisa is ready on your desktop."+("\n\n"+str(path) if path else ""))
+        except (RuntimeError,OSError,ValueError) as exc:
+            self.set_status(str(exc));QMessageBox.warning(None,"Lisa · Desktop shortcut",str(exc))
     @Slot()
     def memory(self):
         dialog=QDialog();dialog.setWindowTitle("Lisa · Memory");dialog.resize(600,460);dialog.setStyleSheet(STYLE);layout=QVBoxLayout(dialog)
@@ -281,18 +306,40 @@ class Backend(QObject):
         self.work(poll,done)
     @Slot()
     def checkUpdate(self):
-        self.set_status("Checking updates…")
+        if self._updating:return
+        self._updating=True;self._update_progress=-1;self._update_state="checking";self._update_note="Checking for a new Lisa…";self.updateChanged.emit();self.set_status("Checking updates…")
+        def finish(note,state="idle"):
+            self._updating=False;self._update_note=note;self._update_state=state;self._update_progress=-1;self.updateChanged.emit();self.set_status(note)
         def checked(result):
-            if isinstance(result,Exception):self.set_status(str(result));return
-            if not result:self.set_status("You have the latest Lisa · "+VERSION);return
-            if QMessageBox.question(None,"Lisa update",result["version"]+" is available. Download and restart Lisa?",QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:self.set_status("Update available · "+result["version"]);return
-            self.set_status("Downloading update…")
+            if isinstance(result,Exception):finish(str(result),"error");return
+            if not result:finish("You have the latest Lisa · "+VERSION,"success");return
+            if QMessageBox.question(None,"Lisa update",result["version"]+" is ready. Download, install and restart Lisa? Your settings and memories will stay.",QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:finish("Update available · "+result["version"]);return
+            self._update_state="downloading";self._update_note="Downloading "+result["version"]+"…";self.updateChanged.emit();self.set_status(self._update_note)
             def downloaded(path):
-                if isinstance(path,Exception):self.set_status(str(path));return
-                try:updates.install_update(path,self.store.directory);self.app.quit()
-                except RuntimeError as exc:self.set_status(str(exc))
-            self.work(lambda:updates.download_release(result,self.store.directory/"updates"),downloaded)
-        self.work(lambda:updates.latest_release(self.store.settings["repository"]),checked)
+                if isinstance(path,Exception):finish(str(path),"error");return
+                try:
+                    updates.install_update(path,self.store.directory);self._update_state="installing";self._update_note="Installing and restarting Lisa…";self.updateChanged.emit();self.app.quit()
+                except (RuntimeError,OSError,ValueError) as exc:finish(str(exc),"error")
+            self.work(lambda:updates.download_release(result,self.store.directory/"updates",lambda received,total:self.downloadProgress.emit(received,total)),downloaded)
+        def check():
+            from installation import is_installed
+            return updates.latest_release(self.store.settings["repository"],prefer_installer=is_installed())
+        self.work(check,checked)
+    @Slot(int,int)
+    def on_update_progress(self,received,total):
+        if not self._updating:return
+        self._update_progress=min(1,received/total) if total else -1
+        self._update_note=(f"Downloading Lisa · {received/1048576:.1f} / {total/1048576:.1f} MB" if total else f"Downloading Lisa · {received/1048576:.1f} MB")
+        self.updateChanged.emit()
+    @Slot()
+    def dismissUpdate(self):
+        if not self._updating:self._update_note="";self.updateChanged.emit()
+    def recover_update_status(self):
+        record=updates.read_update_status(self.store.directory)
+        if record.get("state") not in ("error","success"):return
+        self._update_state=record["state"];self._update_note=record.get("message","Lisa update finished.");self.updateChanged.emit();self.set_status(self._update_note)
+        if self._update_state=="error":QMessageBox.warning(None,"Lisa · Update needs attention",self._update_note+"\n\nYou can retry Update or run the latest Lisa installer.")
+        updates.pending_update_error(self.store.directory,clear=True)
     @Slot()
     def quit(self):self.app.quit()
     def close(self):
@@ -315,4 +362,5 @@ def main():
         QTimer.singleShot(1600,capture)
     elif backend.store.settings["fullscreen"]:backend.window.showFullScreen()
     else:backend.window.show()
+    if "--self-test" not in sys.argv:QTimer.singleShot(700,backend.recover_update_status)
     return app.exec()

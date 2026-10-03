@@ -1,15 +1,18 @@
 """Private native configuration; secrets never enter QML or conversation history."""
 from PySide6.QtWidgets import (QDialog,QVBoxLayout,QHBoxLayout,QTabWidget,QWidget,QFormLayout,QLineEdit,QComboBox,QCheckBox,QPushButton,QLabel,QTextEdit,QDialogButtonBox,QMessageBox,QScrollArea)
-from core import DEFAULTS
+from core import DEFAULTS,VERSION
 
-STYLE="""QWidget{background:#191a2c;color:#eeeaf8;font:14px 'Segoe UI';} QLineEdit,QTextEdit,QComboBox{background:#24253b;border:1px solid #41415c;border-radius:8px;padding:8px;} QPushButton{background:#37344e;border:1px solid #53506b;border-radius:8px;padding:9px 16px;} QPushButton:hover{background:#4c4568;} QTabBar::tab{padding:12px;background:#242438;} QTabBar::tab:selected{background:#47405d;} QLabel{background:transparent;}"""
+STYLE="""QWidget{background:#171823;color:#eeeaf8;font:14px 'Segoe UI';} QLineEdit,QTextEdit,QComboBox{background:#232435;border:1px solid #41415c;border-radius:9px;padding:9px;} QLineEdit:focus,QTextEdit:focus,QComboBox:focus{border:1px solid #b49ad4;} QPushButton{background:#353048;border:1px solid #53506b;border-radius:9px;padding:10px 16px;} QPushButton:hover{background:#4c4568;} QPushButton:disabled{color:#777182;background:#242430;} QTabBar::tab{padding:12px;background:#222331;} QTabBar::tab:selected{background:#49405f;} QLabel{background:transparent;} QScrollArea{border:0;} QCheckBox{spacing:9px;padding:4px;} QDialogButtonBox{padding-top:8px;}"""
 
 
 class SettingsDialog(QDialog):
     def __init__(self,backend):
         super().__init__(); self.backend=backend;self.fields={};self.keys={}
-        self.setWindowTitle("Lisa · Settings");self.resize(750,750);self.setStyleSheet(STYLE)
-        layout=QVBoxLayout(self);tabs=QTabWidget();layout.addWidget(tabs)
+        self.setWindowTitle("Lisa · Settings");self.resize(770,750);self.setStyleSheet(STYLE)
+        layout=QVBoxLayout(self);layout.setContentsMargins(22,20,22,20);layout.setSpacing(14)
+        title=QLabel("Make Lisa yours");title.setStyleSheet("font-size:24px;font-weight:600;");layout.addWidget(title)
+        subtitle=QLabel("Chat, voice and the little details that make this your space.");subtitle.setStyleSheet("color:#a79bb9;");layout.addWidget(subtitle)
+        tabs=QTabWidget();layout.addWidget(tabs)
         def page(name):
             widget=QWidget();form=QFormLayout(widget);form.setSpacing(14);scroll=QScrollArea();scroll.setWidgetResizable(True);scroll.setWidget(widget);tabs.addTab(scroll,name);return form
         def field(form,key,title,choices=None):
@@ -59,11 +62,14 @@ class SettingsDialog(QDialog):
         label=QLabel("Lisa's creator line: I am made by Virat by the help of Kitty Corp organisation.\n\nStyle changes the conversation. It cannot add PC tools or bypass a provider's rules.");label.setWordWrap(True);person.addRow(label)
         check(person,"pc_actions","Allow reviewed PC actions")
         privacy=page("App & privacy")
+        shortcut=QPushButton("Add Lisa shortcut to my desktop");privacy.addRow(shortcut);shortcut.clicked.connect(backend.createDesktopShortcut)
+        version=QLabel("LISA "+VERSION+" · Kitty Corp");version.setStyleSheet("color:#bda4dc;");privacy.addRow(version)
         check(privacy,"fullscreen","Open fullscreen next time")
         check(privacy,"auto_outfit","Change outfit with the time of day")
         check(privacy,"save_history","Save chat history locally")
         check(privacy,"sound_enabled","Soft interface chime")
         field(privacy,"repository","Update repository")
+        update=QPushButton("Check for an update");privacy.addRow(update);update.setEnabled(not backend.updateInProgress);update.clicked.connect(lambda:(self.reject(),backend.checkUpdate()))
         label=QLabel("Microphone starts only when you press Mic, stops when submitted, and closes completely on quit. No camera. Keys are encrypted by Windows for your account. Memory is saved only through Memory.");label.setWordWrap(True);privacy.addRow(label)
         self.status=QLabel("");self.status.setWordWrap(True);layout.addWidget(self.status)
         buttons=QDialogButtonBox(QDialogButtonBox.StandardButton.Save|QDialogButtonBox.StandardButton.Cancel);buttons.accepted.connect(self.save);buttons.rejected.connect(self.reject);layout.addWidget(buttons)
@@ -72,9 +78,10 @@ class SettingsDialog(QDialog):
         pending=[(p,c.text().strip()) for p,c in self.keys.items() if c.text().strip()]
         for p,value in pending:self.backend.keys[p].validate(value)
         for p,value in pending:self.backend.keys[p].save(value);self.keys[p].clear()
+        if pending:self.backend.refresh()
 
     def forget(self,provider,control):
-        self.backend.keys[provider].forget();control.clear();control.setPlaceholderText("Enter your API key");self.status.setText("Forgot "+provider+" key.")
+        self.backend.keys[provider].forget();self.backend.refresh();control.clear();control.setPlaceholderText("Enter your API key");self.status.setText("Forgot "+provider+" key.")
 
     def save(self):
         try:

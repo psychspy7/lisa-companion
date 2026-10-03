@@ -1,12 +1,14 @@
 # LISA — your anime companion for Windows
 
-LISA is a standalone Windows app created by Virat with the help of Kitty Corp organisation. Closing the app quits it and releases the microphone. Version 0.3.0 is a test release.
+LISA is a standalone Windows app created by Virat with the help of Kitty Corp organisation. Closing the app quits it and releases the microphone. Version **1.0.0** adds a clean Windows installation and a repaired update flow.
 
 ## Run
 
-Download `LISA.exe` and run it from a writable folder. Use the **Update** button for future GitHub releases. Personal settings, keys, saved notes and optional history stay in `%LOCALAPPDATA%\LISA` across updates.
+Download **LISA-Setup.exe**, close the old Lisa and run the installer. It installs for your Windows account, adds a Start Menu entry, and lets you choose a desktop shortcut. No administrator account is required. Open Lisa from that shortcut after installation. This also recovers an old test app whose Update button fails. Personal settings, encrypted keys, saved notes and optional history stay in `%LOCALAPPDATA%\LISA` across installation, updates and uninstall.
 
-The app opens fullscreen. **F11** toggles fullscreen; **Esc** stops speech and leaves fullscreen. Drag the divider to resize chat, choose **Focus** to hide it, and use the zoom slider. Drag Lisa to reposition her; double-click to reset. **Ctrl+H** toggles chat. Press Mic to start recording and again to submit; recordings stop after 30 seconds. Stop interrupts speech and discards late replies. No background listening or camera.
+The installed app keeps its runtime files beside it, avoiding unpacking them on every launch. A portable `LISA.exe` is also published so older test versions can still discover and download this release. **Update** in the installed app downloads the verified installer; portable updates replace the executable safely. Progress and failures are shown in the app. The installer offers a Windows uninstall entry; uninstall removes application files and shortcuts while keeping personal Lisa data.
+
+The app opens as its own fullscreen window on first launch and on the first upgrade to 1.0. **F11** toggles fullscreen; **Esc** stops speech and leaves fullscreen. Settings lets you choose windowed startup afterward. Drag the divider to resize chat, choose **Focus** to hide it, and use the zoom slider. Drag Lisa to reposition her; double-click to reset. **Ctrl+H** toggles chat. Press Mic to start recording and again to submit; recordings stop after 30 seconds. Stop interrupts speech and discards late replies. No background listening or camera. **Settings → App & privacy → Create desktop shortcut** can add a shortcut later.
 
 ## Configure services
 
@@ -35,13 +37,13 @@ Motion Studio submits one explicit 4-second 1080p silent clip per Generate click
 
 ## Personality, memory and PC actions
 
-The Personality tab lets you write Lisa's style: warm close-friend conversation, Hinglish, playful roasts and mock bossiness, gentler listening when upset, and focused help for tasks. The app supplies this creator answer: **I am made by Virat by the help of Kitty Corp organisation.** A style prompt does not bypass provider policies.
+The Personality tab lets you write Lisa's style. The new default is candid, funny close-friend conversation: dry humor, Hinglish, playful roasts and invited bossiness, gentler listening when upset, and focused help for tasks. Existing custom prompts stay intact. The app supplies this creator answer: **I am made by Virat by the help of Kitty Corp organisation.** A style prompt does not bypass provider policies. Offline preview has preset lines and does not run your custom prompt.
 
 Memory saves only notes you explicitly add. Chat history is off by default. Every PC action has a review dialog. Supported actions: open Calculator/Notepad/Explorer/browser, open a public HTTPS page, copy text, or save a `.txt` note to a location you choose. Arbitrary commands, deletions, purchases and messaging are unsupported. The model proposes actions; executable code is never taken from its reply.
 
 ## Build
 
-Python 3.12 on Windows: `python -m pip install -r requirements.txt`, then `./build.ps1`. The GitHub Actions workflow builds tagged releases and publishes `LISA.exe` plus a SHA-256 checksum. `python app.py --self-test` renders the app and checks shutdown; set `LISA_DATA_DIR` to an isolated test directory when using it. Automated tests use fake keys and mocked network responses.
+Python 3.12 on Windows: `python -m pip install -r requirements.txt`, then `./build.ps1`. The GitHub Actions workflow builds tagged releases and publishes the installer, portable app and SHA-256 checksums. See `installer/` for the per-user Windows setup source. `python app.py --self-test` renders the app and checks shutdown; set `LISA_DATA_DIR` to an isolated test directory when using it. Automated tests use fake keys and mocked network responses.
 
 Source and update releases: https://github.com/psychspy7/lisa-companion
 
