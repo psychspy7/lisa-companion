@@ -266,7 +266,7 @@ def install_update(download: Path, helper_directory: Path):
     for ($lisaAttempt = 0; $lisaAttempt -lt 60; $lisaAttempt++) {
       try {
         Copy-Item -LiteralPath $lisaSource -Destination $lisaStage -Force
-        if ((Get-FileHash -LiteralPath $lisaStage -Algorithm SHA256).Hash.ToLower() -ne $lisaExpected) { throw 'The staged update failed its checksum.' }
+        if ((Get-LisaHash $lisaStage) -ne $lisaExpected) { throw 'The staged update failed its checksum.' }
         [IO.File]::Replace($lisaStage, $lisaTarget, $lisaBackup, $true)
         $lisaReplaced = $true
         break
@@ -275,7 +275,7 @@ def install_update(download: Path, helper_directory: Path):
         Start-Sleep -Milliseconds 500
       }
     }
-    if ((Get-FileHash -LiteralPath $lisaTarget -Algorithm SHA256).Hash.ToLower() -ne $lisaExpected) { throw 'The installed update failed its checksum.' }
+    if ((Get-LisaHash $lisaTarget) -ne $lisaExpected) { throw 'The installed update failed its checksum.' }
 """
     installer = """
     $lisaArguments = '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /UPDATE /DIR="' + (Split-Path -Parent $lisaTarget) + '"'
@@ -290,6 +290,12 @@ $lisaExpected = {_quote(record['sha256'])}
 $lisaBackup = $lisaTarget + '.bak'
 $lisaResult = {_quote(directory / 'update-result.json')}
 $lisaReplaced = $false
+function Get-LisaHash($lisaFile) {{
+  $lisaHasher = [Security.Cryptography.SHA256]::Create()
+  $lisaStream = [IO.File]::OpenRead($lisaFile)
+  try {{ return ([BitConverter]::ToString($lisaHasher.ComputeHash($lisaStream))).Replace('-', '').ToLowerInvariant() }}
+  finally {{ $lisaStream.Dispose(); $lisaHasher.Dispose() }}
+}}
 function Write-LisaResult($status, $message) {{
   @{{status=$status; message=$message; version={_quote(record.get('version',''))}}} | ConvertTo-Json | Set-Content -LiteralPath $lisaResult -Encoding UTF8
 }}
@@ -297,7 +303,7 @@ try {{
   $lisaParent = Get-Process -Id {os.getpid()} -ErrorAction SilentlyContinue
   if ($lisaParent) {{ Wait-Process -Id {os.getpid()} -Timeout 90 -ErrorAction SilentlyContinue }}
   if (Get-Process -Id {os.getpid()} -ErrorAction SilentlyContinue) {{ throw 'Lisa is still running. Close it before installing the update.' }}
-  if ((Get-FileHash -LiteralPath $lisaSource -Algorithm SHA256).Hash.ToLower() -ne $lisaExpected) {{ throw 'The update failed its checksum. Download it again.' }}
+  if ((Get-LisaHash $lisaSource) -ne $lisaExpected) {{ throw 'The update failed its checksum. Download it again.' }}
 {installer if kind == 'installer' else portable}
   Write-LisaResult 'success' 'Lisa was updated successfully.'
   Start-Process -FilePath $lisaTarget -WorkingDirectory (Split-Path -Parent $lisaTarget) -WindowStyle Normal

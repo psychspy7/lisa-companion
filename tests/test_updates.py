@@ -2,7 +2,9 @@
 import hashlib
 import io
 import json
+import os
 from pathlib import Path
+import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -123,5 +125,27 @@ class ReliableUpdates(unittest.TestCase):
             self.assertEqual(updates.pending_update_error(directory),"")
             (directory/"update-error.txt").write_text("Legacy install failed")
             self.assertEqual(updates.pending_update_error(directory),"Legacy install failed")
+
+    @unittest.skipUnless(os.name == "nt", "Windows update helper")
+    def test_actual_windows_helper_replaces_file_and_keeps_backup_without_module_hash_command(self):
+        with tempfile.TemporaryDirectory() as folder:
+            directory=Path(folder);(directory/"updates").mkdir()
+            target=directory/"LISA.exe";target.write_bytes(b"previous version")
+            source=directory/"updates/LISA-new.exe";source.write_bytes(b"new verified version")
+            source.with_suffix(".json").write_text(json.dumps({"size":source.stat().st_size,"sha256":hashlib.sha256(source.read_bytes()).hexdigest(),"kind":"portable"}))
+            with patch("updates.sys.frozen",True,create=True),patch("updates.sys.executable",str(target)),patch("updates.subprocess.Popen"):
+                updates.install_update(source,directory)
+            helper=directory/"install-update.ps1"
+            script=helper.read_text(encoding="utf-8-sig")
+            # The test driver is still running; there is no old app process to await.
+            script=script.replace(f"Get-Process -Id {os.getpid()}","Get-Process -Id 2147483647")
+            script=script.replace(f"Wait-Process -Id {os.getpid()}","Wait-Process -Id 2147483647")
+            # These tiny fixtures are data, so intercept only the final application launch.
+            helper.write_text("function Start-Process { }\n"+script,encoding="utf-8-sig")
+            result=subprocess.run(["powershell.exe","-NoProfile","-ExecutionPolicy","Bypass","-WindowStyle","Hidden","-File",str(helper)],capture_output=True,timeout=30,creationflags=subprocess.CREATE_NO_WINDOW)
+            self.assertEqual(result.returncode,0,result.stderr.decode(errors="replace"))
+            self.assertEqual(updates.read_update_status(directory)["state"],"success")
+            self.assertEqual(target.read_bytes(),b"new verified version")
+            self.assertEqual(target.with_suffix(".exe.bak").read_bytes(),b"previous version")
 
 if __name__ == "__main__":unittest.main()
