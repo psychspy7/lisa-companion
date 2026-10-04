@@ -78,5 +78,35 @@ class NativeUpdater(unittest.TestCase):
                 with self.assertRaisesRegex(updates.UpdateError,'could not start'):
                     updates.install_update(source,root)
 
+    def test_waits_for_windowless_process_before_installing(self):
+        target=Path('LISA.exe').resolve()
+        with patch.object(worker,'close_other_windows') as close,patch.object(worker,'matching_process_ids',side_effect=[[22],[22],[]]),patch.object(worker.time,'sleep') as sleep:
+            worker.wait_for_app_exit(target)
+            close.assert_called_once_with(target)
+            self.assertEqual(sleep.call_count,2)
+        with patch.object(worker,'close_other_windows'),patch.object(worker,'matching_process_ids',return_value=[22]):
+            with self.assertRaisesRegex(RuntimeError,'still running'):worker.wait_for_app_exit(target,0)
+
+    def test_permission_prompt_only_for_nonwritable_install_folder(self):
+        with patch.object(worker,'folder_writable',return_value=True),patch.object(worker,'launch',return_value='normal'),patch.object(worker,'ElevatedProcess') as elevated:
+            self.assertEqual(worker.launch_setup(['Setup.exe'],Path('LISA.exe'),'.'),'normal')
+            elevated.assert_not_called()
+        with patch.object(worker,'folder_writable',return_value=False),patch.object(worker,'launch') as launch,patch.object(worker,'ElevatedProcess',return_value='elevated'):
+            self.assertEqual(worker.launch_setup(['Setup.exe'],Path('LISA.exe'),'.'),'elevated')
+            launch.assert_not_called()
+
+    def test_install_verification_detects_missing_and_changed_files(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);(root/'_internal').mkdir()
+            (root/'install-state.json').write_text('{"application":"LISA","version":"1.9.1","verified_payload":1}')
+            (root/'_internal/version.json').write_text('{"version":"1.9.1"}')
+            app=root/'LISA.exe';app.write_bytes(b'verified app')
+            (root/'payload-manifest.json').write_text(json.dumps({'version':'1.9.1','files':[{'path':'LISA.exe','sha256':worker.file_hash(app)}]}))
+            worker.verify_installation(root,'1.9.1')
+            app.write_bytes(b'corrupt app')
+            with self.assertRaisesRegex(RuntimeError,'failed verification'):worker.verify_installation(root,'1.9.1')
+            app.unlink()
+            with self.assertRaisesRegex(RuntimeError,'failed verification'):worker.verify_installation(root,'1.9.1')
+
 
 if __name__=='__main__':unittest.main()

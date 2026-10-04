@@ -1,6 +1,6 @@
 ; Inno Setup 6.7+ / standard per-user install. Private data is outside {app}.
 #ifndef AppVersion
-  #define AppVersion "1.1.3"
+  #define AppVersion "1.9.1"
 #endif
 #ifndef AppSource
   #define AppSource "..\dist\LISA-App"
@@ -38,6 +38,8 @@ DisableProgramGroupPage=yes
 CloseApplications=yes
 RestartApplications=no
 SetupMutex=KittyCorp.LISA.Setup
+SetupLogging=yes
+CloseApplicationsFilter=*.exe,*.dll,*.pyd
 #ifdef TestBuild
 CreateUninstallRegKey=no
 UsePreviousAppDir=no
@@ -56,6 +58,7 @@ Name: "desktopicon"; Description: "Add a LISA shortcut to my Desktop"; GroupDesc
 [Files]
 Source: "{#AppSource}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\assets\lisa.ico"; DestDir: "{app}"; DestName: "LISA-icon-{#AppVersion}.ico"; Flags: ignoreversion
+Source: "{#AppSource}\_internal\updater\LISA-Updater.exe"; DestName: "LISA-Install-Helper.exe"; Flags: dontcopy
 
 [Icons]
 Name: "{code:StartMenuDir}\LISA"; Filename: "{app}\LISA.exe"; WorkingDir: "{app}"; IconFilename: "{app}\LISA-icon-{#AppVersion}.ico"; Comment: "Talk to Lisa"
@@ -106,7 +109,9 @@ end;
 
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 var
-  Target, PrivateData: String;
+  Target, PrivateData, ErrorPath: String;
+  ExitCode: Integer;
+  Details: AnsiString;
 begin
   Result := '';
   Target := AddBackslash(ExpandFileName(ExpandConstant('{app}')));
@@ -114,4 +119,44 @@ begin
   if (CompareText(Target, PrivateData) = 0) or
      (CompareText(Copy(Target, 1, Length(PrivateData)), PrivateData) = 0) then
     Result := 'Choose a different installation folder. This folder holds Lisa''s private memories and settings.';
+  if Result <> '' then Exit;
+  if CompareText(Target, AddBackslash(ExtractFileDrive(Target))) = 0 then begin
+    Result := 'Choose a dedicated Lisa installation folder, not the root of a drive.';
+    Exit;
+  end;
+  WizardForm.StatusLabel.Caption := 'Preparing Lisa and checking folder access...';
+  ExtractTemporaryFile('LISA-Install-Helper.exe');
+  ErrorPath := ExpandConstant('{tmp}\lisa-install-error.txt');
+  DeleteFile(ErrorPath);
+  if not Exec(ExpandConstant('{tmp}\LISA-Install-Helper.exe'),
+      '--prepare-install "' + Target + 'LISA.exe" "' + ErrorPath + '"',
+      ExpandConstant('{tmp}'), SW_HIDE, ewWaitUntilTerminated, ExitCode) then begin
+    Result := 'Windows could not start the installation check. Retry Setup. Windows error: ' + IntToStr(ExitCode);
+    Exit;
+  end;
+  if ExitCode <> 0 then begin
+    if LoadStringFromFile(ErrorPath, Details) then Result := String(Details)
+    else Result := 'Lisa could not prepare for installation. Close Lisa and retry Setup.';
+  end;
+end;
+
+procedure VerifyInstalledFile(RelativeName, ExpectedHash: String);
+var Filename: String;
+begin
+  Filename := ExpandConstant('{app}\') + RelativeName;
+  if not FileExists(Filename) then
+    RaiseException('A Lisa file was not installed: ' + RelativeName);
+  if CompareText(GetSHA256OfFile(Filename), ExpectedHash) <> 0 then
+    RaiseException('A Lisa file failed verification: ' + RelativeName + '. Run Setup again to repair it.');
+end;
+
+#include VerificationInclude
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssPostInstall then begin
+    WizardForm.StatusLabel.Caption := 'Verifying Lisa''s installed files...';
+    VerifyInstalledPayload;
+    Log('LISA installed payload verified: {#AppVersion}');
+  end;
 end;

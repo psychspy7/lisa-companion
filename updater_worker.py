@@ -10,6 +10,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 
 
@@ -69,6 +70,118 @@ def close_other_windows(target):
     user.EnumWindows(visit,0)
 
 
+def matching_process_ids(target):
+    """Include windowless bootloader processes which can still hold app files."""
+    target=Path(target).resolve()
+    kernel=ctypes.WinDLL('kernel32',use_last_error=True)
+    class Entry(ctypes.Structure):
+        _fields_=[('size',wintypes.DWORD),('usage',wintypes.DWORD),('pid',wintypes.DWORD),
+            ('heap',ctypes.c_size_t),('module',wintypes.DWORD),('threads',wintypes.DWORD),
+            ('parent',wintypes.DWORD),('priority',wintypes.LONG),('flags',wintypes.DWORD),
+            ('exe',wintypes.WCHAR*260)]
+    kernel.CreateToolhelp32Snapshot.argtypes=[wintypes.DWORD,wintypes.DWORD]
+    kernel.CreateToolhelp32Snapshot.restype=wintypes.HANDLE
+    kernel.Process32FirstW.argtypes=[wintypes.HANDLE,ctypes.POINTER(Entry)]
+    kernel.Process32NextW.argtypes=[wintypes.HANDLE,ctypes.POINTER(Entry)]
+    kernel.OpenProcess.argtypes=[wintypes.DWORD,wintypes.BOOL,wintypes.DWORD]
+    kernel.OpenProcess.restype=wintypes.HANDLE
+    kernel.QueryFullProcessImageNameW.argtypes=[wintypes.HANDLE,wintypes.DWORD,wintypes.LPWSTR,ctypes.POINTER(wintypes.DWORD)]
+    kernel.CloseHandle.argtypes=[wintypes.HANDLE]
+    snapshot=kernel.CreateToolhelp32Snapshot(2,0)
+    if snapshot==ctypes.c_void_p(-1).value:raise ctypes.WinError(ctypes.get_last_error())
+    matches=[]
+    try:
+        entry=Entry();entry.size=ctypes.sizeof(entry)
+        more=kernel.Process32FirstW(snapshot,ctypes.byref(entry))
+        while more:
+            if entry.exe.casefold()==target.name.casefold():
+                handle=kernel.OpenProcess(0x1000,False,entry.pid)
+                if handle:
+                    try:
+                        size=wintypes.DWORD(32768);name=ctypes.create_unicode_buffer(size.value)
+                        if kernel.QueryFullProcessImageNameW(handle,0,name,ctypes.byref(size)) and Path(name.value).resolve()==target:
+                            matches.append(entry.pid)
+                    finally:kernel.CloseHandle(handle)
+            more=kernel.Process32NextW(snapshot,ctypes.byref(entry))
+    finally:kernel.CloseHandle(snapshot)
+    return matches
+
+
+def wait_for_app_exit(target,seconds=90):
+    close_other_windows(target)
+    deadline=time.monotonic()+seconds
+    while matching_process_ids(target):
+        if time.monotonic()>=deadline:
+            raise RuntimeError('Lisa is still running. Close all Lisa windows and retry Setup. No process was forcibly stopped.')
+        time.sleep(.25)
+
+
+def folder_writable(folder):
+    """Probe the actual installation folder, rather than guessing from account type."""
+    try:
+        folder=Path(folder)
+        folder.mkdir(parents=True,exist_ok=True)
+        with tempfile.TemporaryFile(dir=folder):pass
+        return True
+    except OSError:return False
+
+
+class ElevatedProcess:
+    def __init__(self,command,cwd):
+        class Info(ctypes.Structure):
+            _fields_=[('cbSize',wintypes.DWORD),('fMask',ctypes.c_ulong),('hwnd',wintypes.HWND),
+                ('verb',wintypes.LPCWSTR),('file',wintypes.LPCWSTR),('params',wintypes.LPCWSTR),
+                ('directory',wintypes.LPCWSTR),('show',ctypes.c_int),('instance',wintypes.HINSTANCE),
+                ('idList',ctypes.c_void_p),('className',wintypes.LPCWSTR),('classKey',wintypes.HKEY),
+                ('hotKey',wintypes.DWORD),('icon',wintypes.HANDLE),('process',wintypes.HANDLE)]
+        shell=ctypes.WinDLL('shell32',use_last_error=True)
+        shell.ShellExecuteExW.argtypes=[ctypes.POINTER(Info)]
+        info=Info();info.cbSize=ctypes.sizeof(info);info.fMask=0x40|0x100
+        info.verb='runas';info.file=command[0];info.params=subprocess.list2cmdline(command[1:]);info.directory=str(cwd);info.show=1
+        ctypes.windll.kernel32.SetDllDirectoryW(None)
+        if not shell.ShellExecuteExW(ctypes.byref(info)):
+            error=ctypes.get_last_error()
+            if error==1223:raise RuntimeError('Windows administrator permission was cancelled. Lisa was not updated.')
+            raise ctypes.WinError(error)
+        self.handle=info.process
+        self.kernel=ctypes.WinDLL('kernel32',use_last_error=True)
+        self.kernel.WaitForSingleObject.argtypes=[wintypes.HANDLE,wintypes.DWORD]
+        self.kernel.GetExitCodeProcess.argtypes=[wintypes.HANDLE,ctypes.POINTER(wintypes.DWORD)]
+        self.kernel.CloseHandle.argtypes=[wintypes.HANDLE]
+    def poll(self):
+        code=wintypes.DWORD()
+        if not self.kernel.GetExitCodeProcess(self.handle,ctypes.byref(code)):raise ctypes.WinError(ctypes.get_last_error())
+        return None if code.value==259 else code.value
+    def wait(self,timeout):
+        if self.kernel.WaitForSingleObject(self.handle,int(timeout*1000))==258:
+            raise subprocess.TimeoutExpired('Lisa Setup',timeout)
+        return self.poll()
+    def close(self):
+        if self.handle:self.kernel.CloseHandle(self.handle);self.handle=None
+
+
+def launch_setup(command,target,cwd):
+    if folder_writable(Path(target).parent):return launch(command,cwd=cwd)
+    return ElevatedProcess(command,cwd)
+
+
+def verify_installation(root,version):
+    root=Path(root).resolve()
+    marker=json.loads((root/'install-state.json').read_text(encoding='utf-8-sig'))
+    installed=json.loads((root/'_internal/version.json').read_text(encoding='utf-8-sig'))
+    if marker.get('application')!='LISA' or marker.get('version')!=version or installed.get('version')!=version:
+        raise RuntimeError('Setup did not install the expected Lisa version. Run the latest Setup.')
+    if marker.get('verified_payload')!=1:
+        raise RuntimeError('Setup did not verify its installed files. Run the latest Lisa Setup.')
+    manifest=json.loads((root/'payload-manifest.json').read_text(encoding='utf-8-sig'))
+    if manifest.get('version')!=version or not manifest.get('files'):
+        raise RuntimeError('The installed file manifest is missing or has the wrong version.')
+    for item in manifest['files']:
+        path=(root/item['path']).resolve()
+        if not path.is_relative_to(root) or not path.is_file() or file_hash(path)!=item['sha256']:
+            raise RuntimeError('An installed Lisa file failed verification. Run the latest Setup to repair it.')
+
+
 def launch(command,**kwargs):
     env=dict(os.environ,PYINSTALLER_RESET_ENVIRONMENT='1')
     # External processes must use Windows' DLL search path, not our extracted runtime.
@@ -98,17 +211,14 @@ def run_job(manifest):
         write_json(directory/'updates'/('ready-'+job_id+'.json'),{'id':job_id,'ready':True})
         if not parent.wait(120):
             raise RuntimeError('Lisa could not finish closing. Close Lisa and retry the update.')
-        close_other_windows(target)
+        wait_for_app_exit(target)
         status('installing','Installing Lisa '+version+'…')
         if job['kind']=='installer':
             log=directory/'updates'/('setup-'+job_id+'.log')
-            setup=launch([str(source),'/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/CLOSEAPPLICATIONS','/UPDATE','/DIR='+str(target.parent),'/LOG='+str(log)],cwd=directory/'updates')
+            setup=launch_setup([str(source),'/SILENT','/SUPPRESSMSGBOXES','/NORESTART','/CLOSEAPPLICATIONS','/UPDATE','/DIR='+str(target.parent),'/LOG='+str(log)],target,directory/'updates')
             code=setup.wait(timeout=600)
-            if code!=0:raise RuntimeError(f'Lisa Setup could not finish (exit {code}). Close other Lisa windows and retry, or run the latest Setup.')
-            marker=json.loads((target.parent/'install-state.json').read_text(encoding='utf-8-sig'))
-            installed=json.loads((target.parent/'_internal/version.json').read_text(encoding='utf-8-sig'))
-            if marker.get('application')!='LISA' or marker.get('version')!=version or installed.get('version')!=version:
-                raise RuntimeError('Setup did not install the expected Lisa version. Run the latest Setup.')
+            if code!=0:raise RuntimeError(f'Lisa Setup could not finish (exit {code}). Installer details: {log}. Run the latest Setup to repair Lisa.')
+            verify_installation(target.parent,version)
         else:
             stage=target.with_name(target.name+'.new')
             shutil.copyfile(source,stage)
@@ -149,8 +259,19 @@ def run_job(manifest):
         return 1
     finally:
         if parent:parent.close()
+        if isinstance(setup,ElevatedProcess):setup.close()
 
 
 if __name__=='__main__':
+    if len(sys.argv)==4 and sys.argv[1]=='--prepare-install':
+        try:
+            target=Path(sys.argv[2]).resolve()
+            if target.name.casefold()!='lisa.exe':raise RuntimeError('Invalid Lisa installation target.')
+            wait_for_app_exit(target)
+            if not folder_writable(target.parent):raise RuntimeError('This installation folder is not writable. Choose the default folder, or run Setup as administrator.')
+        except Exception as exc:
+            Path(sys.argv[3]).write_text(str(exc),encoding='utf-8')
+            raise SystemExit(1)
+        raise SystemExit(0)
     if len(sys.argv)!=2:raise SystemExit(2)
     raise SystemExit(run_job(sys.argv[1]))
