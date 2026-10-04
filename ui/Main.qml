@@ -77,7 +77,7 @@ ApplicationWindow {
             Rectangle { x:stage.width*.7; y:45; width:4; height:stage.height*.73; color:"#423950"; opacity:.6 }
             Rectangle { x:stage.width*.075; y:stage.height*.78; width:stage.width*.85; height:1; color:"#5a4b69" }
             Rectangle { x:24;y:20;width:stageLabel.implicitWidth+28;height:30;radius:15;color:"#b5202030";border.color:"#484055";Text { id:stageLabel;anchors.centerIn:parent;text:lisa.outfitName.toUpperCase()+"  /  "+lisa.moodName; color:"#c5b7d8"; font.pixelSize:10; font.letterSpacing:1.1 } }
-            Text { x:28; y:59; text: "A little company. A little mischief."; color:"#92849f"; font.pixelSize:12 }
+            Text { objectName:"companionTagline"; x:28; y:59; text: "Your daily dose of company and chaos, Sir."; color:"#92849f"; font.pixelSize:12 }
             Item {
                 id: character
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.bottom: parent.bottom; anchors.bottomMargin:92-root.characterOffsetY

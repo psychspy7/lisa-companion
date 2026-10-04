@@ -1,6 +1,6 @@
 ; Inno Setup 6.7+ / standard per-user install. Private data is outside {app}.
 #ifndef AppVersion
-  #define AppVersion "1.9.1"
+  #define AppVersion "1.9.2"
 #endif
 #ifndef AppSource
   #define AppSource "..\dist\LISA-App"

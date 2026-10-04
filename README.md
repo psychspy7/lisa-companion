@@ -1,6 +1,6 @@
 # LISA — your anime companion for Windows
 
-LISA is a standalone Windows app created by Virat with the help of Kitty Corp organisation. Closing the app quits it and releases the microphone. Version **1.9.1** strengthens the manual installer and future update handoff, while keeping your supplied Lisa icon, chat backups and hands-free conversation.
+LISA is a standalone Windows app created by Virat with the help of Kitty Corp organisation. Closing the app quits it and releases the microphone. Version **1.9.2** adds the visible stage greeting “Your daily dose of company and chaos, Sir.” and retains the verified installer and update restart from 1.9.1.
 
 ## Run
 

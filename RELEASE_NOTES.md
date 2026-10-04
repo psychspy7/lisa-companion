@@ -1,5 +1,5 @@
-LISA 1.9.1 is the manual installer repair release. Close your existing Lisa and run LISA-Setup.exe once. Setup installs for your Windows account, creates the chosen shortcuts, checks folder access, requests a normal close from existing copies, waits for windowless app processes to release their files, and verifies every installed payload file before reporting completion. Automatic installer logs are enabled.
+LISA 1.9.2 adds a small visible greeting to the character screen: “Your daily dose of company and chaos, Sir.” The header now shows version 1.9.2, giving you two visible ways to confirm this update installed.
 
-Future in-app updates show an installation progress window after Lisa closes, verify the installed payload, and restart Lisa only after checking its version. A Windows administrator prompt is requested only if the existing installation folder is not writable. Cancelling that prompt leaves the update unsuccessful and reports it clearly. Settings, encrypted API keys, memories, history and shortcut choices are preserved.
+From an installed Lisa 1.9.1, press Update to download the verified installer, install and restart automatically. Settings, encrypted API keys, saved memories, history and shortcut choices remain in place. This release retains the folder-access checks, normal app shutdown, installed-file verification and automatic restart acknowledgement introduced in 1.9.1.
 
-The version is 1.9.1 so it is newer than a copy displaying 1.9. This release prepares the installer and updater; a separate small update for the owner's in-app test has not been published.
+Older copies with a broken Update button can still install LISA-Setup.exe manually once. The public release includes the installer, portable app and matching SHA-256 checksums.
