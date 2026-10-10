@@ -1,5 +1,9 @@
-LISA 1.9.2 adds a small visible greeting to the character screen: “Your daily dose of company and chaos, Sir.” The header now shows version 1.9.2, giving you two visible ways to confirm this update installed.
+# LISA 1.9.3 — Maintenance
 
-From an installed Lisa 1.9.1, press Update to download the verified installer, install and restart automatically. Settings, encrypted API keys, saved memories, history and shortcut choices remain in place. This release retains the folder-access checks, normal app shutdown, installed-file verification and automatic restart acknowledgement introduced in 1.9.1.
+Lisa now opens a simple fullscreen **Under maintenance** screen while the next major version is being developed, including the 3D room and animated character.
 
-Older copies with a broken Update button can still install LISA-Setup.exe manually once. The public release includes the installer, portable app and matching SHA-256 checksums.
+Chat, voice conversation, character interactions and PC actions are unavailable in this maintenance release. The companion and microphone services do not start.
+
+**Check for update** stays available so you can download, install and restart into the next release when it is published. Saved keys, chats, memories and settings are preserved.
+
+Install through Lisa's Update button or download **LISA-Setup.exe**. **LISA.exe** is the portable edition. This update only changes copies that install it; earlier versions remain usable until updated.

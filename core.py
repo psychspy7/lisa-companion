@@ -15,7 +15,7 @@ import uuid
 import wave
 from persona import DEFAULT_PERSONALITY, LEGACY_PERSONALITY
 
-VERSION = "1.9.2"
+VERSION = "1.9.3"
 MOODS = ["smile", "shy", "tea", "sitting", "wave", "yawn", "stretch", "thinking", "listening",
          "commanding", "angry", "smirk", "excited", "laughing", "surprised", "proud", "cheering", "teasing",
          "kiss", "affectionate", "elegant_sitting", "thumbs_up", "blushing", "welcoming", "apologetic", "reassuring", "peace",
