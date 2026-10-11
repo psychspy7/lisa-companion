@@ -33,4 +33,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         shell: pwsh
-        run: gh release create $env:GITHUB_REF_NAME dist/LISA.exe dist/LISA-Setup.exe dist/SHA256SUMS.txt --title "LISA $env:GITHUB_REF_NAME" --notes-file RELEASE_NOTES.md
+        run: |
+          gh release view $env:GITHUB_REF_NAME *> $null
+          if ($LASTEXITCODE -eq 0) { Write-Output "Release already exists; keeping the verified published binaries." }
+          else { gh release create $env:GITHUB_REF_NAME dist/LISA.exe dist/LISA-Setup.exe dist/SHA256SUMS.txt --title "LISA $env:GITHUB_REF_NAME" --notes-file RELEASE_NOTES.md }
+          if ($LASTEXITCODE -ne 0) { throw "Release publication failed" }

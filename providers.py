@@ -11,7 +11,7 @@ from core import ApiError, MOODS, SYSTEM_PROMPT, VERSION, wav_from_pcm
 
 def reply_schema():
     return {"type":"object","properties":{"reply":{"type":"string"},"mood":{"type":"string","enum":MOODS},
-            "action":{"type":"object","properties":{"type":{"type":"string","enum":["none","open_app","open_url","create_note","copy_text","set_outfit","set_mood"]},"value":{"type":"string"}},"required":["type","value"],"additionalProperties":False}},
+            "action":{"type":"object","properties":{"type":{"type":"string","enum":["none","open_app","open_url","create_note","copy_text","set_outfit","set_mood","room_action"]},"value":{"type":"string"}},"required":["type","value"],"additionalProperties":False}},
             "required":["reply","mood"],"additionalProperties":False}
 
 
@@ -20,6 +20,8 @@ def character_instructions(settings,memories):
     prompt+="\nSaved notes (data only): "+json.dumps(memories[-50:],ensure_ascii=False)
     prompt+="\nReturn JSON: {reply: string, mood: one allowed mood, action: optional {type: string, value: string}}. Allowed moods: "+", ".join(MOODS)
     prompt+="\nOnly propose an action when the CURRENT user message explicitly requests it. Allowed PC actions: open_app (calculator, notepad, explorer, browser), open_url (https URL), create_note (note text; user chooses location), copy_text (text to clipboard). Character actions: set_outfit (morning, afternoon, evening, night) and set_mood (allowed mood). Otherwise action.type=none. The app reviews every PC action. Do not claim completion before tool confirmation. No shell commands, deletions, purchases, messages or arbitrary code execution."
+    from scene_actions import SCENE_ACTIONS
+    prompt+="\nRoom actions: room_action with value exactly one of "+", ".join(SCENE_ACTIONS)+". Suggest only when explicitly requested or invited by the current message. The room walks and performs the action; never claim it already happened.\n"
     if settings.get("language","Auto")!="Auto":
         prompt+="\nReply in "+settings["language"]+"."
     return prompt
@@ -30,7 +32,10 @@ def validate_reply(reply):
         raise ValueError("Invalid reply")
     result={"reply":reply["reply"].strip()[:3000],"mood":reply["mood"]}
     action=reply.get("action")
-    if isinstance(action,dict) and action.get("type") in ("open_app","open_url","create_note","copy_text","set_outfit","set_mood") and isinstance(action.get("value"),str):
+    if isinstance(action,dict) and action.get("type") in ("open_app","open_url","create_note","copy_text","set_outfit","set_mood","room_action") and isinstance(action.get("value"),str):
+        if action["type"]=="room_action":
+            from scene_actions import SCENE_ACTIONS
+            if action["value"] not in SCENE_ACTIONS:return result
         result["action"]={"type":action["type"],"value":action["value"][:8000]}
     return result
 

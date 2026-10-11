@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-09",
+  "method": "built-in imagegen",
+  "assets": [
+    {
+      "path": "assets/scenes/moonlit-room.png",
+      "prompt": "Use case: stylized-concept. Asset type: fullscreen background artwork for the LISA Windows anime companion app. Create a very polished immersive anime room at night, wide cinematic 16:9 composition, high detail and clean sharp edges. Floor-to-ceiling glass windows overlooking a moonlit blue and violet city with lights reflected on water, soft rain on the glass. Cozy modern interior, warm amber lamp and plants at the far left, a low soft sofa and bookshelf at the far right. Large uncluttered open space and visible floor in the middle for a separately rendered full-body anime woman. Midnight blue, lavender and muted crystal silver accents matching Lisa's neon purple-blue icon. Subtle natural reflections, rich depth, restrained warm lighting, calm premium atmosphere. Avoid bright objects or clutter behind the center character and along the bottom chat dock. No people, no characters, no text, no UI, no logo, no watermark. Render a finished background image, not a UI mockup.",
+      "purpose": "Fullscreen background"
+    },
+    {
+      "path": "assets/avatar/blink.png",
+      "prompt": "Edit target: supplied full-body transparent Lisa portrait. Create a precise animation frame: change ONLY both eyes to naturally fully CLOSED as in a gentle blink, with delicate curved dark eyelash lines. Keep EXACTLY the same face location, head tilt, nose, mouth, smile, hair, body, dress, accessories, hands, shoes, silhouette, canvas framing and scale. Preserve every pixel's composition as closely as possible. No new pose, no camera change, no head resizing, no repositioning, no face relighting, no extra detail. It is a matching frame for overlaying eyelids on the original. Preserve the transparent background. Full body head-to-toe, original portrait aspect ratio.",
+      "purpose": "Registered eye-close texture for the portrait rig"
+    },
+    {
+      "path": "assets/avatar/talk.png",
+      "prompt": "Edit target: supplied full-body transparent Lisa portrait. Create a precise talking animation frame: change ONLY her mouth to a gently OPEN conversational mouth, with a small dark interior, subtle tongue and upper teeth; realistic anime speaking, no exaggerated laughing. Keep EXACTLY the same face location, head tilt, eyes, nose, hair, body, dress, accessories, hands, shoes, silhouette, canvas framing and scale. Preserve every pixel's composition as closely as possible. No new pose, no camera change, no head resizing, no repositioning, no face relighting, no extra detail. It is a matching frame for overlaying a talking mouth on the original. Preserve the transparent background. Full body head-to-toe, original portrait aspect ratio.",
+      "purpose": "Registered speech-mouth texture for the portrait rig"
+    }
+  ]
+}

@@ -1,0 +1,6590 @@
+{
+  "format": "lisa-portable-2d",
+  "schema_version": "1.0",
+  "name": "Lisa",
+  "adult_age": 22,
+  "description": "Approved red-haired anime character; portable painted-pose animation library",
+  "master_pose": "O01-P01",
+  "reference_master": "C-T01-P01",
+  "appearance": {
+    "hair": "deep burgundy, long; original wavy and approved straight variants",
+    "face": "warm red-brown almond eyes, tapered oval face, peach skin",
+    "base_outfit": "black ribbed sleeveless crop top, black short pleated skirt, normal belt, black strappy block-heel sandals",
+    "variants": [
+      "original long sleeves",
+      "sleeve outer layer over sleeveless base",
+      "opaque black briefs with lowercase virat front waistband",
+      "covered robe / bathing / sleep scenes"
+    ]
+  },
+  "capabilities": {
+    "painted_pose_playback": true,
+    "gentle_2d_pose_loops": true,
+    "key_pose_sequences": true,
+    "layered_deformation_rig": false,
+    "live2d_model": false,
+    "skeletal_3d_mesh": false,
+    "alpha_cutout_sprites": false,
+    "voice_audio": false
+  },
+  "palette": [
+    {
+      "id": "hair_base",
+      "label": "Hair / burgundy",
+      "hex": "#701B27",
+      "r": 112,
+      "g": 27,
+      "b": 39
+    },
+    {
+      "id": "hair_shadow",
+      "label": "Hair / deep shadow",
+      "hex": "#311018",
+      "r": 49,
+      "g": 16,
+      "b": 24
+    },
+    {
+      "id": "hair_highlight",
+      "label": "Hair / warm highlight",
+      "hex": "#C6484A",
+      "r": 198,
+      "g": 72,
+      "b": 74
+    },
+    {
+      "id": "skin_base",
+      "label": "Skin / peach base",
+      "hex": "#F4C9BA",
+      "r": 244,
+      "g": 201,
+      "b": 186
+    },
+    {
+      "id": "skin_shadow",
+      "label": "Skin / warm shadow",
+      "hex": "#CB8B7E",
+      "r": 203,
+      "g": 139,
+      "b": 126
+    },
+    {
+      "id": "fabric_base",
+      "label": "Top and skirt / black",
+      "hex": "#171516",
+      "r": 23,
+      "g": 21,
+      "b": 22
+    },
+    {
+      "id": "fabric_light",
+      "label": "Ribbing and pleat light",
+      "hex": "#343033",
+      "r": 52,
+      "g": 48,
+      "b": 51
+    },
+    {
+      "id": "leather_base",
+      "label": "Belt and sandal leather",
+      "hex": "#21191A",
+      "r": 33,
+      "g": 25,
+      "b": 26
+    },
+    {
+      "id": "brass",
+      "label": "Buckles and buttons",
+      "hex": "#A57C50",
+      "r": 165,
+      "g": 124,
+      "b": 80
+    },
+    {
+      "id": "iris",
+      "label": "Iris / red brown",
+      "hex": "#9A3F3F",
+      "r": 154,
+      "g": 63,
+      "b": 63
+    },
+    {
+      "id": "lips",
+      "label": "Lips / muted rose",
+      "hex": "#C97570",
+      "r": 201,
+      "g": 117,
+      "b": 112
+    },
+    {
+      "id": "nails",
+      "label": "Nails / burgundy",
+      "hex": "#6F1822",
+      "r": 111,
+      "g": 24,
+      "b": 34
+    }
+  ],
+  "sheets": [
+    {
+      "id": "C-T01",
+      "title": "Orthographic turnaround",
+      "path": "references/core/01-turnaround/lisa-orthographic-turnaround.png",
+      "labels": [
+        "Front 0 deg",
+        "Three-quarter, approximately 45 deg",
+        "Character-left profile; nose points page-right",
+        "Back 180 deg"
+      ],
+      "cols": 4,
+      "rows": 1,
+      "group": "Model reference",
+      "mode": "study",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.24934895833333334,
+          1.0
+        ],
+        [
+          0.2506510416666667,
+          0.0,
+          0.4993489583333333,
+          1.0
+        ],
+        [
+          0.5006510416666666,
+          0.0,
+          0.7493489583333334,
+          1.0
+        ],
+        [
+          0.7506510416666666,
+          0.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/C-T01.webp"
+    },
+    {
+      "id": "C-T02",
+      "title": "Top orthographic projection",
+      "path": "references/core/01-turnaround/lisa-top-orthographic.png",
+      "labels": [
+        "90 deg overhead, T-pose; forward is page-bottom"
+      ],
+      "cols": 1,
+      "rows": 1,
+      "group": "Model reference",
+      "mode": "study",
+      "width": 1254,
+      "height": 1254,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/C-T02.webp"
+    },
+    {
+      "id": "C-T03",
+      "title": "Elevated volume references",
+      "path": "references/core/01-turnaround/lisa-elevated-views.png",
+      "labels": [
+        "Elevated front",
+        "Elevated three-quarter",
+        "Crown and shoulder close-up"
+      ],
+      "cols": 3,
+      "rows": 1,
+      "group": "Model reference",
+      "mode": "study",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.3326822916666667,
+          1.0
+        ],
+        [
+          0.333984375,
+          0.0,
+          0.634765625,
+          1.0
+        ],
+        [
+          0.6360677083333334,
+          0.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/C-T03.webp"
+    },
+    {
+      "id": "C-H01",
+      "title": "Face and hair construction",
+      "path": "references/core/02-face-hair/lisa-face-hair-construction.png",
+      "labels": [
+        "Front neutral",
+        "Three-quarter neutral",
+        "Character-left profile",
+        "Rear hair silhouette",
+        "Elevated crown and part",
+        "Ear, jaw and face strands"
+      ],
+      "cols": 3,
+      "rows": 2,
+      "group": "Model reference",
+      "mode": "study",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.3326822916666667,
+          0.498046875
+        ],
+        [
+          0.333984375,
+          0.0,
+          0.666015625,
+          0.498046875
+        ],
+        [
+          0.6673177083333334,
+          0.0,
+          1.0,
+          0.498046875
+        ],
+        [
+          0.0,
+          0.5,
+          0.3326822916666667,
+          1.0
+        ],
+        [
+          0.333984375,
+          0.5,
+          0.666015625,
+          1.0
+        ],
+        [
+          0.6673177083333334,
+          0.5,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/C-H01.webp"
+    },
+    {
+      "id": "C-D01",
+      "title": "Hand construction",
+      "path": "references/core/03-hands-feet/lisa-hands.png",
+      "labels": [
+        "Right hand, dorsal",
+        "Right palm",
+        "Right hand, side",
+        "Gentle fist",
+        "Spread palm",
+        "Pinch / light grip"
+      ],
+      "cols": 3,
+      "rows": 2,
+      "group": "Model reference",
+      "mode": "study",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.3326822916666667,
+          0.4853515625
+        ],
+        [
+          0.333984375,
+          0.0,
+          0.666015625,
+          0.4853515625
+        ],
+        [
+          0.6673177083333334,
+          0.0,
+          1.0,
+          0.4853515625
+        ],
+        [
+          0.0,
+          0.4873046875,
+          0.3326822916666667,
+          1.0
+        ],
+        [
+          0.333984375,
+          0.4873046875,
+          0.666015625,
+          1.0
+        ],
+        [
+          0.6673177083333334,
+          0.4873046875,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/C-D01.webp"
+    },
+    {
+      "id": "C-D02",
+      "title": "Sandals and feet",
+      "path": "references/core/03-hands-feet/lisa-sandals-feet.png",
+      "labels": [
+        "Paired front",
+        "Outer side and block heel",
+        "Paired rear supports",
+        "Right foot overhead",
+        "Outside ankle buckle",
+        "Barefoot plan and matching sandal plan"
+      ],
+      "cols": 3,
+      "rows": 2,
+      "group": "Model reference",
+      "mode": "study",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.3326822916666667,
+          0.478515625
+        ],
+        [
+          0.333984375,
+          0.0,
+          0.666015625,
+          0.478515625
+        ],
+        [
+          0.6673177083333334,
+          0.0,
+          1.0,
+          0.478515625
+        ],
+        [
+          0.0,
+          0.48046875,
+          0.3326822916666667,
+          1.0
+        ],
+        [
+          0.333984375,
+          0.48046875,
+          0.666015625,
+          1.0
+        ],
+        [
+          0.6673177083333334,
+          0.48046875,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/C-D02.webp"
+    },
+    {
+      "id": "C-A01",
+      "title": "Facial expressions",
+      "path": "references/core/04-animation/lisa-expressions.png",
+      "labels": [
+        "Neutral",
+        "Warm smile",
+        "Laugh",
+        "Serious",
+        "Angry",
+        "Sad / worried",
+        "Surprised",
+        "Playful wink"
+      ],
+      "cols": 4,
+      "rows": 2,
+      "group": "Face animation",
+      "mode": "study",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.24934895833333334,
+          0.498046875
+        ],
+        [
+          0.2506510416666667,
+          0.0,
+          0.4993489583333333,
+          0.498046875
+        ],
+        [
+          0.5006510416666666,
+          0.0,
+          0.7493489583333334,
+          0.498046875
+        ],
+        [
+          0.7506510416666666,
+          0.0,
+          1.0,
+          0.498046875
+        ],
+        [
+          0.0,
+          0.5,
+          0.24934895833333334,
+          1.0
+        ],
+        [
+          0.2506510416666667,
+          0.5,
+          0.4993489583333333,
+          1.0
+        ],
+        [
+          0.5006510416666666,
+          0.5,
+          0.7493489583333334,
+          1.0
+        ],
+        [
+          0.7506510416666666,
+          0.5,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/C-A01.webp"
+    },
+    {
+      "id": "C-A02",
+      "title": "Mouth shape library",
+      "path": "references/core/04-animation/lisa-mouth-shapes.png",
+      "labels": [
+        "M01 Rest / slight part",
+        "M02 Closed M-B-P",
+        "M03 Wide open AA",
+        "M04 Wide teeth EE",
+        "M05 Medium open IH",
+        "M06 Rounded open OH",
+        "M07 Pursed OO-U",
+        "M08 Narrow upper-teeth shape",
+        "M09 Open tongue shape",
+        "M10 Narrow teeth S-Z",
+        "M11 Tongue-visible opening",
+        "M12 Teeth smile"
+      ],
+      "cols": 4,
+      "rows": 3,
+      "group": "Face animation",
+      "mode": "study",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.24934895833333334,
+          0.3291015625
+        ],
+        [
+          0.2506510416666667,
+          0.0,
+          0.4993489583333333,
+          0.3291015625
+        ],
+        [
+          0.5006510416666666,
+          0.0,
+          0.7493489583333334,
+          0.3291015625
+        ],
+        [
+          0.7506510416666666,
+          0.0,
+          1.0,
+          0.3291015625
+        ],
+        [
+          0.0,
+          0.3310546875,
+          0.24934895833333334,
+          0.650390625
+        ],
+        [
+          0.2506510416666667,
+          0.3310546875,
+          0.4993489583333333,
+          0.650390625
+        ],
+        [
+          0.5006510416666666,
+          0.3310546875,
+          0.7493489583333334,
+          0.650390625
+        ],
+        [
+          0.7506510416666666,
+          0.3310546875,
+          1.0,
+          0.650390625
+        ],
+        [
+          0.0,
+          0.65234375,
+          0.24934895833333334,
+          1.0
+        ],
+        [
+          0.2506510416666667,
+          0.65234375,
+          0.4993489583333333,
+          1.0
+        ],
+        [
+          0.5006510416666666,
+          0.65234375,
+          0.7493489583333334,
+          1.0
+        ],
+        [
+          0.7506510416666666,
+          0.65234375,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/C-A02.webp"
+    },
+    {
+      "id": "C-A03",
+      "title": "Eye and brow shapes",
+      "path": "references/core/04-animation/lisa-eye-shapes.png",
+      "labels": [
+        "E01 Open",
+        "E02 Half blink",
+        "E03 Closed blink",
+        "E04 Squeezed happy",
+        "E05 Wide surprise",
+        "E06 Character-left wink",
+        "E07 Look character-left",
+        "E08 Look character-right",
+        "E09 Look up",
+        "E10 Look down"
+      ],
+      "cols": 5,
+      "rows": 2,
+      "group": "Face animation",
+      "mode": "study",
+      "width": 1983,
+      "height": 793,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.19969742813918306,
+          0.49810844892812106
+        ],
+        [
+          0.20070600100857286,
+          0.0,
+          0.39939485627836613,
+          0.49810844892812106
+        ],
+        [
+          0.40040342914775595,
+          0.0,
+          0.599596570852244,
+          0.49810844892812106
+        ],
+        [
+          0.6006051437216339,
+          0.0,
+          0.7992939989914272,
+          0.49810844892812106
+        ],
+        [
+          0.800302571860817,
+          0.0,
+          1.0,
+          0.49810844892812106
+        ],
+        [
+          0.0,
+          0.5006305170239597,
+          0.19969742813918306,
+          1.0
+        ],
+        [
+          0.20070600100857286,
+          0.5006305170239597,
+          0.39939485627836613,
+          1.0
+        ],
+        [
+          0.40040342914775595,
+          0.5006305170239597,
+          0.599596570852244,
+          1.0
+        ],
+        [
+          0.6006051437216339,
+          0.5006305170239597,
+          0.7992939989914272,
+          1.0
+        ],
+        [
+          0.800302571860817,
+          0.5006305170239597,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/C-A03.webp"
+    },
+    {
+      "id": "C-A04",
+      "title": "Speech contact shapes",
+      "path": "references/core/04-animation/lisa-speech-contacts.png",
+      "labels": [
+        "C01 F-V: upper teeth contact lower lip",
+        "C02 L: tongue raised toward upper ridge",
+        "C03 TH: tongue between teeth"
+      ],
+      "cols": 3,
+      "rows": 1,
+      "group": "Face animation",
+      "mode": "study",
+      "width": 2172,
+      "height": 724,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.3328729281767956,
+          1.0
+        ],
+        [
+          0.3337937384898711,
+          0.0,
+          0.666206261510129,
+          1.0
+        ],
+        [
+          0.6671270718232044,
+          0.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/C-A04.webp"
+    },
+    {
+      "id": "SOURCE",
+      "title": "Approved original character",
+      "path": "references/source/lisa-approved-reference.png",
+      "labels": [
+        "Approved design collage"
+      ],
+      "cols": 1,
+      "rows": 1,
+      "group": "Reference",
+      "mode": "study",
+      "width": 1024,
+      "height": 1536,
+      "regions": null,
+      "optimized_sheet": "assets/sheets/SOURCE.webp"
+    },
+    {
+      "id": "B01",
+      "title": "Lower-body turnaround",
+      "path": "references/body/lower-body-turnaround.png",
+      "labels": [
+        "Front",
+        "Three-quarter",
+        "Side",
+        "Back"
+      ],
+      "cols": 4,
+      "rows": 1,
+      "group": "Body reference",
+      "mode": "study",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.24934895833333334,
+          1.0
+        ],
+        [
+          0.2506510416666667,
+          0.0,
+          0.4993489583333333,
+          1.0
+        ],
+        [
+          0.5006510416666666,
+          0.0,
+          0.7493489583333334,
+          1.0
+        ],
+        [
+          0.7506510416666666,
+          0.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/B01.webp"
+    },
+    {
+      "id": "B02",
+      "title": "Thigh, knee and calf details",
+      "path": "references/body/thigh-knee-calf-details.png",
+      "labels": [
+        "Front thighs and knees",
+        "Side thighs and knee",
+        "Rear thighs and knees",
+        "Front calf and ankle",
+        "Side calf and ankle",
+        "Rear calf and heel"
+      ],
+      "cols": 3,
+      "rows": 2,
+      "group": "Body reference",
+      "mode": "study",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.3326822916666667,
+          0.4892578125
+        ],
+        [
+          0.333984375,
+          0.0,
+          0.666015625,
+          0.4892578125
+        ],
+        [
+          0.6673177083333334,
+          0.0,
+          1.0,
+          0.4892578125
+        ],
+        [
+          0.0,
+          0.4912109375,
+          0.3326822916666667,
+          1.0
+        ],
+        [
+          0.333984375,
+          0.4912109375,
+          0.666015625,
+          1.0
+        ],
+        [
+          0.6673177083333334,
+          0.4912109375,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/B02.webp"
+    },
+    {
+      "id": "B03",
+      "title": "Overhead upper body and hands",
+      "path": "references/body/upper-body-overhead-hands.png",
+      "labels": [
+        "Upper-body overhead",
+        "Elevated front and palms"
+      ],
+      "cols": 1,
+      "rows": 2,
+      "group": "Body reference",
+      "mode": "study",
+      "width": 1024,
+      "height": 1536,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.3860677083333333
+        ],
+        [
+          0.0,
+          0.3873697916666667,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/B03.webp"
+    },
+    {
+      "id": "B04",
+      "title": "Raised arms and underarm construction",
+      "path": "references/body/raised-arms-underarm-back.png",
+      "labels": [
+        "Front raised arms",
+        "Rear upper back",
+        "Side raised arm",
+        "Underarm and armhole"
+      ],
+      "cols": 2,
+      "rows": 2,
+      "group": "Body reference",
+      "mode": "study",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.4993489583333333,
+          0.482421875
+        ],
+        [
+          0.5006510416666666,
+          0.0,
+          1.0,
+          0.482421875
+        ],
+        [
+          0.0,
+          0.484375,
+          0.4993489583333333,
+          1.0
+        ],
+        [
+          0.5006510416666666,
+          0.484375,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/B04.webp"
+    },
+    {
+      "id": "O01",
+      "title": "Straight hair and hair-touch poses",
+      "path": "references/optional/straight-hair-poses.png",
+      "labels": [
+        "Front neutral straight-hair reference",
+        "Hand on hair / confident fashion pose",
+        "Hair tuck / soft smile",
+        "Rear straight-hair construction"
+      ],
+      "cols": 4,
+      "rows": 1,
+      "group": "Optional poses",
+      "mode": "loop",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.24934895833333334,
+          1.0
+        ],
+        [
+          0.2506510416666667,
+          0.0,
+          0.4993489583333333,
+          1.0
+        ],
+        [
+          0.5006510416666666,
+          0.0,
+          0.7493489583333334,
+          1.0
+        ],
+        [
+          0.7506510416666666,
+          0.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/O01.webp"
+    },
+    {
+      "id": "O02",
+      "title": "Workout and warm-weather sweat",
+      "path": "references/optional/workout-heat-sweat.png",
+      "labels": [
+        "Left full-height panel: full-body forehead wipe",
+        "Upper-right wide panel: sweaty face and damp fringe",
+        "Lower center: damp fabric and skin material detail",
+        "Lower right: fanning face and clearing hair from neck"
+      ],
+      "cols": 2,
+      "rows": 2,
+      "group": "Optional poses",
+      "mode": "loop",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.333984375,
+          1.0
+        ],
+        [
+          0.3372395833333333,
+          0.0,
+          1.0,
+          0.4560546875
+        ],
+        [
+          0.3372395833333333,
+          0.4609375,
+          0.6477864583333334,
+          1.0
+        ],
+        [
+          0.6510416666666666,
+          0.4609375,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/O02.webp"
+    },
+    {
+      "id": "O03",
+      "title": "Opening and removing a sandal",
+      "path": "references/optional/sandal-unfastening-sequence.png",
+      "labels": [
+        "Reach the ankle strap",
+        "Release and loosen ankle band",
+        "Close grip / buckle construction",
+        "Sandal off / bare-foot end pose"
+      ],
+      "cols": 2,
+      "rows": 2,
+      "group": "Optional poses",
+      "mode": "loop",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.4993489583333333,
+          0.4970703125
+        ],
+        [
+          0.5006510416666666,
+          0.0,
+          1.0,
+          0.4970703125
+        ],
+        [
+          0.0,
+          0.4990234375,
+          0.4993489583333333,
+          1.0
+        ],
+        [
+          0.5006510416666666,
+          0.4990234375,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/O03.webp"
+    },
+    {
+      "id": "O04",
+      "title": "Wind scene",
+      "path": "references/optional/wind-gust-sequence.png",
+      "labels": [
+        "Breeze onset",
+        "Gust / hair and skirt reaction",
+        "Wind easing / hair adjustment"
+      ],
+      "cols": 3,
+      "rows": 1,
+      "group": "Optional poses",
+      "mode": "loop",
+      "width": 1774,
+      "height": 887,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.33258173618940245,
+          1.0
+        ],
+        [
+          0.3337091319052988,
+          0.0,
+          0.6662908680947013,
+          1.0
+        ],
+        [
+          0.6674182638105975,
+          0.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/O04.webp"
+    },
+    {
+      "id": "O05",
+      "title": "Putting on the long-sleeve layer",
+      "path": "references/optional/putting-on-sleeve-top.png",
+      "labels": [
+        "Hold the open outer garment",
+        "First sleeve on / hold opposite shoulder",
+        "Seat shoulder / prepare remaining sleeve",
+        "Both sleeves on / outer top closed"
+      ],
+      "cols": 4,
+      "rows": 1,
+      "group": "Optional poses",
+      "mode": "loop",
+      "width": 2172,
+      "height": 724,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.24953959484346225,
+          1.0
+        ],
+        [
+          0.2504604051565378,
+          0.0,
+          0.4995395948434622,
+          1.0
+        ],
+        [
+          0.5004604051565378,
+          0.0,
+          0.7495395948434622,
+          1.0
+        ],
+        [
+          0.7504604051565378,
+          0.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/O05.webp"
+    },
+    {
+      "id": "O06",
+      "title": "Removing the long-sleeve layer",
+      "path": "references/optional/taking-off-sleeve-top.png",
+      "labels": [
+        "Open the front placket",
+        "Loosen shoulder",
+        "Withdraw from remaining sleeve",
+        "Hold removed garment / sleeveless base retained"
+      ],
+      "cols": 4,
+      "rows": 1,
+      "group": "Optional poses",
+      "mode": "loop",
+      "width": 2172,
+      "height": 724,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.24953959484346225,
+          1.0
+        ],
+        [
+          0.2504604051565378,
+          0.0,
+          0.4995395948434622,
+          1.0
+        ],
+        [
+          0.5004604051565378,
+          0.0,
+          0.7495395948434622,
+          1.0
+        ],
+        [
+          0.7504604051565378,
+          0.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/O06.webp"
+    },
+    {
+      "id": "O07",
+      "title": "Extra cooldown and reset poses",
+      "path": "references/optional/cooldown-extra-transitions.png",
+      "labels": [
+        "Towel dab",
+        "Drink water",
+        "Cross-body shoulder stretch",
+        "Smooth skirt and tuck hair / reset to idle"
+      ],
+      "cols": 2,
+      "rows": 2,
+      "group": "Optional poses",
+      "mode": "loop",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.4993489583333333,
+          0.4912109375
+        ],
+        [
+          0.5006510416666666,
+          0.0,
+          1.0,
+          0.4912109375
+        ],
+        [
+          0.0,
+          0.4931640625,
+          0.4993489583333333,
+          1.0
+        ],
+        [
+          0.5006510416666666,
+          0.4931640625,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/O07.webp"
+    },
+    {
+      "id": "D01",
+      "title": "Seated fashion and sit-down poses",
+      "path": "references/daily/seated-fashion-poses.png",
+      "labels": [
+        "Crossed-knee / hand in hair",
+        "Chin-rest fashion pose",
+        "Side seated silhouette",
+        "Lowering into the seat"
+      ],
+      "cols": 2,
+      "rows": 2,
+      "group": "Daily life",
+      "mode": "loop",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.4993489583333333,
+          0.5087890625
+        ],
+        [
+          0.5006510416666666,
+          0.0,
+          1.0,
+          0.5087890625
+        ],
+        [
+          0.0,
+          0.5107421875,
+          0.4993489583333333,
+          1.0
+        ],
+        [
+          0.5006510416666666,
+          0.5107421875,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/D01.webp"
+    },
+    {
+      "id": "D02",
+      "title": "Cigarette hand and mouth scenes",
+      "path": "references/daily/cigarette-hand-mouth-scenes.png",
+      "labels": [
+        "Hold at side",
+        "Bring cigarette to lips",
+        "Mouth-held close-up",
+        "Lower hand and exhale"
+      ],
+      "cols": 2,
+      "rows": 2,
+      "group": "Daily life",
+      "mode": "loop",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.4993489583333333,
+          0.6025390625
+        ],
+        [
+          0.5006510416666666,
+          0.0,
+          1.0,
+          0.6025390625
+        ],
+        [
+          0.0,
+          0.6044921875,
+          0.4993489583333333,
+          1.0
+        ],
+        [
+          0.5006510416666666,
+          0.6044921875,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/D02.webp"
+    },
+    {
+      "id": "D03",
+      "title": "Bathroom and toilet-use routine",
+      "path": "references/daily/bathroom-toilet-routine.png",
+      "labels": [
+        "Before sitting",
+        "Covered front seated toilet-use posture",
+        "Covered side posture / raised lid",
+        "Wash hands"
+      ],
+      "cols": 2,
+      "rows": 2,
+      "group": "Daily life",
+      "mode": "loop",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.4993489583333333,
+          0.4990234375
+        ],
+        [
+          0.5006510416666666,
+          0.0,
+          1.0,
+          0.4990234375
+        ],
+        [
+          0.0,
+          0.5009765625,
+          0.4993489583333333,
+          1.0
+        ],
+        [
+          0.5006510416666666,
+          0.5009765625,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/D03.webp"
+    },
+    {
+      "id": "D04",
+      "title": "Bathing and personal care",
+      "path": "references/daily/bathing-personal-care.png",
+      "labels": [
+        "Robe and towel preparation",
+        "Covered bubble-bath pose",
+        "Covered hair rinse",
+        "Dry hair in robe"
+      ],
+      "cols": 2,
+      "rows": 2,
+      "group": "Daily life",
+      "mode": "loop",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.4993489583333333,
+          0.498046875
+        ],
+        [
+          0.5006510416666666,
+          0.0,
+          1.0,
+          0.498046875
+        ],
+        [
+          0.0,
+          0.5,
+          0.4993489583333333,
+          1.0
+        ],
+        [
+          0.5006510416666666,
+          0.5,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/D04.webp"
+    },
+    {
+      "id": "D05",
+      "title": "Drinking tea",
+      "path": "references/daily/tea-drinking-scenes.png",
+      "labels": [
+        "Seated cup and saucer",
+        "Sip",
+        "Cup-handle / saucer grip close-up",
+        "Lower cup to side table"
+      ],
+      "cols": 2,
+      "rows": 2,
+      "group": "Daily life",
+      "mode": "loop",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.4993489583333333,
+          0.5107421875
+        ],
+        [
+          0.5006510416666666,
+          0.0,
+          1.0,
+          0.5107421875
+        ],
+        [
+          0.0,
+          0.5126953125,
+          0.4993489583333333,
+          1.0
+        ],
+        [
+          0.5006510416666666,
+          0.5126953125,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/D05.webp"
+    },
+    {
+      "id": "D06",
+      "title": "Sleep and waking in bed",
+      "path": "references/daily/sleep-bed-scenes.png",
+      "labels": [
+        "Back sleep",
+        "Side sleep",
+        "Sleeping face close-up",
+        "Covered waking stretch"
+      ],
+      "cols": 2,
+      "rows": 2,
+      "group": "Daily life",
+      "mode": "loop",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.4993489583333333,
+          0.4677734375
+        ],
+        [
+          0.5006510416666666,
+          0.0,
+          1.0,
+          0.4677734375
+        ],
+        [
+          0.0,
+          0.4697265625,
+          0.4993489583333333,
+          1.0
+        ],
+        [
+          0.5006510416666666,
+          0.4697265625,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/D06.webp"
+    },
+    {
+      "id": "D07",
+      "title": "Whip motion toward an empty floor",
+      "path": "references/daily/whip-floor-motion.png",
+      "labels": [
+        "Resting grip and slack",
+        "Raised preparation loop",
+        "Forward-down stroke / floor contact",
+        "Lower and reset"
+      ],
+      "cols": 2,
+      "rows": 2,
+      "group": "Daily life",
+      "mode": "loop",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.4993489583333333,
+          0.4931640625
+        ],
+        [
+          0.5006510416666666,
+          0.0,
+          1.0,
+          0.4931640625
+        ],
+        [
+          0.0,
+          0.4951171875,
+          0.4993489583333333,
+          1.0
+        ],
+        [
+          0.5006510416666666,
+          0.4951171875,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/D07.webp"
+    },
+    {
+      "id": "D08",
+      "title": "Everyday small gestures",
+      "path": "references/daily/everyday-small-gestures.png",
+      "labels": [
+        "Brush teeth",
+        "Check phone",
+        "Read book",
+        "Greeting wave"
+      ],
+      "cols": 2,
+      "rows": 2,
+      "group": "Daily life",
+      "mode": "loop",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.4993489583333333,
+          0.49609375
+        ],
+        [
+          0.5006510416666666,
+          0.0,
+          1.0,
+          0.49609375
+        ],
+        [
+          0.0,
+          0.498046875,
+          0.4993489583333333,
+          1.0
+        ],
+        [
+          0.5006510416666666,
+          0.498046875,
+          1.0,
+          1.0
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/D08.webp"
+    },
+    {
+      "id": "S01",
+      "title": "Putting on the skirt",
+      "path": "references/dressing/putting-on-skirt.png",
+      "labels": [
+        "Prepare",
+        "Step in",
+        "Pull up",
+        "Fasten"
+      ],
+      "cols": 4,
+      "rows": 1,
+      "group": "Dressing",
+      "mode": "loop",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.24934895833333334,
+          0.9306640625
+        ],
+        [
+          0.2506510416666667,
+          0.05078125,
+          0.4993489583333333,
+          0.9306640625
+        ],
+        [
+          0.5006510416666666,
+          0.05078125,
+          0.7493489583333334,
+          0.9306640625
+        ],
+        [
+          0.7506510416666666,
+          0.0,
+          1.0,
+          0.9306640625
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/S01.webp"
+    },
+    {
+      "id": "S02",
+      "title": "Taking off the skirt",
+      "path": "references/dressing/taking-off-skirt.png",
+      "labels": [
+        "Unfasten",
+        "Lower",
+        "Step out",
+        "Hold"
+      ],
+      "cols": 4,
+      "rows": 1,
+      "group": "Dressing",
+      "mode": "loop",
+      "width": 1536,
+      "height": 1024,
+      "regions": [
+        [
+          0.0,
+          0.0,
+          0.24934895833333334,
+          0.9306640625
+        ],
+        [
+          0.2506510416666667,
+          0.05078125,
+          0.4993489583333333,
+          0.9306640625
+        ],
+        [
+          0.5006510416666666,
+          0.05078125,
+          0.7493489583333334,
+          0.9306640625
+        ],
+        [
+          0.7506510416666666,
+          0.0,
+          1.0,
+          0.9306640625
+        ]
+      ],
+      "optimized_sheet": "assets/sheets/S02.webp"
+    }
+  ],
+  "poses": [
+    {
+      "id": "C-T01-P01",
+      "sheet": "C-T01",
+      "label": "Front 0 deg",
+      "group": "Model reference",
+      "image": "assets/poses/C-T01-P01.webp",
+      "animation": "animations/poses/C-T01-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        383,
+        1024
+      ],
+      "native_crop_pixels": [
+        383,
+        1024
+      ],
+      "image_pixels": [
+        383,
+        1024
+      ],
+      "loop_pixels": [
+        239,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-T01-P02",
+      "sheet": "C-T01",
+      "label": "Three-quarter, approximately 45 deg",
+      "group": "Model reference",
+      "image": "assets/poses/C-T01-P02.webp",
+      "animation": "animations/poses/C-T01-P02.webp",
+      "source_rect_pixels": [
+        385,
+        0,
+        767,
+        1024
+      ],
+      "native_crop_pixels": [
+        382,
+        1024
+      ],
+      "image_pixels": [
+        382,
+        1024
+      ],
+      "loop_pixels": [
+        239,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-T01-P03",
+      "sheet": "C-T01",
+      "label": "Character-left profile; nose points page-right",
+      "group": "Model reference",
+      "image": "assets/poses/C-T01-P03.webp",
+      "animation": "animations/poses/C-T01-P03.webp",
+      "source_rect_pixels": [
+        769,
+        0,
+        1151,
+        1024
+      ],
+      "native_crop_pixels": [
+        382,
+        1024
+      ],
+      "image_pixels": [
+        382,
+        1024
+      ],
+      "loop_pixels": [
+        239,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-T01-P04",
+      "sheet": "C-T01",
+      "label": "Back 180 deg",
+      "group": "Model reference",
+      "image": "assets/poses/C-T01-P04.webp",
+      "animation": "animations/poses/C-T01-P04.webp",
+      "source_rect_pixels": [
+        1153,
+        0,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        383,
+        1024
+      ],
+      "image_pixels": [
+        383,
+        1024
+      ],
+      "loop_pixels": [
+        239,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-T02-P01",
+      "sheet": "C-T02",
+      "label": "90 deg overhead, T-pose; forward is page-bottom",
+      "group": "Model reference",
+      "image": "assets/poses/C-T02-P01.webp",
+      "animation": "animations/poses/C-T02-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "native_crop_pixels": [
+        1254,
+        1254
+      ],
+      "image_pixels": [
+        1024,
+        1024
+      ],
+      "loop_pixels": [
+        640,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-T03-P01",
+      "sheet": "C-T03",
+      "label": "Elevated front",
+      "group": "Model reference",
+      "image": "assets/poses/C-T03-P01.webp",
+      "animation": "animations/poses/C-T03-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        511,
+        1024
+      ],
+      "native_crop_pixels": [
+        511,
+        1024
+      ],
+      "image_pixels": [
+        511,
+        1024
+      ],
+      "loop_pixels": [
+        319,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-T03-P02",
+      "sheet": "C-T03",
+      "label": "Elevated three-quarter",
+      "group": "Model reference",
+      "image": "assets/poses/C-T03-P02.webp",
+      "animation": "animations/poses/C-T03-P02.webp",
+      "source_rect_pixels": [
+        513,
+        0,
+        975,
+        1024
+      ],
+      "native_crop_pixels": [
+        462,
+        1024
+      ],
+      "image_pixels": [
+        462,
+        1024
+      ],
+      "loop_pixels": [
+        289,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-T03-P03",
+      "sheet": "C-T03",
+      "label": "Crown and shoulder close-up",
+      "group": "Model reference",
+      "image": "assets/poses/C-T03-P03.webp",
+      "animation": "animations/poses/C-T03-P03.webp",
+      "source_rect_pixels": [
+        977,
+        0,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        559,
+        1024
+      ],
+      "image_pixels": [
+        559,
+        1024
+      ],
+      "loop_pixels": [
+        349,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-H01-P01",
+      "sheet": "C-H01",
+      "label": "Front neutral",
+      "group": "Model reference",
+      "image": "assets/poses/C-H01-P01.webp",
+      "animation": "animations/poses/C-H01-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        511,
+        510
+      ],
+      "native_crop_pixels": [
+        511,
+        510
+      ],
+      "image_pixels": [
+        511,
+        510
+      ],
+      "loop_pixels": [
+        511,
+        510
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-H01-P02",
+      "sheet": "C-H01",
+      "label": "Three-quarter neutral",
+      "group": "Model reference",
+      "image": "assets/poses/C-H01-P02.webp",
+      "animation": "animations/poses/C-H01-P02.webp",
+      "source_rect_pixels": [
+        513,
+        0,
+        1023,
+        510
+      ],
+      "native_crop_pixels": [
+        510,
+        510
+      ],
+      "image_pixels": [
+        510,
+        510
+      ],
+      "loop_pixels": [
+        510,
+        510
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-H01-P03",
+      "sheet": "C-H01",
+      "label": "Character-left profile",
+      "group": "Model reference",
+      "image": "assets/poses/C-H01-P03.webp",
+      "animation": "animations/poses/C-H01-P03.webp",
+      "source_rect_pixels": [
+        1025,
+        0,
+        1536,
+        510
+      ],
+      "native_crop_pixels": [
+        511,
+        510
+      ],
+      "image_pixels": [
+        511,
+        510
+      ],
+      "loop_pixels": [
+        511,
+        510
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-H01-P04",
+      "sheet": "C-H01",
+      "label": "Rear hair silhouette",
+      "group": "Model reference",
+      "image": "assets/poses/C-H01-P04.webp",
+      "animation": "animations/poses/C-H01-P04.webp",
+      "source_rect_pixels": [
+        0,
+        512,
+        511,
+        1024
+      ],
+      "native_crop_pixels": [
+        511,
+        512
+      ],
+      "image_pixels": [
+        511,
+        512
+      ],
+      "loop_pixels": [
+        511,
+        512
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-H01-P05",
+      "sheet": "C-H01",
+      "label": "Elevated crown and part",
+      "group": "Model reference",
+      "image": "assets/poses/C-H01-P05.webp",
+      "animation": "animations/poses/C-H01-P05.webp",
+      "source_rect_pixels": [
+        513,
+        512,
+        1023,
+        1024
+      ],
+      "native_crop_pixels": [
+        510,
+        512
+      ],
+      "image_pixels": [
+        510,
+        512
+      ],
+      "loop_pixels": [
+        510,
+        512
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-H01-P06",
+      "sheet": "C-H01",
+      "label": "Ear, jaw and face strands",
+      "group": "Model reference",
+      "image": "assets/poses/C-H01-P06.webp",
+      "animation": "animations/poses/C-H01-P06.webp",
+      "source_rect_pixels": [
+        1025,
+        512,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        511,
+        512
+      ],
+      "image_pixels": [
+        511,
+        512
+      ],
+      "loop_pixels": [
+        511,
+        512
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-D01-P01",
+      "sheet": "C-D01",
+      "label": "Right hand, dorsal",
+      "group": "Model reference",
+      "image": "assets/poses/C-D01-P01.webp",
+      "animation": "animations/poses/C-D01-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        511,
+        497
+      ],
+      "native_crop_pixels": [
+        511,
+        497
+      ],
+      "image_pixels": [
+        511,
+        497
+      ],
+      "loop_pixels": [
+        511,
+        497
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-D01-P02",
+      "sheet": "C-D01",
+      "label": "Right palm",
+      "group": "Model reference",
+      "image": "assets/poses/C-D01-P02.webp",
+      "animation": "animations/poses/C-D01-P02.webp",
+      "source_rect_pixels": [
+        513,
+        0,
+        1023,
+        497
+      ],
+      "native_crop_pixels": [
+        510,
+        497
+      ],
+      "image_pixels": [
+        510,
+        497
+      ],
+      "loop_pixels": [
+        510,
+        497
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-D01-P03",
+      "sheet": "C-D01",
+      "label": "Right hand, side",
+      "group": "Model reference",
+      "image": "assets/poses/C-D01-P03.webp",
+      "animation": "animations/poses/C-D01-P03.webp",
+      "source_rect_pixels": [
+        1025,
+        0,
+        1536,
+        497
+      ],
+      "native_crop_pixels": [
+        511,
+        497
+      ],
+      "image_pixels": [
+        511,
+        497
+      ],
+      "loop_pixels": [
+        511,
+        497
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-D01-P04",
+      "sheet": "C-D01",
+      "label": "Gentle fist",
+      "group": "Model reference",
+      "image": "assets/poses/C-D01-P04.webp",
+      "animation": "animations/poses/C-D01-P04.webp",
+      "source_rect_pixels": [
+        0,
+        499,
+        511,
+        1024
+      ],
+      "native_crop_pixels": [
+        511,
+        525
+      ],
+      "image_pixels": [
+        511,
+        525
+      ],
+      "loop_pixels": [
+        511,
+        525
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-D01-P05",
+      "sheet": "C-D01",
+      "label": "Spread palm",
+      "group": "Model reference",
+      "image": "assets/poses/C-D01-P05.webp",
+      "animation": "animations/poses/C-D01-P05.webp",
+      "source_rect_pixels": [
+        513,
+        499,
+        1023,
+        1024
+      ],
+      "native_crop_pixels": [
+        510,
+        525
+      ],
+      "image_pixels": [
+        510,
+        525
+      ],
+      "loop_pixels": [
+        510,
+        525
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-D01-P06",
+      "sheet": "C-D01",
+      "label": "Pinch / light grip",
+      "group": "Model reference",
+      "image": "assets/poses/C-D01-P06.webp",
+      "animation": "animations/poses/C-D01-P06.webp",
+      "source_rect_pixels": [
+        1025,
+        499,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        511,
+        525
+      ],
+      "image_pixels": [
+        511,
+        525
+      ],
+      "loop_pixels": [
+        511,
+        525
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-D02-P01",
+      "sheet": "C-D02",
+      "label": "Paired front",
+      "group": "Model reference",
+      "image": "assets/poses/C-D02-P01.webp",
+      "animation": "animations/poses/C-D02-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        511,
+        490
+      ],
+      "native_crop_pixels": [
+        511,
+        490
+      ],
+      "image_pixels": [
+        511,
+        490
+      ],
+      "loop_pixels": [
+        511,
+        490
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-D02-P02",
+      "sheet": "C-D02",
+      "label": "Outer side and block heel",
+      "group": "Model reference",
+      "image": "assets/poses/C-D02-P02.webp",
+      "animation": "animations/poses/C-D02-P02.webp",
+      "source_rect_pixels": [
+        513,
+        0,
+        1023,
+        490
+      ],
+      "native_crop_pixels": [
+        510,
+        490
+      ],
+      "image_pixels": [
+        510,
+        490
+      ],
+      "loop_pixels": [
+        510,
+        490
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-D02-P03",
+      "sheet": "C-D02",
+      "label": "Paired rear supports",
+      "group": "Model reference",
+      "image": "assets/poses/C-D02-P03.webp",
+      "animation": "animations/poses/C-D02-P03.webp",
+      "source_rect_pixels": [
+        1025,
+        0,
+        1536,
+        490
+      ],
+      "native_crop_pixels": [
+        511,
+        490
+      ],
+      "image_pixels": [
+        511,
+        490
+      ],
+      "loop_pixels": [
+        511,
+        490
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-D02-P04",
+      "sheet": "C-D02",
+      "label": "Right foot overhead",
+      "group": "Model reference",
+      "image": "assets/poses/C-D02-P04.webp",
+      "animation": "animations/poses/C-D02-P04.webp",
+      "source_rect_pixels": [
+        0,
+        492,
+        511,
+        1024
+      ],
+      "native_crop_pixels": [
+        511,
+        532
+      ],
+      "image_pixels": [
+        511,
+        532
+      ],
+      "loop_pixels": [
+        511,
+        532
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-D02-P05",
+      "sheet": "C-D02",
+      "label": "Outside ankle buckle",
+      "group": "Model reference",
+      "image": "assets/poses/C-D02-P05.webp",
+      "animation": "animations/poses/C-D02-P05.webp",
+      "source_rect_pixels": [
+        513,
+        492,
+        1023,
+        1024
+      ],
+      "native_crop_pixels": [
+        510,
+        532
+      ],
+      "image_pixels": [
+        510,
+        532
+      ],
+      "loop_pixels": [
+        510,
+        532
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-D02-P06",
+      "sheet": "C-D02",
+      "label": "Barefoot plan and matching sandal plan",
+      "group": "Model reference",
+      "image": "assets/poses/C-D02-P06.webp",
+      "animation": "animations/poses/C-D02-P06.webp",
+      "source_rect_pixels": [
+        1025,
+        492,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        511,
+        532
+      ],
+      "image_pixels": [
+        511,
+        532
+      ],
+      "loop_pixels": [
+        511,
+        532
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A01-P01",
+      "sheet": "C-A01",
+      "label": "Neutral",
+      "group": "Face animation",
+      "image": "assets/poses/C-A01-P01.webp",
+      "animation": "animations/poses/C-A01-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        383,
+        510
+      ],
+      "native_crop_pixels": [
+        383,
+        510
+      ],
+      "image_pixels": [
+        383,
+        510
+      ],
+      "loop_pixels": [
+        383,
+        510
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A01-P02",
+      "sheet": "C-A01",
+      "label": "Warm smile",
+      "group": "Face animation",
+      "image": "assets/poses/C-A01-P02.webp",
+      "animation": "animations/poses/C-A01-P02.webp",
+      "source_rect_pixels": [
+        385,
+        0,
+        767,
+        510
+      ],
+      "native_crop_pixels": [
+        382,
+        510
+      ],
+      "image_pixels": [
+        382,
+        510
+      ],
+      "loop_pixels": [
+        382,
+        510
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A01-P03",
+      "sheet": "C-A01",
+      "label": "Laugh",
+      "group": "Face animation",
+      "image": "assets/poses/C-A01-P03.webp",
+      "animation": "animations/poses/C-A01-P03.webp",
+      "source_rect_pixels": [
+        769,
+        0,
+        1151,
+        510
+      ],
+      "native_crop_pixels": [
+        382,
+        510
+      ],
+      "image_pixels": [
+        382,
+        510
+      ],
+      "loop_pixels": [
+        382,
+        510
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A01-P04",
+      "sheet": "C-A01",
+      "label": "Serious",
+      "group": "Face animation",
+      "image": "assets/poses/C-A01-P04.webp",
+      "animation": "animations/poses/C-A01-P04.webp",
+      "source_rect_pixels": [
+        1153,
+        0,
+        1536,
+        510
+      ],
+      "native_crop_pixels": [
+        383,
+        510
+      ],
+      "image_pixels": [
+        383,
+        510
+      ],
+      "loop_pixels": [
+        383,
+        510
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A01-P05",
+      "sheet": "C-A01",
+      "label": "Angry",
+      "group": "Face animation",
+      "image": "assets/poses/C-A01-P05.webp",
+      "animation": "animations/poses/C-A01-P05.webp",
+      "source_rect_pixels": [
+        0,
+        512,
+        383,
+        1024
+      ],
+      "native_crop_pixels": [
+        383,
+        512
+      ],
+      "image_pixels": [
+        383,
+        512
+      ],
+      "loop_pixels": [
+        383,
+        512
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A01-P06",
+      "sheet": "C-A01",
+      "label": "Sad / worried",
+      "group": "Face animation",
+      "image": "assets/poses/C-A01-P06.webp",
+      "animation": "animations/poses/C-A01-P06.webp",
+      "source_rect_pixels": [
+        385,
+        512,
+        767,
+        1024
+      ],
+      "native_crop_pixels": [
+        382,
+        512
+      ],
+      "image_pixels": [
+        382,
+        512
+      ],
+      "loop_pixels": [
+        382,
+        512
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A01-P07",
+      "sheet": "C-A01",
+      "label": "Surprised",
+      "group": "Face animation",
+      "image": "assets/poses/C-A01-P07.webp",
+      "animation": "animations/poses/C-A01-P07.webp",
+      "source_rect_pixels": [
+        769,
+        512,
+        1151,
+        1024
+      ],
+      "native_crop_pixels": [
+        382,
+        512
+      ],
+      "image_pixels": [
+        382,
+        512
+      ],
+      "loop_pixels": [
+        382,
+        512
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A01-P08",
+      "sheet": "C-A01",
+      "label": "Playful wink",
+      "group": "Face animation",
+      "image": "assets/poses/C-A01-P08.webp",
+      "animation": "animations/poses/C-A01-P08.webp",
+      "source_rect_pixels": [
+        1153,
+        512,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        383,
+        512
+      ],
+      "image_pixels": [
+        383,
+        512
+      ],
+      "loop_pixels": [
+        383,
+        512
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A02-P01",
+      "sheet": "C-A02",
+      "label": "M01 Rest / slight part",
+      "group": "Face animation",
+      "image": "assets/poses/C-A02-P01.webp",
+      "animation": "animations/poses/C-A02-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        383,
+        337
+      ],
+      "native_crop_pixels": [
+        383,
+        337
+      ],
+      "image_pixels": [
+        383,
+        337
+      ],
+      "loop_pixels": [
+        383,
+        337
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A02-P02",
+      "sheet": "C-A02",
+      "label": "M02 Closed M-B-P",
+      "group": "Face animation",
+      "image": "assets/poses/C-A02-P02.webp",
+      "animation": "animations/poses/C-A02-P02.webp",
+      "source_rect_pixels": [
+        385,
+        0,
+        767,
+        337
+      ],
+      "native_crop_pixels": [
+        382,
+        337
+      ],
+      "image_pixels": [
+        382,
+        337
+      ],
+      "loop_pixels": [
+        382,
+        337
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A02-P03",
+      "sheet": "C-A02",
+      "label": "M03 Wide open AA",
+      "group": "Face animation",
+      "image": "assets/poses/C-A02-P03.webp",
+      "animation": "animations/poses/C-A02-P03.webp",
+      "source_rect_pixels": [
+        769,
+        0,
+        1151,
+        337
+      ],
+      "native_crop_pixels": [
+        382,
+        337
+      ],
+      "image_pixels": [
+        382,
+        337
+      ],
+      "loop_pixels": [
+        382,
+        337
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A02-P04",
+      "sheet": "C-A02",
+      "label": "M04 Wide teeth EE",
+      "group": "Face animation",
+      "image": "assets/poses/C-A02-P04.webp",
+      "animation": "animations/poses/C-A02-P04.webp",
+      "source_rect_pixels": [
+        1153,
+        0,
+        1536,
+        337
+      ],
+      "native_crop_pixels": [
+        383,
+        337
+      ],
+      "image_pixels": [
+        383,
+        337
+      ],
+      "loop_pixels": [
+        383,
+        337
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A02-P05",
+      "sheet": "C-A02",
+      "label": "M05 Medium open IH",
+      "group": "Face animation",
+      "image": "assets/poses/C-A02-P05.webp",
+      "animation": "animations/poses/C-A02-P05.webp",
+      "source_rect_pixels": [
+        0,
+        339,
+        383,
+        666
+      ],
+      "native_crop_pixels": [
+        383,
+        327
+      ],
+      "image_pixels": [
+        383,
+        327
+      ],
+      "loop_pixels": [
+        383,
+        327
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A02-P06",
+      "sheet": "C-A02",
+      "label": "M06 Rounded open OH",
+      "group": "Face animation",
+      "image": "assets/poses/C-A02-P06.webp",
+      "animation": "animations/poses/C-A02-P06.webp",
+      "source_rect_pixels": [
+        385,
+        339,
+        767,
+        666
+      ],
+      "native_crop_pixels": [
+        382,
+        327
+      ],
+      "image_pixels": [
+        382,
+        327
+      ],
+      "loop_pixels": [
+        382,
+        327
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A02-P07",
+      "sheet": "C-A02",
+      "label": "M07 Pursed OO-U",
+      "group": "Face animation",
+      "image": "assets/poses/C-A02-P07.webp",
+      "animation": "animations/poses/C-A02-P07.webp",
+      "source_rect_pixels": [
+        769,
+        339,
+        1151,
+        666
+      ],
+      "native_crop_pixels": [
+        382,
+        327
+      ],
+      "image_pixels": [
+        382,
+        327
+      ],
+      "loop_pixels": [
+        382,
+        327
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A02-P08",
+      "sheet": "C-A02",
+      "label": "M08 Narrow upper-teeth shape",
+      "group": "Face animation",
+      "image": "assets/poses/C-A02-P08.webp",
+      "animation": "animations/poses/C-A02-P08.webp",
+      "source_rect_pixels": [
+        1153,
+        339,
+        1536,
+        666
+      ],
+      "native_crop_pixels": [
+        383,
+        327
+      ],
+      "image_pixels": [
+        383,
+        327
+      ],
+      "loop_pixels": [
+        383,
+        327
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A02-P09",
+      "sheet": "C-A02",
+      "label": "M09 Open tongue shape",
+      "group": "Face animation",
+      "image": "assets/poses/C-A02-P09.webp",
+      "animation": "animations/poses/C-A02-P09.webp",
+      "source_rect_pixels": [
+        0,
+        668,
+        383,
+        1024
+      ],
+      "native_crop_pixels": [
+        383,
+        356
+      ],
+      "image_pixels": [
+        383,
+        356
+      ],
+      "loop_pixels": [
+        383,
+        356
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A02-P10",
+      "sheet": "C-A02",
+      "label": "M10 Narrow teeth S-Z",
+      "group": "Face animation",
+      "image": "assets/poses/C-A02-P10.webp",
+      "animation": "animations/poses/C-A02-P10.webp",
+      "source_rect_pixels": [
+        385,
+        668,
+        767,
+        1024
+      ],
+      "native_crop_pixels": [
+        382,
+        356
+      ],
+      "image_pixels": [
+        382,
+        356
+      ],
+      "loop_pixels": [
+        382,
+        356
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A02-P11",
+      "sheet": "C-A02",
+      "label": "M11 Tongue-visible opening",
+      "group": "Face animation",
+      "image": "assets/poses/C-A02-P11.webp",
+      "animation": "animations/poses/C-A02-P11.webp",
+      "source_rect_pixels": [
+        769,
+        668,
+        1151,
+        1024
+      ],
+      "native_crop_pixels": [
+        382,
+        356
+      ],
+      "image_pixels": [
+        382,
+        356
+      ],
+      "loop_pixels": [
+        382,
+        356
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A02-P12",
+      "sheet": "C-A02",
+      "label": "M12 Teeth smile",
+      "group": "Face animation",
+      "image": "assets/poses/C-A02-P12.webp",
+      "animation": "animations/poses/C-A02-P12.webp",
+      "source_rect_pixels": [
+        1153,
+        668,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        383,
+        356
+      ],
+      "image_pixels": [
+        383,
+        356
+      ],
+      "loop_pixels": [
+        383,
+        356
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A03-P01",
+      "sheet": "C-A03",
+      "label": "E01 Open",
+      "group": "Face animation",
+      "image": "assets/poses/C-A03-P01.webp",
+      "animation": "animations/poses/C-A03-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        396,
+        395
+      ],
+      "native_crop_pixels": [
+        396,
+        395
+      ],
+      "image_pixels": [
+        396,
+        395
+      ],
+      "loop_pixels": [
+        396,
+        395
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A03-P02",
+      "sheet": "C-A03",
+      "label": "E02 Half blink",
+      "group": "Face animation",
+      "image": "assets/poses/C-A03-P02.webp",
+      "animation": "animations/poses/C-A03-P02.webp",
+      "source_rect_pixels": [
+        398,
+        0,
+        792,
+        395
+      ],
+      "native_crop_pixels": [
+        394,
+        395
+      ],
+      "image_pixels": [
+        394,
+        395
+      ],
+      "loop_pixels": [
+        394,
+        395
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A03-P03",
+      "sheet": "C-A03",
+      "label": "E03 Closed blink",
+      "group": "Face animation",
+      "image": "assets/poses/C-A03-P03.webp",
+      "animation": "animations/poses/C-A03-P03.webp",
+      "source_rect_pixels": [
+        794,
+        0,
+        1189,
+        395
+      ],
+      "native_crop_pixels": [
+        395,
+        395
+      ],
+      "image_pixels": [
+        395,
+        395
+      ],
+      "loop_pixels": [
+        395,
+        395
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A03-P04",
+      "sheet": "C-A03",
+      "label": "E04 Squeezed happy",
+      "group": "Face animation",
+      "image": "assets/poses/C-A03-P04.webp",
+      "animation": "animations/poses/C-A03-P04.webp",
+      "source_rect_pixels": [
+        1191,
+        0,
+        1585,
+        395
+      ],
+      "native_crop_pixels": [
+        394,
+        395
+      ],
+      "image_pixels": [
+        394,
+        395
+      ],
+      "loop_pixels": [
+        394,
+        395
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A03-P05",
+      "sheet": "C-A03",
+      "label": "E05 Wide surprise",
+      "group": "Face animation",
+      "image": "assets/poses/C-A03-P05.webp",
+      "animation": "animations/poses/C-A03-P05.webp",
+      "source_rect_pixels": [
+        1587,
+        0,
+        1983,
+        395
+      ],
+      "native_crop_pixels": [
+        396,
+        395
+      ],
+      "image_pixels": [
+        396,
+        395
+      ],
+      "loop_pixels": [
+        396,
+        395
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A03-P06",
+      "sheet": "C-A03",
+      "label": "E06 Character-left wink",
+      "group": "Face animation",
+      "image": "assets/poses/C-A03-P06.webp",
+      "animation": "animations/poses/C-A03-P06.webp",
+      "source_rect_pixels": [
+        0,
+        397,
+        396,
+        793
+      ],
+      "native_crop_pixels": [
+        396,
+        396
+      ],
+      "image_pixels": [
+        396,
+        396
+      ],
+      "loop_pixels": [
+        396,
+        396
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A03-P07",
+      "sheet": "C-A03",
+      "label": "E07 Look character-left",
+      "group": "Face animation",
+      "image": "assets/poses/C-A03-P07.webp",
+      "animation": "animations/poses/C-A03-P07.webp",
+      "source_rect_pixels": [
+        398,
+        397,
+        792,
+        793
+      ],
+      "native_crop_pixels": [
+        394,
+        396
+      ],
+      "image_pixels": [
+        394,
+        396
+      ],
+      "loop_pixels": [
+        394,
+        396
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A03-P08",
+      "sheet": "C-A03",
+      "label": "E08 Look character-right",
+      "group": "Face animation",
+      "image": "assets/poses/C-A03-P08.webp",
+      "animation": "animations/poses/C-A03-P08.webp",
+      "source_rect_pixels": [
+        794,
+        397,
+        1189,
+        793
+      ],
+      "native_crop_pixels": [
+        395,
+        396
+      ],
+      "image_pixels": [
+        395,
+        396
+      ],
+      "loop_pixels": [
+        395,
+        396
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A03-P09",
+      "sheet": "C-A03",
+      "label": "E09 Look up",
+      "group": "Face animation",
+      "image": "assets/poses/C-A03-P09.webp",
+      "animation": "animations/poses/C-A03-P09.webp",
+      "source_rect_pixels": [
+        1191,
+        397,
+        1585,
+        793
+      ],
+      "native_crop_pixels": [
+        394,
+        396
+      ],
+      "image_pixels": [
+        394,
+        396
+      ],
+      "loop_pixels": [
+        394,
+        396
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A03-P10",
+      "sheet": "C-A03",
+      "label": "E10 Look down",
+      "group": "Face animation",
+      "image": "assets/poses/C-A03-P10.webp",
+      "animation": "animations/poses/C-A03-P10.webp",
+      "source_rect_pixels": [
+        1587,
+        397,
+        1983,
+        793
+      ],
+      "native_crop_pixels": [
+        396,
+        396
+      ],
+      "image_pixels": [
+        396,
+        396
+      ],
+      "loop_pixels": [
+        396,
+        396
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A04-P01",
+      "sheet": "C-A04",
+      "label": "C01 F-V: upper teeth contact lower lip",
+      "group": "Face animation",
+      "image": "assets/poses/C-A04-P01.webp",
+      "animation": "animations/poses/C-A04-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        723,
+        724
+      ],
+      "native_crop_pixels": [
+        723,
+        724
+      ],
+      "image_pixels": [
+        723,
+        724
+      ],
+      "loop_pixels": [
+        639,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A04-P02",
+      "sheet": "C-A04",
+      "label": "C02 L: tongue raised toward upper ridge",
+      "group": "Face animation",
+      "image": "assets/poses/C-A04-P02.webp",
+      "animation": "animations/poses/C-A04-P02.webp",
+      "source_rect_pixels": [
+        725,
+        0,
+        1447,
+        724
+      ],
+      "native_crop_pixels": [
+        722,
+        724
+      ],
+      "image_pixels": [
+        722,
+        724
+      ],
+      "loop_pixels": [
+        638,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "C-A04-P03",
+      "sheet": "C-A04",
+      "label": "C03 TH: tongue between teeth",
+      "group": "Face animation",
+      "image": "assets/poses/C-A04-P03.webp",
+      "animation": "animations/poses/C-A04-P03.webp",
+      "source_rect_pixels": [
+        1449,
+        0,
+        2172,
+        724
+      ],
+      "native_crop_pixels": [
+        723,
+        724
+      ],
+      "image_pixels": [
+        723,
+        724
+      ],
+      "loop_pixels": [
+        639,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "B01-P01",
+      "sheet": "B01",
+      "label": "Front",
+      "group": "Body reference",
+      "image": "assets/poses/B01-P01.webp",
+      "animation": "animations/poses/B01-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        383,
+        1024
+      ],
+      "native_crop_pixels": [
+        383,
+        1024
+      ],
+      "image_pixels": [
+        383,
+        1024
+      ],
+      "loop_pixels": [
+        239,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "B01-P02",
+      "sheet": "B01",
+      "label": "Three-quarter",
+      "group": "Body reference",
+      "image": "assets/poses/B01-P02.webp",
+      "animation": "animations/poses/B01-P02.webp",
+      "source_rect_pixels": [
+        385,
+        0,
+        767,
+        1024
+      ],
+      "native_crop_pixels": [
+        382,
+        1024
+      ],
+      "image_pixels": [
+        382,
+        1024
+      ],
+      "loop_pixels": [
+        239,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "B01-P03",
+      "sheet": "B01",
+      "label": "Side",
+      "group": "Body reference",
+      "image": "assets/poses/B01-P03.webp",
+      "animation": "animations/poses/B01-P03.webp",
+      "source_rect_pixels": [
+        769,
+        0,
+        1151,
+        1024
+      ],
+      "native_crop_pixels": [
+        382,
+        1024
+      ],
+      "image_pixels": [
+        382,
+        1024
+      ],
+      "loop_pixels": [
+        239,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "B01-P04",
+      "sheet": "B01",
+      "label": "Back",
+      "group": "Body reference",
+      "image": "assets/poses/B01-P04.webp",
+      "animation": "animations/poses/B01-P04.webp",
+      "source_rect_pixels": [
+        1153,
+        0,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        383,
+        1024
+      ],
+      "image_pixels": [
+        383,
+        1024
+      ],
+      "loop_pixels": [
+        239,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "B02-P01",
+      "sheet": "B02",
+      "label": "Front thighs and knees",
+      "group": "Body reference",
+      "image": "assets/poses/B02-P01.webp",
+      "animation": "animations/poses/B02-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        511,
+        501
+      ],
+      "native_crop_pixels": [
+        511,
+        501
+      ],
+      "image_pixels": [
+        511,
+        501
+      ],
+      "loop_pixels": [
+        511,
+        501
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "B02-P02",
+      "sheet": "B02",
+      "label": "Side thighs and knee",
+      "group": "Body reference",
+      "image": "assets/poses/B02-P02.webp",
+      "animation": "animations/poses/B02-P02.webp",
+      "source_rect_pixels": [
+        513,
+        0,
+        1023,
+        501
+      ],
+      "native_crop_pixels": [
+        510,
+        501
+      ],
+      "image_pixels": [
+        510,
+        501
+      ],
+      "loop_pixels": [
+        510,
+        501
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "B02-P03",
+      "sheet": "B02",
+      "label": "Rear thighs and knees",
+      "group": "Body reference",
+      "image": "assets/poses/B02-P03.webp",
+      "animation": "animations/poses/B02-P03.webp",
+      "source_rect_pixels": [
+        1025,
+        0,
+        1536,
+        501
+      ],
+      "native_crop_pixels": [
+        511,
+        501
+      ],
+      "image_pixels": [
+        511,
+        501
+      ],
+      "loop_pixels": [
+        511,
+        501
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "B02-P04",
+      "sheet": "B02",
+      "label": "Front calf and ankle",
+      "group": "Body reference",
+      "image": "assets/poses/B02-P04.webp",
+      "animation": "animations/poses/B02-P04.webp",
+      "source_rect_pixels": [
+        0,
+        503,
+        511,
+        1024
+      ],
+      "native_crop_pixels": [
+        511,
+        521
+      ],
+      "image_pixels": [
+        511,
+        521
+      ],
+      "loop_pixels": [
+        511,
+        521
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "B02-P05",
+      "sheet": "B02",
+      "label": "Side calf and ankle",
+      "group": "Body reference",
+      "image": "assets/poses/B02-P05.webp",
+      "animation": "animations/poses/B02-P05.webp",
+      "source_rect_pixels": [
+        513,
+        503,
+        1023,
+        1024
+      ],
+      "native_crop_pixels": [
+        510,
+        521
+      ],
+      "image_pixels": [
+        510,
+        521
+      ],
+      "loop_pixels": [
+        510,
+        521
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "B02-P06",
+      "sheet": "B02",
+      "label": "Rear calf and heel",
+      "group": "Body reference",
+      "image": "assets/poses/B02-P06.webp",
+      "animation": "animations/poses/B02-P06.webp",
+      "source_rect_pixels": [
+        1025,
+        503,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        511,
+        521
+      ],
+      "image_pixels": [
+        511,
+        521
+      ],
+      "loop_pixels": [
+        511,
+        521
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "B03-P01",
+      "sheet": "B03",
+      "label": "Upper-body overhead",
+      "group": "Body reference",
+      "image": "assets/poses/B03-P01.webp",
+      "animation": "animations/poses/B03-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        1024,
+        593
+      ],
+      "native_crop_pixels": [
+        1024,
+        593
+      ],
+      "image_pixels": [
+        1024,
+        593
+      ],
+      "loop_pixels": [
+        640,
+        371
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "B03-P02",
+      "sheet": "B03",
+      "label": "Elevated front and palms",
+      "group": "Body reference",
+      "image": "assets/poses/B03-P02.webp",
+      "animation": "animations/poses/B03-P02.webp",
+      "source_rect_pixels": [
+        0,
+        595,
+        1024,
+        1536
+      ],
+      "native_crop_pixels": [
+        1024,
+        941
+      ],
+      "image_pixels": [
+        1024,
+        941
+      ],
+      "loop_pixels": [
+        640,
+        588
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "B04-P01",
+      "sheet": "B04",
+      "label": "Front raised arms",
+      "group": "Body reference",
+      "image": "assets/poses/B04-P01.webp",
+      "animation": "animations/poses/B04-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        767,
+        494
+      ],
+      "native_crop_pixels": [
+        767,
+        494
+      ],
+      "image_pixels": [
+        767,
+        494
+      ],
+      "loop_pixels": [
+        640,
+        412
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "B04-P02",
+      "sheet": "B04",
+      "label": "Rear upper back",
+      "group": "Body reference",
+      "image": "assets/poses/B04-P02.webp",
+      "animation": "animations/poses/B04-P02.webp",
+      "source_rect_pixels": [
+        769,
+        0,
+        1536,
+        494
+      ],
+      "native_crop_pixels": [
+        767,
+        494
+      ],
+      "image_pixels": [
+        767,
+        494
+      ],
+      "loop_pixels": [
+        640,
+        412
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "B04-P03",
+      "sheet": "B04",
+      "label": "Side raised arm",
+      "group": "Body reference",
+      "image": "assets/poses/B04-P03.webp",
+      "animation": "animations/poses/B04-P03.webp",
+      "source_rect_pixels": [
+        0,
+        496,
+        767,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        528
+      ],
+      "image_pixels": [
+        767,
+        528
+      ],
+      "loop_pixels": [
+        640,
+        441
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "B04-P04",
+      "sheet": "B04",
+      "label": "Underarm and armhole",
+      "group": "Body reference",
+      "image": "assets/poses/B04-P04.webp",
+      "animation": "animations/poses/B04-P04.webp",
+      "source_rect_pixels": [
+        769,
+        496,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        528
+      ],
+      "image_pixels": [
+        767,
+        528
+      ],
+      "loop_pixels": [
+        640,
+        441
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O01-P01",
+      "sheet": "O01",
+      "label": "Front neutral straight-hair reference",
+      "group": "Optional poses",
+      "image": "assets/poses/O01-P01.webp",
+      "animation": "animations/poses/O01-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        383,
+        1024
+      ],
+      "native_crop_pixels": [
+        383,
+        1024
+      ],
+      "image_pixels": [
+        383,
+        1024
+      ],
+      "loop_pixels": [
+        239,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O01-P02",
+      "sheet": "O01",
+      "label": "Hand on hair / confident fashion pose",
+      "group": "Optional poses",
+      "image": "assets/poses/O01-P02.webp",
+      "animation": "animations/poses/O01-P02.webp",
+      "source_rect_pixels": [
+        385,
+        0,
+        767,
+        1024
+      ],
+      "native_crop_pixels": [
+        382,
+        1024
+      ],
+      "image_pixels": [
+        382,
+        1024
+      ],
+      "loop_pixels": [
+        239,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O01-P03",
+      "sheet": "O01",
+      "label": "Hair tuck / soft smile",
+      "group": "Optional poses",
+      "image": "assets/poses/O01-P03.webp",
+      "animation": "animations/poses/O01-P03.webp",
+      "source_rect_pixels": [
+        769,
+        0,
+        1151,
+        1024
+      ],
+      "native_crop_pixels": [
+        382,
+        1024
+      ],
+      "image_pixels": [
+        382,
+        1024
+      ],
+      "loop_pixels": [
+        239,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O01-P04",
+      "sheet": "O01",
+      "label": "Rear straight-hair construction",
+      "group": "Optional poses",
+      "image": "assets/poses/O01-P04.webp",
+      "animation": "animations/poses/O01-P04.webp",
+      "source_rect_pixels": [
+        1153,
+        0,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        383,
+        1024
+      ],
+      "image_pixels": [
+        383,
+        1024
+      ],
+      "loop_pixels": [
+        239,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O02-P01",
+      "sheet": "O02",
+      "label": "Left full-height panel: full-body forehead wipe",
+      "group": "Optional poses",
+      "image": "assets/poses/O02-P01.webp",
+      "animation": "animations/poses/O02-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        513,
+        1024
+      ],
+      "native_crop_pixels": [
+        513,
+        1024
+      ],
+      "image_pixels": [
+        513,
+        1024
+      ],
+      "loop_pixels": [
+        321,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O02-P02",
+      "sheet": "O02",
+      "label": "Upper-right wide panel: sweaty face and damp fringe",
+      "group": "Optional poses",
+      "image": "assets/poses/O02-P02.webp",
+      "animation": "animations/poses/O02-P02.webp",
+      "source_rect_pixels": [
+        518,
+        0,
+        1536,
+        467
+      ],
+      "native_crop_pixels": [
+        1018,
+        467
+      ],
+      "image_pixels": [
+        1018,
+        467
+      ],
+      "loop_pixels": [
+        640,
+        294
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O02-P03",
+      "sheet": "O02",
+      "label": "Lower center: damp fabric and skin material detail",
+      "group": "Optional poses",
+      "image": "assets/poses/O02-P03.webp",
+      "animation": "animations/poses/O02-P03.webp",
+      "source_rect_pixels": [
+        518,
+        472,
+        995,
+        1024
+      ],
+      "native_crop_pixels": [
+        477,
+        552
+      ],
+      "image_pixels": [
+        477,
+        552
+      ],
+      "loop_pixels": [
+        477,
+        552
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O02-P04",
+      "sheet": "O02",
+      "label": "Lower right: fanning face and clearing hair from neck",
+      "group": "Optional poses",
+      "image": "assets/poses/O02-P04.webp",
+      "animation": "animations/poses/O02-P04.webp",
+      "source_rect_pixels": [
+        1000,
+        472,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        536,
+        552
+      ],
+      "image_pixels": [
+        536,
+        552
+      ],
+      "loop_pixels": [
+        536,
+        552
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O03-P01",
+      "sheet": "O03",
+      "label": "Reach the ankle strap",
+      "group": "Optional poses",
+      "image": "assets/poses/O03-P01.webp",
+      "animation": "animations/poses/O03-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        767,
+        509
+      ],
+      "native_crop_pixels": [
+        767,
+        509
+      ],
+      "image_pixels": [
+        767,
+        509
+      ],
+      "loop_pixels": [
+        640,
+        425
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O03-P02",
+      "sheet": "O03",
+      "label": "Release and loosen ankle band",
+      "group": "Optional poses",
+      "image": "assets/poses/O03-P02.webp",
+      "animation": "animations/poses/O03-P02.webp",
+      "source_rect_pixels": [
+        769,
+        0,
+        1536,
+        509
+      ],
+      "native_crop_pixels": [
+        767,
+        509
+      ],
+      "image_pixels": [
+        767,
+        509
+      ],
+      "loop_pixels": [
+        640,
+        425
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O03-P03",
+      "sheet": "O03",
+      "label": "Close grip / buckle construction",
+      "group": "Optional poses",
+      "image": "assets/poses/O03-P03.webp",
+      "animation": "animations/poses/O03-P03.webp",
+      "source_rect_pixels": [
+        0,
+        511,
+        767,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        513
+      ],
+      "image_pixels": [
+        767,
+        513
+      ],
+      "loop_pixels": [
+        640,
+        428
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O03-P04",
+      "sheet": "O03",
+      "label": "Sandal off / bare-foot end pose",
+      "group": "Optional poses",
+      "image": "assets/poses/O03-P04.webp",
+      "animation": "animations/poses/O03-P04.webp",
+      "source_rect_pixels": [
+        769,
+        511,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        513
+      ],
+      "image_pixels": [
+        767,
+        513
+      ],
+      "loop_pixels": [
+        640,
+        428
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O04-P01",
+      "sheet": "O04",
+      "label": "Breeze onset",
+      "group": "Optional poses",
+      "image": "assets/poses/O04-P01.webp",
+      "animation": "animations/poses/O04-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        590,
+        887
+      ],
+      "native_crop_pixels": [
+        590,
+        887
+      ],
+      "image_pixels": [
+        590,
+        887
+      ],
+      "loop_pixels": [
+        426,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O04-P02",
+      "sheet": "O04",
+      "label": "Gust / hair and skirt reaction",
+      "group": "Optional poses",
+      "image": "assets/poses/O04-P02.webp",
+      "animation": "animations/poses/O04-P02.webp",
+      "source_rect_pixels": [
+        592,
+        0,
+        1182,
+        887
+      ],
+      "native_crop_pixels": [
+        590,
+        887
+      ],
+      "image_pixels": [
+        590,
+        887
+      ],
+      "loop_pixels": [
+        426,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O04-P03",
+      "sheet": "O04",
+      "label": "Wind easing / hair adjustment",
+      "group": "Optional poses",
+      "image": "assets/poses/O04-P03.webp",
+      "animation": "animations/poses/O04-P03.webp",
+      "source_rect_pixels": [
+        1184,
+        0,
+        1774,
+        887
+      ],
+      "native_crop_pixels": [
+        590,
+        887
+      ],
+      "image_pixels": [
+        590,
+        887
+      ],
+      "loop_pixels": [
+        426,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O05-P01",
+      "sheet": "O05",
+      "label": "Hold the open outer garment",
+      "group": "Optional poses",
+      "image": "assets/poses/O05-P01.webp",
+      "animation": "animations/poses/O05-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        542,
+        724
+      ],
+      "native_crop_pixels": [
+        542,
+        724
+      ],
+      "image_pixels": [
+        542,
+        724
+      ],
+      "loop_pixels": [
+        479,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O05-P02",
+      "sheet": "O05",
+      "label": "First sleeve on / hold opposite shoulder",
+      "group": "Optional poses",
+      "image": "assets/poses/O05-P02.webp",
+      "animation": "animations/poses/O05-P02.webp",
+      "source_rect_pixels": [
+        544,
+        0,
+        1085,
+        724
+      ],
+      "native_crop_pixels": [
+        541,
+        724
+      ],
+      "image_pixels": [
+        541,
+        724
+      ],
+      "loop_pixels": [
+        478,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O05-P03",
+      "sheet": "O05",
+      "label": "Seat shoulder / prepare remaining sleeve",
+      "group": "Optional poses",
+      "image": "assets/poses/O05-P03.webp",
+      "animation": "animations/poses/O05-P03.webp",
+      "source_rect_pixels": [
+        1087,
+        0,
+        1628,
+        724
+      ],
+      "native_crop_pixels": [
+        541,
+        724
+      ],
+      "image_pixels": [
+        541,
+        724
+      ],
+      "loop_pixels": [
+        478,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O05-P04",
+      "sheet": "O05",
+      "label": "Both sleeves on / outer top closed",
+      "group": "Optional poses",
+      "image": "assets/poses/O05-P04.webp",
+      "animation": "animations/poses/O05-P04.webp",
+      "source_rect_pixels": [
+        1630,
+        0,
+        2172,
+        724
+      ],
+      "native_crop_pixels": [
+        542,
+        724
+      ],
+      "image_pixels": [
+        542,
+        724
+      ],
+      "loop_pixels": [
+        479,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O06-P01",
+      "sheet": "O06",
+      "label": "Open the front placket",
+      "group": "Optional poses",
+      "image": "assets/poses/O06-P01.webp",
+      "animation": "animations/poses/O06-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        542,
+        724
+      ],
+      "native_crop_pixels": [
+        542,
+        724
+      ],
+      "image_pixels": [
+        542,
+        724
+      ],
+      "loop_pixels": [
+        479,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O06-P02",
+      "sheet": "O06",
+      "label": "Loosen shoulder",
+      "group": "Optional poses",
+      "image": "assets/poses/O06-P02.webp",
+      "animation": "animations/poses/O06-P02.webp",
+      "source_rect_pixels": [
+        544,
+        0,
+        1085,
+        724
+      ],
+      "native_crop_pixels": [
+        541,
+        724
+      ],
+      "image_pixels": [
+        541,
+        724
+      ],
+      "loop_pixels": [
+        478,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O06-P03",
+      "sheet": "O06",
+      "label": "Withdraw from remaining sleeve",
+      "group": "Optional poses",
+      "image": "assets/poses/O06-P03.webp",
+      "animation": "animations/poses/O06-P03.webp",
+      "source_rect_pixels": [
+        1087,
+        0,
+        1628,
+        724
+      ],
+      "native_crop_pixels": [
+        541,
+        724
+      ],
+      "image_pixels": [
+        541,
+        724
+      ],
+      "loop_pixels": [
+        478,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O06-P04",
+      "sheet": "O06",
+      "label": "Hold removed garment / sleeveless base retained",
+      "group": "Optional poses",
+      "image": "assets/poses/O06-P04.webp",
+      "animation": "animations/poses/O06-P04.webp",
+      "source_rect_pixels": [
+        1630,
+        0,
+        2172,
+        724
+      ],
+      "native_crop_pixels": [
+        542,
+        724
+      ],
+      "image_pixels": [
+        542,
+        724
+      ],
+      "loop_pixels": [
+        479,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O07-P01",
+      "sheet": "O07",
+      "label": "Towel dab",
+      "group": "Optional poses",
+      "image": "assets/poses/O07-P01.webp",
+      "animation": "animations/poses/O07-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        767,
+        503
+      ],
+      "native_crop_pixels": [
+        767,
+        503
+      ],
+      "image_pixels": [
+        767,
+        503
+      ],
+      "loop_pixels": [
+        640,
+        420
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O07-P02",
+      "sheet": "O07",
+      "label": "Drink water",
+      "group": "Optional poses",
+      "image": "assets/poses/O07-P02.webp",
+      "animation": "animations/poses/O07-P02.webp",
+      "source_rect_pixels": [
+        769,
+        0,
+        1536,
+        503
+      ],
+      "native_crop_pixels": [
+        767,
+        503
+      ],
+      "image_pixels": [
+        767,
+        503
+      ],
+      "loop_pixels": [
+        640,
+        420
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O07-P03",
+      "sheet": "O07",
+      "label": "Cross-body shoulder stretch",
+      "group": "Optional poses",
+      "image": "assets/poses/O07-P03.webp",
+      "animation": "animations/poses/O07-P03.webp",
+      "source_rect_pixels": [
+        0,
+        505,
+        767,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        519
+      ],
+      "image_pixels": [
+        767,
+        519
+      ],
+      "loop_pixels": [
+        640,
+        433
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "O07-P04",
+      "sheet": "O07",
+      "label": "Smooth skirt and tuck hair / reset to idle",
+      "group": "Optional poses",
+      "image": "assets/poses/O07-P04.webp",
+      "animation": "animations/poses/O07-P04.webp",
+      "source_rect_pixels": [
+        769,
+        505,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        519
+      ],
+      "image_pixels": [
+        767,
+        519
+      ],
+      "loop_pixels": [
+        640,
+        433
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D01-P01",
+      "sheet": "D01",
+      "label": "Crossed-knee / hand in hair",
+      "group": "Daily life",
+      "image": "assets/poses/D01-P01.webp",
+      "animation": "animations/poses/D01-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        767,
+        521
+      ],
+      "native_crop_pixels": [
+        767,
+        521
+      ],
+      "image_pixels": [
+        767,
+        521
+      ],
+      "loop_pixels": [
+        640,
+        435
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D01-P02",
+      "sheet": "D01",
+      "label": "Chin-rest fashion pose",
+      "group": "Daily life",
+      "image": "assets/poses/D01-P02.webp",
+      "animation": "animations/poses/D01-P02.webp",
+      "source_rect_pixels": [
+        769,
+        0,
+        1536,
+        521
+      ],
+      "native_crop_pixels": [
+        767,
+        521
+      ],
+      "image_pixels": [
+        767,
+        521
+      ],
+      "loop_pixels": [
+        640,
+        435
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D01-P03",
+      "sheet": "D01",
+      "label": "Side seated silhouette",
+      "group": "Daily life",
+      "image": "assets/poses/D01-P03.webp",
+      "animation": "animations/poses/D01-P03.webp",
+      "source_rect_pixels": [
+        0,
+        523,
+        767,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        501
+      ],
+      "image_pixels": [
+        767,
+        501
+      ],
+      "loop_pixels": [
+        640,
+        418
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D01-P04",
+      "sheet": "D01",
+      "label": "Lowering into the seat",
+      "group": "Daily life",
+      "image": "assets/poses/D01-P04.webp",
+      "animation": "animations/poses/D01-P04.webp",
+      "source_rect_pixels": [
+        769,
+        523,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        501
+      ],
+      "image_pixels": [
+        767,
+        501
+      ],
+      "loop_pixels": [
+        640,
+        418
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D02-P01",
+      "sheet": "D02",
+      "label": "Hold at side",
+      "group": "Daily life",
+      "image": "assets/poses/D02-P01.webp",
+      "animation": "animations/poses/D02-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        767,
+        617
+      ],
+      "native_crop_pixels": [
+        767,
+        617
+      ],
+      "image_pixels": [
+        767,
+        617
+      ],
+      "loop_pixels": [
+        640,
+        515
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D02-P02",
+      "sheet": "D02",
+      "label": "Bring cigarette to lips",
+      "group": "Daily life",
+      "image": "assets/poses/D02-P02.webp",
+      "animation": "animations/poses/D02-P02.webp",
+      "source_rect_pixels": [
+        769,
+        0,
+        1536,
+        617
+      ],
+      "native_crop_pixels": [
+        767,
+        617
+      ],
+      "image_pixels": [
+        767,
+        617
+      ],
+      "loop_pixels": [
+        640,
+        515
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D02-P03",
+      "sheet": "D02",
+      "label": "Mouth-held close-up",
+      "group": "Daily life",
+      "image": "assets/poses/D02-P03.webp",
+      "animation": "animations/poses/D02-P03.webp",
+      "source_rect_pixels": [
+        0,
+        619,
+        767,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        405
+      ],
+      "image_pixels": [
+        767,
+        405
+      ],
+      "loop_pixels": [
+        640,
+        338
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D02-P04",
+      "sheet": "D02",
+      "label": "Lower hand and exhale",
+      "group": "Daily life",
+      "image": "assets/poses/D02-P04.webp",
+      "animation": "animations/poses/D02-P04.webp",
+      "source_rect_pixels": [
+        769,
+        619,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        405
+      ],
+      "image_pixels": [
+        767,
+        405
+      ],
+      "loop_pixels": [
+        640,
+        338
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D03-P01",
+      "sheet": "D03",
+      "label": "Before sitting",
+      "group": "Daily life",
+      "image": "assets/poses/D03-P01.webp",
+      "animation": "animations/poses/D03-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        767,
+        511
+      ],
+      "native_crop_pixels": [
+        767,
+        511
+      ],
+      "image_pixels": [
+        767,
+        511
+      ],
+      "loop_pixels": [
+        640,
+        426
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D03-P02",
+      "sheet": "D03",
+      "label": "Covered front seated toilet-use posture",
+      "group": "Daily life",
+      "image": "assets/poses/D03-P02.webp",
+      "animation": "animations/poses/D03-P02.webp",
+      "source_rect_pixels": [
+        769,
+        0,
+        1536,
+        511
+      ],
+      "native_crop_pixels": [
+        767,
+        511
+      ],
+      "image_pixels": [
+        767,
+        511
+      ],
+      "loop_pixels": [
+        640,
+        426
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D03-P03",
+      "sheet": "D03",
+      "label": "Covered side posture / raised lid",
+      "group": "Daily life",
+      "image": "assets/poses/D03-P03.webp",
+      "animation": "animations/poses/D03-P03.webp",
+      "source_rect_pixels": [
+        0,
+        513,
+        767,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        511
+      ],
+      "image_pixels": [
+        767,
+        511
+      ],
+      "loop_pixels": [
+        640,
+        426
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D03-P04",
+      "sheet": "D03",
+      "label": "Wash hands",
+      "group": "Daily life",
+      "image": "assets/poses/D03-P04.webp",
+      "animation": "animations/poses/D03-P04.webp",
+      "source_rect_pixels": [
+        769,
+        513,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        511
+      ],
+      "image_pixels": [
+        767,
+        511
+      ],
+      "loop_pixels": [
+        640,
+        426
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D04-P01",
+      "sheet": "D04",
+      "label": "Robe and towel preparation",
+      "group": "Daily life",
+      "image": "assets/poses/D04-P01.webp",
+      "animation": "animations/poses/D04-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        767,
+        510
+      ],
+      "native_crop_pixels": [
+        767,
+        510
+      ],
+      "image_pixels": [
+        767,
+        510
+      ],
+      "loop_pixels": [
+        640,
+        426
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D04-P02",
+      "sheet": "D04",
+      "label": "Covered bubble-bath pose",
+      "group": "Daily life",
+      "image": "assets/poses/D04-P02.webp",
+      "animation": "animations/poses/D04-P02.webp",
+      "source_rect_pixels": [
+        769,
+        0,
+        1536,
+        510
+      ],
+      "native_crop_pixels": [
+        767,
+        510
+      ],
+      "image_pixels": [
+        767,
+        510
+      ],
+      "loop_pixels": [
+        640,
+        426
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D04-P03",
+      "sheet": "D04",
+      "label": "Covered hair rinse",
+      "group": "Daily life",
+      "image": "assets/poses/D04-P03.webp",
+      "animation": "animations/poses/D04-P03.webp",
+      "source_rect_pixels": [
+        0,
+        512,
+        767,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        512
+      ],
+      "image_pixels": [
+        767,
+        512
+      ],
+      "loop_pixels": [
+        640,
+        427
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D04-P04",
+      "sheet": "D04",
+      "label": "Dry hair in robe",
+      "group": "Daily life",
+      "image": "assets/poses/D04-P04.webp",
+      "animation": "animations/poses/D04-P04.webp",
+      "source_rect_pixels": [
+        769,
+        512,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        512
+      ],
+      "image_pixels": [
+        767,
+        512
+      ],
+      "loop_pixels": [
+        640,
+        427
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D05-P01",
+      "sheet": "D05",
+      "label": "Seated cup and saucer",
+      "group": "Daily life",
+      "image": "assets/poses/D05-P01.webp",
+      "animation": "animations/poses/D05-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        767,
+        523
+      ],
+      "native_crop_pixels": [
+        767,
+        523
+      ],
+      "image_pixels": [
+        767,
+        523
+      ],
+      "loop_pixels": [
+        640,
+        436
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D05-P02",
+      "sheet": "D05",
+      "label": "Sip",
+      "group": "Daily life",
+      "image": "assets/poses/D05-P02.webp",
+      "animation": "animations/poses/D05-P02.webp",
+      "source_rect_pixels": [
+        769,
+        0,
+        1536,
+        523
+      ],
+      "native_crop_pixels": [
+        767,
+        523
+      ],
+      "image_pixels": [
+        767,
+        523
+      ],
+      "loop_pixels": [
+        640,
+        436
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D05-P03",
+      "sheet": "D05",
+      "label": "Cup-handle / saucer grip close-up",
+      "group": "Daily life",
+      "image": "assets/poses/D05-P03.webp",
+      "animation": "animations/poses/D05-P03.webp",
+      "source_rect_pixels": [
+        0,
+        525,
+        767,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        499
+      ],
+      "image_pixels": [
+        767,
+        499
+      ],
+      "loop_pixels": [
+        640,
+        416
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D05-P04",
+      "sheet": "D05",
+      "label": "Lower cup to side table",
+      "group": "Daily life",
+      "image": "assets/poses/D05-P04.webp",
+      "animation": "animations/poses/D05-P04.webp",
+      "source_rect_pixels": [
+        769,
+        525,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        499
+      ],
+      "image_pixels": [
+        767,
+        499
+      ],
+      "loop_pixels": [
+        640,
+        416
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D06-P01",
+      "sheet": "D06",
+      "label": "Back sleep",
+      "group": "Daily life",
+      "image": "assets/poses/D06-P01.webp",
+      "animation": "animations/poses/D06-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        767,
+        479
+      ],
+      "native_crop_pixels": [
+        767,
+        479
+      ],
+      "image_pixels": [
+        767,
+        479
+      ],
+      "loop_pixels": [
+        640,
+        400
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D06-P02",
+      "sheet": "D06",
+      "label": "Side sleep",
+      "group": "Daily life",
+      "image": "assets/poses/D06-P02.webp",
+      "animation": "animations/poses/D06-P02.webp",
+      "source_rect_pixels": [
+        769,
+        0,
+        1536,
+        479
+      ],
+      "native_crop_pixels": [
+        767,
+        479
+      ],
+      "image_pixels": [
+        767,
+        479
+      ],
+      "loop_pixels": [
+        640,
+        400
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D06-P03",
+      "sheet": "D06",
+      "label": "Sleeping face close-up",
+      "group": "Daily life",
+      "image": "assets/poses/D06-P03.webp",
+      "animation": "animations/poses/D06-P03.webp",
+      "source_rect_pixels": [
+        0,
+        481,
+        767,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        543
+      ],
+      "image_pixels": [
+        767,
+        543
+      ],
+      "loop_pixels": [
+        640,
+        453
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "gentle study zoom",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D06-P04",
+      "sheet": "D06",
+      "label": "Covered waking stretch",
+      "group": "Daily life",
+      "image": "assets/poses/D06-P04.webp",
+      "animation": "animations/poses/D06-P04.webp",
+      "source_rect_pixels": [
+        769,
+        481,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        543
+      ],
+      "image_pixels": [
+        767,
+        543
+      ],
+      "loop_pixels": [
+        640,
+        453
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D07-P01",
+      "sheet": "D07",
+      "label": "Resting grip and slack",
+      "group": "Daily life",
+      "image": "assets/poses/D07-P01.webp",
+      "animation": "animations/poses/D07-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        767,
+        505
+      ],
+      "native_crop_pixels": [
+        767,
+        505
+      ],
+      "image_pixels": [
+        767,
+        505
+      ],
+      "loop_pixels": [
+        640,
+        421
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D07-P02",
+      "sheet": "D07",
+      "label": "Raised preparation loop",
+      "group": "Daily life",
+      "image": "assets/poses/D07-P02.webp",
+      "animation": "animations/poses/D07-P02.webp",
+      "source_rect_pixels": [
+        769,
+        0,
+        1536,
+        505
+      ],
+      "native_crop_pixels": [
+        767,
+        505
+      ],
+      "image_pixels": [
+        767,
+        505
+      ],
+      "loop_pixels": [
+        640,
+        421
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D07-P03",
+      "sheet": "D07",
+      "label": "Forward-down stroke / floor contact",
+      "group": "Daily life",
+      "image": "assets/poses/D07-P03.webp",
+      "animation": "animations/poses/D07-P03.webp",
+      "source_rect_pixels": [
+        0,
+        507,
+        767,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        517
+      ],
+      "image_pixels": [
+        767,
+        517
+      ],
+      "loop_pixels": [
+        640,
+        431
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D07-P04",
+      "sheet": "D07",
+      "label": "Lower and reset",
+      "group": "Daily life",
+      "image": "assets/poses/D07-P04.webp",
+      "animation": "animations/poses/D07-P04.webp",
+      "source_rect_pixels": [
+        769,
+        507,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        517
+      ],
+      "image_pixels": [
+        767,
+        517
+      ],
+      "loop_pixels": [
+        640,
+        431
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D08-P01",
+      "sheet": "D08",
+      "label": "Brush teeth",
+      "group": "Daily life",
+      "image": "assets/poses/D08-P01.webp",
+      "animation": "animations/poses/D08-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        767,
+        508
+      ],
+      "native_crop_pixels": [
+        767,
+        508
+      ],
+      "image_pixels": [
+        767,
+        508
+      ],
+      "loop_pixels": [
+        640,
+        424
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D08-P02",
+      "sheet": "D08",
+      "label": "Check phone",
+      "group": "Daily life",
+      "image": "assets/poses/D08-P02.webp",
+      "animation": "animations/poses/D08-P02.webp",
+      "source_rect_pixels": [
+        769,
+        0,
+        1536,
+        508
+      ],
+      "native_crop_pixels": [
+        767,
+        508
+      ],
+      "image_pixels": [
+        767,
+        508
+      ],
+      "loop_pixels": [
+        640,
+        424
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D08-P03",
+      "sheet": "D08",
+      "label": "Read book",
+      "group": "Daily life",
+      "image": "assets/poses/D08-P03.webp",
+      "animation": "animations/poses/D08-P03.webp",
+      "source_rect_pixels": [
+        0,
+        510,
+        767,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        514
+      ],
+      "image_pixels": [
+        767,
+        514
+      ],
+      "loop_pixels": [
+        640,
+        429
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "D08-P04",
+      "sheet": "D08",
+      "label": "Greeting wave",
+      "group": "Daily life",
+      "image": "assets/poses/D08-P04.webp",
+      "animation": "animations/poses/D08-P04.webp",
+      "source_rect_pixels": [
+        769,
+        510,
+        1536,
+        1024
+      ],
+      "native_crop_pixels": [
+        767,
+        514
+      ],
+      "image_pixels": [
+        767,
+        514
+      ],
+      "loop_pixels": [
+        640,
+        429
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "S01-P01",
+      "sheet": "S01",
+      "label": "Prepare",
+      "group": "Dressing",
+      "image": "assets/poses/S01-P01.webp",
+      "animation": "animations/poses/S01-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        383,
+        953
+      ],
+      "native_crop_pixels": [
+        383,
+        953
+      ],
+      "image_pixels": [
+        383,
+        953
+      ],
+      "loop_pixels": [
+        257,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "S01-P02",
+      "sheet": "S01",
+      "label": "Step in",
+      "group": "Dressing",
+      "image": "assets/poses/S01-P02.webp",
+      "animation": "animations/poses/S01-P02.webp",
+      "source_rect_pixels": [
+        385,
+        52,
+        767,
+        953
+      ],
+      "native_crop_pixels": [
+        382,
+        901
+      ],
+      "image_pixels": [
+        382,
+        901
+      ],
+      "loop_pixels": [
+        271,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "S01-P03",
+      "sheet": "S01",
+      "label": "Pull up",
+      "group": "Dressing",
+      "image": "assets/poses/S01-P03.webp",
+      "animation": "animations/poses/S01-P03.webp",
+      "source_rect_pixels": [
+        769,
+        52,
+        1151,
+        953
+      ],
+      "native_crop_pixels": [
+        382,
+        901
+      ],
+      "image_pixels": [
+        382,
+        901
+      ],
+      "loop_pixels": [
+        271,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "S01-P04",
+      "sheet": "S01",
+      "label": "Fasten",
+      "group": "Dressing",
+      "image": "assets/poses/S01-P04.webp",
+      "animation": "animations/poses/S01-P04.webp",
+      "source_rect_pixels": [
+        1153,
+        0,
+        1536,
+        953
+      ],
+      "native_crop_pixels": [
+        383,
+        953
+      ],
+      "image_pixels": [
+        383,
+        953
+      ],
+      "loop_pixels": [
+        257,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "S02-P01",
+      "sheet": "S02",
+      "label": "Unfasten",
+      "group": "Dressing",
+      "image": "assets/poses/S02-P01.webp",
+      "animation": "animations/poses/S02-P01.webp",
+      "source_rect_pixels": [
+        0,
+        0,
+        383,
+        953
+      ],
+      "native_crop_pixels": [
+        383,
+        953
+      ],
+      "image_pixels": [
+        383,
+        953
+      ],
+      "loop_pixels": [
+        257,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "S02-P02",
+      "sheet": "S02",
+      "label": "Lower",
+      "group": "Dressing",
+      "image": "assets/poses/S02-P02.webp",
+      "animation": "animations/poses/S02-P02.webp",
+      "source_rect_pixels": [
+        385,
+        52,
+        767,
+        953
+      ],
+      "native_crop_pixels": [
+        382,
+        901
+      ],
+      "image_pixels": [
+        382,
+        901
+      ],
+      "loop_pixels": [
+        271,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "S02-P03",
+      "sheet": "S02",
+      "label": "Step out",
+      "group": "Dressing",
+      "image": "assets/poses/S02-P03.webp",
+      "animation": "animations/poses/S02-P03.webp",
+      "source_rect_pixels": [
+        769,
+        52,
+        1151,
+        953
+      ],
+      "native_crop_pixels": [
+        382,
+        901
+      ],
+      "image_pixels": [
+        382,
+        901
+      ],
+      "loop_pixels": [
+        271,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    },
+    {
+      "id": "S02-P04",
+      "sheet": "S02",
+      "label": "Hold",
+      "group": "Dressing",
+      "image": "assets/poses/S02-P04.webp",
+      "animation": "animations/poses/S02-P04.webp",
+      "source_rect_pixels": [
+        1153,
+        0,
+        1536,
+        953
+      ],
+      "native_crop_pixels": [
+        383,
+        953
+      ],
+      "image_pixels": [
+        383,
+        953
+      ],
+      "loop_pixels": [
+        257,
+        640
+      ],
+      "duration_seconds": 2,
+      "fps": 12,
+      "motion": "subtle torso breathing deformation",
+      "background": "painted, opaque",
+      "anchor": "feet/contact point for torso loops; canvas center for study loops"
+    }
+  ],
+  "sequences": [
+    {
+      "id": "sequence-C-T01",
+      "title": "Orthographic turnaround",
+      "group": "Model reference",
+      "poses": [
+        "C-T01-P01",
+        "C-T01-P02",
+        "C-T01-P03",
+        "C-T01-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "animated reference comparison",
+      "video": "animations/sequences/C-T01.mp4"
+    },
+    {
+      "id": "sequence-C-T02",
+      "title": "Top orthographic projection",
+      "group": "Model reference",
+      "poses": [
+        "C-T02-P01"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 2,
+      "kind": "animated reference comparison",
+      "video": "animations/sequences/C-T02.mp4"
+    },
+    {
+      "id": "sequence-C-T03",
+      "title": "Elevated volume references",
+      "group": "Model reference",
+      "poses": [
+        "C-T03-P01",
+        "C-T03-P02",
+        "C-T03-P03"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 6,
+      "kind": "animated reference comparison",
+      "video": "animations/sequences/C-T03.mp4"
+    },
+    {
+      "id": "sequence-C-H01",
+      "title": "Face and hair construction",
+      "group": "Model reference",
+      "poses": [
+        "C-H01-P01",
+        "C-H01-P02",
+        "C-H01-P03",
+        "C-H01-P04",
+        "C-H01-P05",
+        "C-H01-P06"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 12,
+      "kind": "animated reference comparison",
+      "video": "animations/sequences/C-H01.mp4"
+    },
+    {
+      "id": "sequence-C-D01",
+      "title": "Hand construction",
+      "group": "Model reference",
+      "poses": [
+        "C-D01-P01",
+        "C-D01-P02",
+        "C-D01-P03",
+        "C-D01-P04",
+        "C-D01-P05",
+        "C-D01-P06"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 12,
+      "kind": "animated reference comparison",
+      "video": "animations/sequences/C-D01.mp4"
+    },
+    {
+      "id": "sequence-C-D02",
+      "title": "Sandals and feet",
+      "group": "Model reference",
+      "poses": [
+        "C-D02-P01",
+        "C-D02-P02",
+        "C-D02-P03",
+        "C-D02-P04",
+        "C-D02-P05",
+        "C-D02-P06"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 12,
+      "kind": "animated reference comparison",
+      "video": "animations/sequences/C-D02.mp4"
+    },
+    {
+      "id": "sequence-C-A01",
+      "title": "Facial expressions",
+      "group": "Face animation",
+      "poses": [
+        "C-A01-P01",
+        "C-A01-P02",
+        "C-A01-P03",
+        "C-A01-P04",
+        "C-A01-P05",
+        "C-A01-P06",
+        "C-A01-P07",
+        "C-A01-P08"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 16,
+      "kind": "animated reference comparison",
+      "video": "animations/sequences/C-A01.mp4"
+    },
+    {
+      "id": "sequence-C-A02",
+      "title": "Mouth shape library",
+      "group": "Face animation",
+      "poses": [
+        "C-A02-P01",
+        "C-A02-P02",
+        "C-A02-P03",
+        "C-A02-P04",
+        "C-A02-P05",
+        "C-A02-P06",
+        "C-A02-P07",
+        "C-A02-P08",
+        "C-A02-P09",
+        "C-A02-P10",
+        "C-A02-P11",
+        "C-A02-P12"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 24,
+      "kind": "animated reference comparison",
+      "video": "animations/sequences/C-A02.mp4"
+    },
+    {
+      "id": "sequence-C-A03",
+      "title": "Eye and brow shapes",
+      "group": "Face animation",
+      "poses": [
+        "C-A03-P01",
+        "C-A03-P02",
+        "C-A03-P03",
+        "C-A03-P04",
+        "C-A03-P05",
+        "C-A03-P06",
+        "C-A03-P07",
+        "C-A03-P08",
+        "C-A03-P09",
+        "C-A03-P10"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 20,
+      "kind": "animated reference comparison",
+      "video": "animations/sequences/C-A03.mp4"
+    },
+    {
+      "id": "sequence-C-A04",
+      "title": "Speech contact shapes",
+      "group": "Face animation",
+      "poses": [
+        "C-A04-P01",
+        "C-A04-P02",
+        "C-A04-P03"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 6,
+      "kind": "animated reference comparison",
+      "video": "animations/sequences/C-A04.mp4"
+    },
+    {
+      "id": "sequence-B01",
+      "title": "Lower-body turnaround",
+      "group": "Body reference",
+      "poses": [
+        "B01-P01",
+        "B01-P02",
+        "B01-P03",
+        "B01-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "animated reference comparison",
+      "video": "animations/sequences/B01.mp4"
+    },
+    {
+      "id": "sequence-B02",
+      "title": "Thigh, knee and calf details",
+      "group": "Body reference",
+      "poses": [
+        "B02-P01",
+        "B02-P02",
+        "B02-P03",
+        "B02-P04",
+        "B02-P05",
+        "B02-P06"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 12,
+      "kind": "animated reference comparison",
+      "video": "animations/sequences/B02.mp4"
+    },
+    {
+      "id": "sequence-B03",
+      "title": "Overhead upper body and hands",
+      "group": "Body reference",
+      "poses": [
+        "B03-P01",
+        "B03-P02"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 4,
+      "kind": "animated reference comparison",
+      "video": "animations/sequences/B03.mp4"
+    },
+    {
+      "id": "sequence-B04",
+      "title": "Raised arms and underarm construction",
+      "group": "Body reference",
+      "poses": [
+        "B04-P01",
+        "B04-P02",
+        "B04-P03",
+        "B04-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "animated reference comparison",
+      "video": "animations/sequences/B04.mp4"
+    },
+    {
+      "id": "sequence-O01",
+      "title": "Straight hair and hair-touch poses",
+      "group": "Optional poses",
+      "poses": [
+        "O01-P01",
+        "O01-P02",
+        "O01-P03",
+        "O01-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/O01.mp4"
+    },
+    {
+      "id": "sequence-O02",
+      "title": "Workout and warm-weather sweat",
+      "group": "Optional poses",
+      "poses": [
+        "O02-P01",
+        "O02-P02",
+        "O02-P03",
+        "O02-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/O02.mp4"
+    },
+    {
+      "id": "sequence-O03",
+      "title": "Opening and removing a sandal",
+      "group": "Optional poses",
+      "poses": [
+        "O03-P01",
+        "O03-P02",
+        "O03-P03",
+        "O03-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/O03.mp4"
+    },
+    {
+      "id": "sequence-O04",
+      "title": "Wind scene",
+      "group": "Optional poses",
+      "poses": [
+        "O04-P01",
+        "O04-P02",
+        "O04-P03"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 6,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/O04.mp4"
+    },
+    {
+      "id": "sequence-O05",
+      "title": "Putting on the long-sleeve layer",
+      "group": "Optional poses",
+      "poses": [
+        "O05-P01",
+        "O05-P02",
+        "O05-P03",
+        "O05-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/O05.mp4"
+    },
+    {
+      "id": "sequence-O06",
+      "title": "Removing the long-sleeve layer",
+      "group": "Optional poses",
+      "poses": [
+        "O06-P01",
+        "O06-P02",
+        "O06-P03",
+        "O06-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/O06.mp4"
+    },
+    {
+      "id": "sequence-O07",
+      "title": "Extra cooldown and reset poses",
+      "group": "Optional poses",
+      "poses": [
+        "O07-P01",
+        "O07-P02",
+        "O07-P03",
+        "O07-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/O07.mp4"
+    },
+    {
+      "id": "sequence-D01",
+      "title": "Seated fashion and sit-down poses",
+      "group": "Daily life",
+      "poses": [
+        "D01-P04",
+        "D01-P01",
+        "D01-P02",
+        "D01-P03"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/D01.mp4"
+    },
+    {
+      "id": "sequence-D02",
+      "title": "Cigarette hand and mouth scenes",
+      "group": "Daily life",
+      "poses": [
+        "D02-P01",
+        "D02-P02",
+        "D02-P03",
+        "D02-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/D02.mp4"
+    },
+    {
+      "id": "sequence-D03",
+      "title": "Bathroom and toilet-use routine",
+      "group": "Daily life",
+      "poses": [
+        "D03-P01",
+        "D03-P02",
+        "D03-P03",
+        "D03-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/D03.mp4"
+    },
+    {
+      "id": "sequence-D04",
+      "title": "Bathing and personal care",
+      "group": "Daily life",
+      "poses": [
+        "D04-P01",
+        "D04-P02",
+        "D04-P03",
+        "D04-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/D04.mp4"
+    },
+    {
+      "id": "sequence-D05",
+      "title": "Drinking tea",
+      "group": "Daily life",
+      "poses": [
+        "D05-P01",
+        "D05-P02",
+        "D05-P03",
+        "D05-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/D05.mp4"
+    },
+    {
+      "id": "sequence-D06",
+      "title": "Sleep and waking in bed",
+      "group": "Daily life",
+      "poses": [
+        "D06-P01",
+        "D06-P02",
+        "D06-P03",
+        "D06-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/D06.mp4"
+    },
+    {
+      "id": "sequence-D07",
+      "title": "Whip motion toward an empty floor",
+      "group": "Daily life",
+      "poses": [
+        "D07-P01",
+        "D07-P02",
+        "D07-P03",
+        "D07-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/D07.mp4"
+    },
+    {
+      "id": "sequence-D08",
+      "title": "Everyday small gestures",
+      "group": "Daily life",
+      "poses": [
+        "D08-P01",
+        "D08-P02",
+        "D08-P03",
+        "D08-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/D08.mp4"
+    },
+    {
+      "id": "sequence-S01",
+      "title": "Putting on the skirt",
+      "group": "Dressing",
+      "poses": [
+        "S01-P01",
+        "S01-P02",
+        "S01-P03",
+        "S01-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/S01.mp4"
+    },
+    {
+      "id": "sequence-S02",
+      "title": "Taking off the skirt",
+      "group": "Dressing",
+      "poses": [
+        "S02-P01",
+        "S02-P02",
+        "S02-P03",
+        "S02-P04"
+      ],
+      "pose_hold_seconds": 2,
+      "transition_seconds": 0.25,
+      "duration_seconds": 8,
+      "kind": "key-pose animatic",
+      "video": "animations/sequences/S02.mp4"
+    }
+  ],
+  "state_machine": {
+    "initial": "idle",
+    "states": {
+      "idle": {
+        "pose": "O01-P01",
+        "on": {
+          "hair_touch": "sequence-O01",
+          "wind": "sequence-O04",
+          "tea": "sequence-D05",
+          "sleep": "sequence-D06",
+          "wave": "D08-P04",
+          "skirt_on": "sequence-S01",
+          "skirt_off": "sequence-S02"
+        }
+      },
+      "action": {
+        "on_complete": "idle"
+      },
+      "sleep": {
+        "sequence": "sequence-D06",
+        "on": {
+          "wake": "D06-P04"
+        }
+      }
+    },
+    "note": "Suggested application mapping, not an autonomous AI agent."
+  },
+  "notes": [
+    "Original images remain available at their native resolution.",
+    "Pose-loop deformation is restrained; large limb actions use held key poses and short cross-dissolves.",
+    "Reference studies use gentle zoom loops, not invented body movement.",
+    "Retain independent clothing and hair variants; reference artwork can contain small proportions or costume differences.",
+    "A production Live2D/Spine/3D rig requires separated artwork or a mesh and is not included."
+  ]
+}

@@ -2,6 +2,8 @@ param([string]$Python = 'python', [string]$Output = '', [string]$InnoCompiler = 
 $ErrorActionPreference = 'Stop'
 Set-Location -LiteralPath $PSScriptRoot
 if (-not $Output) { $Output = Join-Path $PSScriptRoot 'dist' }
+& $Python tools/compile_shaders.py
+if ($LASTEXITCODE -ne 0) { throw 'Shader compilation failed' }
 & $Python -m unittest discover -s tests -v
 if ($LASTEXITCODE -ne 0) { throw 'Tests failed' }
 $lisaOriginalPath = $env:PATH

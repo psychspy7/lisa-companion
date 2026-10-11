@@ -78,6 +78,7 @@ class SettingsDialog(QDialog):
         key(motion,"vidu","Vidu API key")
         field(motion,"vidu_model","Vidu video model",["viduq3-pro-fast","viduq3-turbo","viduq3-pro"])
         check(motion,"motion","Gentle breathing and character sway")
+        check(motion,"live_avatar","Live Lisa: blinking, head motion and voice-driven mouth; keep outfit during chat")
         label=QLabel("Open Motion Studio to generate a 4-second 1080p action clip, or import an MP4/WebM. Clips stay on this PC. Each Generate click uses your Vidu credits; no videos are generated automatically.");label.setWordWrap(True);motion.addRow(label)
         person=page("Personality")
         editor=QTextEdit();editor.setPlainText(backend.store.settings["personality_prompt"]);editor.setMinimumHeight(250);self.fields["personality_prompt"]=editor;person.addRow(editor)

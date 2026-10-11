@@ -1,0 +1,4 @@
+VAULT_KEY=base64-encoded-32-byte-key-set-privately
+OWNER_EMAIL=viratanand1221@gmail.com
+FIREBASE_PROJECT_ID=lisa-kittycorp-20261011
+FIREBASE_API_KEY=public-firebase-web-configuration

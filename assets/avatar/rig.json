@@ -1,0 +1,14 @@
+{
+  "name": "Lisa portrait rig",
+  "format": "lisa-portrait-rig-1",
+  "type": "2D texture deformation with expression overlays",
+  "blink_frame": "blink.png",
+  "talk_frame": "talk.png",
+  "eyes": [[0.440, 0.105, 0.040, 0.013], [0.513, 0.090, 0.034, 0.012]],
+  "mouth": [0.491, 0.125, 0.027, 0.011],
+  "coordinates": "normalized full portrait texture: center x, center y, radius x, radius y",
+  "outfits": ["morning", "afternoon", "evening", "night"],
+  "speech_driver": "playback RMS envelope, not phoneme recognition",
+  "independent_controls": ["blink", "mouth", "headTilt", "nod", "hairSway", "breathing"],
+  "notes": "Shared face overlays are registered to the four master portraits. Illustrated poses use the original artwork. This is a custom 2D portrait rig, not a VRM mesh or Cubism model."
+}

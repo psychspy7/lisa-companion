@@ -1,0 +1,15 @@
+{
+  "auth": {
+    "authorizedDomains": [
+      "lisa-kittycorp-20261011.firebaseapp.com",
+      "lisa-kittycorp-20261011.web.app",
+      "lisa-control-center.kitty-ai.workers.dev"
+    ],
+    "providers": {
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "LISA by Kitty Corp",
+        "supportEmail": "viratanand1221@gmail.com"
+      }
+    }
+  }
+}

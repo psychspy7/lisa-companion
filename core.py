@@ -14,8 +14,9 @@ import urllib.request
 import uuid
 import wave
 from persona import DEFAULT_PERSONALITY, LEGACY_PERSONALITY
+BLUE_PERSONALITY = DEFAULT_PERSONALITY.replace("long wavy burgundy-red hair, red-brown eyes", "midnight-blue hair fading to lavender, blue eyes")
 
-VERSION = "1.9.2"
+VERSION = "1.10.0"
 MOODS = ["smile", "shy", "tea", "sitting", "wave", "yawn", "stretch", "thinking", "listening",
          "commanding", "angry", "smirk", "excited", "laughing", "surprised", "proud", "cheering", "teasing",
          "kiss", "affectionate", "elegant_sitting", "thumbs_up", "blushing", "welcoming", "apologetic", "reassuring", "peace",
@@ -66,6 +67,7 @@ DEFAULTS.update(chat_fallback=True, openrouter_model="openrouter/free", meta_mod
                 windows_voice_fallback=True, speech_threshold="0.018", speech_pause="0.85", api_version=1)
 # Flash is economical and does not require the newest voice model's account access.
 DEFAULTS["eleven_model"] = "eleven_flash_v2_5"
+DEFAULTS.update(live_avatar=True, background_path="", ui_version=5)
 
 
 class Store:
@@ -89,6 +91,9 @@ class Store:
             self.settings.update(fullscreen=True, ui_version=4)
             if self.settings.get("personality_prompt") == LEGACY_PERSONALITY:
                 self.settings["personality_prompt"] = DEFAULT_PERSONALITY
+        if saved_settings.get("ui_version", 0) < 5:
+            self.settings.update(fullscreen=True, ui_version=5)
+        if self.settings.get("personality_prompt") == BLUE_PERSONALITY:self.settings["personality_prompt"] = DEFAULT_PERSONALITY
         manifest = json.loads(resource("version.json").read_text(encoding="utf-8"))
         if not self.settings.get("repository"):
             self.settings["repository"] = manifest.get("repository", "")

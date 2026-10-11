@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LISA — Private Suite</title><link rel="icon" href="data:,">
+<link rel="stylesheet" href="./room-ui.css">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/"}}</script>
+</head>
+<body>
+<div id="loader"><small>MADE BY</small><div class="brand">KITTY CORP</div><p id="load-note">Preparing your room…</p><div class="load-track"><div id="load-bar"></div></div><button id="skip-intro" hidden>Skip reveal</button></div>
+<div id="error" role="alert"></div>
+<header><button id="settings-toggle" class="glass icon" aria-label="Open settings" aria-expanded="false">☰</button><span class="name">LISA</span></header>
+<aside id="settings" class="glass" hidden aria-label="Room settings">
+  <div class="panel-title">Your space <button id="settings-close" aria-label="Close settings">×</button></div>
+  <div class="setting-row"><label for="lights">Room lights</label><button id="lights" aria-pressed="true">On</button></div>
+  <div class="setting-row"><label for="lighting">Time of day</label><button id="lighting">Evening</button></div>
+  <div class="setting-row"><label for="quality">Quality</label><select id="quality"><option value="auto">Auto</option><option value="crisp">Crisp</option><option value="balanced">Balanced</option></select></div>
+  <div class="setting-row"><label for="follow">Follow Lisa</label><input id="follow" type="checkbox" checked></div>
+  <div class="setting-row"><label for="speak">Read command replies</label><input id="speak" type="checkbox"></div>
+  <div class="setting-row"><label for="motion-lisa">Character motion</label><button id="motion-lisa">On</button></div>
+  <button id="fullscreen" class="wide">Enter fullscreen</button>
+  <details><summary>Camera & review tools</summary>
+    <nav id="dock" aria-label="Camera views"><button data-view="room" class="active">Room</button><button data-view="sofa">Sofa</button><button data-view="bed">Bed</button><button data-view="wardrobe">Wardrobe</button><button data-view="bathroom">Bathroom</button><button data-view="balcony">Balcony</button></nav>
+    <button id="tour">Camera tour</button><button id="plan">Layout</button><button id="audio-lisa">Test local audio</button><button id="edit-lisa">Character viewer</button><input id="voice-file" type="file" accept="audio/*" hidden>
+  </details>
+  <p class="preview-note">Local 3D interaction review. Your installed Lisa and saved keys are unchanged. Cloud chat and ElevenLabs are not connected to this preview.</p>
+</aside>
+<div id="caption" hidden><span id="place"></span><small id="description"></small></div>
+<section id="conversation" aria-label="Talk to Lisa">
+  <div id="reply" role="status" aria-live="polite">Hey, Sir. Make yourself comfortable.</div>
+  <form id="composer" class="glass" autocomplete="off">
+    <button type="button" id="mic" class="icon" aria-label="Start voice commands" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/></svg></button>
+    <input id="message" aria-label="Message Lisa" placeholder="Talk to Lisa…" maxlength="4000">
+    <button type="submit" class="icon" aria-label="Send message"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 12 15-8-5 16-3-6-7-2ZM11 14l8-10"/></svg></button>
+  </form>
+  <div id="activity" aria-live="polite">Try “sit on the sofa”, “go to sleep”, or “lights off”.</div>
+</section>
+<script type="module">import('./suite.js').then(()=>import('./room-avatar.js')).catch(error=>{document.getElementById('loader')?.remove();const box=document.getElementById('error');box.style.display='block';box.textContent='The room could not start. Restart Lisa or open local recovery settings. '+error.message;});</script>
+</body></html>

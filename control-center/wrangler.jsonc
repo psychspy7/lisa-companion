@@ -1,0 +1,29 @@
+{
+  "name": "lisa-control-center",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-10-11",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*",
+      "/health"
+    ]
+  },
+  "vars": {
+    "FIREBASE_PROJECT_ID": "lisa-kittycorp-20261011",
+    "FIREBASE_API_KEY": "AIzaSyAmcwP0ocIfwmRm7-SUKQDBqNHmsQoNMnk"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "lisa-control-center",
+      "database_id": "0046eac2-c66c-4a1f-b189-a2e8b4a6fab9",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "observability": {
+    "enabled": false
+  }
+}

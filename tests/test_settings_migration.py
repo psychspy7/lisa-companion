@@ -18,7 +18,7 @@ class SettingsMigration(unittest.TestCase):
             (folder / "groq.key").write_bytes(b"encrypted test bytes")
             store = Store(folder)
             self.assertTrue(store.settings["fullscreen"])
-            self.assertEqual(store.settings["ui_version"], 4)
+            self.assertEqual(store.settings["ui_version"], 5)
             self.assertEqual(store.settings["personality_prompt"], "My own Lisa")
             self.assertEqual(store.settings["chat_provider"], "gemini")
             self.assertEqual(store.memories, ["I prefer chai"])
@@ -40,7 +40,7 @@ class SettingsMigration(unittest.TestCase):
             folder = Path(directory)
             (folder / "settings.json").write_text('["broken settings"]')
             self.assertTrue(Store(folder).settings["fullscreen"])
-            self.assertEqual(VERSION, "1.9.2")
+            self.assertEqual(VERSION, "1.10.0")
 
 
 if __name__ == "__main__":

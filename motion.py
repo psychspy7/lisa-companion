@@ -10,30 +10,32 @@ from PIL import Image
 from core import ApiError, MOODS, OUTFITS
 from providers import request, decode_json, identifier
 from actions import public_https
+MOTION_ROLES=["idle","talking","listening","thinking"]
 
 
-def stage_image(path):
+def stage_image(path,green_screen=False):
     with Image.open(path) as source:
         source=source.convert("RGBA")
         source.thumbnail((720,1280),Image.Resampling.LANCZOS)
-        image=Image.new("RGB",(720,1280),(24,23,43))
+        image=Image.new("RGB",(720,1280),(0,255,0) if green_screen else (24,23,43))
         image.paste(source,((720-source.width)//2,(1280-source.height)//2),source)
         output=io.BytesIO(); image.save(output,"PNG")
     return "data:image/png;base64,"+base64.b64encode(output.getvalue()).decode()
 
 
-def motion_prompt(mood):
+def motion_prompt(mood,green_screen=False):
     gestures={"kiss":"blows one gentle flying kiss with her hand", "commanding":"confidently points forward then puts a hand on her hip", "angry":"folds her arms with playful mock anger", "sitting":"sits calmly and gently moves her hands", "tea":"holds her tea cup and brings it near her lips", "wave":"gently waves hello", "crying":"wipes a tear gently", "sad":"looks down softly then toward the viewer"}
-    return "A clearly adult anime woman, same identity, face, hair and clothes as image. "+gestures.get(mood,"shows a subtle "+mood.replace("_"," ")+" expression")+". Gentle natural breathing, occasional blinks, small hair motion. Smooth coherent anatomy, detailed crisp anime artwork. Locked camera and background, no zoom or cuts, no text, no extra people. Return to starting pose for a seamless short loop."
+    gestures.update(idle="stands calmly and looks toward the viewer",talking="speaks naturally with small conversational mouth and hand movements",listening="listens attentively with a small nod",thinking="tilts her head thoughtfully and glances back toward the viewer")
+    return "A clearly adult anime woman, same identity, face, hair and clothes as image. "+gestures.get(mood,"shows a subtle "+mood.replace("_"," ")+" expression")+". Gentle natural breathing, occasional blinks, small hair motion. Smooth coherent anatomy, detailed crisp anime artwork. Locked camera and background, no zoom or cuts, no text, no extra people. Return to starting pose for a seamless short loop."+(" Preserve the flat pure green background with no scenery, shadows or green clothing, for chroma key removal." if green_screen else "")
 
 
 class ViduClient:
     def __init__(self,key,settings): self.key,self.settings=key,dict(settings)
 
-    def submit(self,image,mood):
+    def submit(self,image,mood,green_screen=False):
         model=identifier(self.settings["vidu_model"],"Vidu model")
         response=decode_json(request("Vidu","https://api.vidu.com/ent/v2/img2video",self.key,
-            {"model":model,"images":[stage_image(image)],"prompt":motion_prompt(mood),"duration":4,"resolution":"1080p","audio":False,"bgm":False,"is_rec":False}),"Vidu")
+            {"model":model,"images":[stage_image(image,green_screen)],"prompt":motion_prompt(mood,green_screen),"duration":4,"resolution":"1080p","audio":False,"bgm":False,"is_rec":False}),"Vidu")
         return identifier(str(response.get("task_id","")),"Vidu task ID")
 
     def result(self,task_id):
@@ -47,14 +49,18 @@ class MotionCache:
         self.manifest=self.directory/"clips.json"
         try: self.clips=json.loads(self.manifest.read_text())
         except (OSError,ValueError): self.clips={}
+        try:self.metadata=json.loads((self.directory/"clip-options.json").read_text())
+        except (OSError,ValueError):self.metadata={}
+
+    def green_screen(self,outfit,mood):return bool(self.metadata.get(outfit+":"+mood,{}).get("green_screen",False))
 
     def get(self,outfit,mood):
         value=self.clips.get(outfit+":"+mood,"")
         path=self.directory/value
         return path if value and path.is_file() and path.resolve().parent==self.directory.resolve() else None
 
-    def import_clip(self,source,outfit,mood):
-        if outfit not in OUTFITS or mood not in MOODS: raise ValueError("Invalid clip selection.")
+    def import_clip(self,source,outfit,mood,green_screen=False):
+        if outfit not in OUTFITS or mood not in MOODS+MOTION_ROLES: raise ValueError("Invalid clip selection.")
         source=Path(source)
         if source.suffix.lower() not in (".mp4",".webm") or source.stat().st_size>500_000_000:
             raise ValueError("Choose an MP4 or WebM under 500 MB.")
@@ -64,9 +70,11 @@ class MotionCache:
                 while block:=read.read(1024*1024): write.write(block)
         self.clips[outfit+":"+mood]=target.name
         self.manifest.write_text(json.dumps(self.clips,indent=2))
+        self.metadata[outfit+":"+mood]={"green_screen":bool(green_screen)}
+        (self.directory/"clip-options.json").write_text(json.dumps(self.metadata,indent=2))
         return target
 
-    def download(self,url,outfit,mood):
+    def download(self,url,outfit,mood,green_screen=False):
         public_https(url)
         temp=self.directory/"download.part"
         try:
@@ -82,6 +90,6 @@ class MotionCache:
             with temp.open("rb") as header:data=header.read(32)
             if b"ftyp" not in data: raise ApiError("Vidu returned an unsupported video format.")
             video=self.directory/"download.mp4";temp.replace(video)
-            return self.import_clip(video,outfit,mood)
+            return self.import_clip(video,outfit,mood,green_screen)
         finally:
             temp.unlink(missing_ok=True)

@@ -25,8 +25,22 @@ Unmodified official Real-ESRGAN NCNN Vulkan with `realesr-animevideov3`, scale 4
 
 This is **AI upscaled 4K**. Upscaling improves edges and detail but does not recreate guaranteed native 4K detail, especially in the original smaller expression tiles.
 
-## Motion
+## Motion through 1.9.2
 
 The bundled render uses Qt Quick breathing, subtle sway and crossfades. No fully rigged character, phoneme mouth animation or real Vidu-generated clips are claimed. Vidu generation and imported MP4/WebM clips are stored privately under `%LOCALAPPDATA%/LISA/motion`; they are excluded from the public source and packaged release. A generation prompt is built in `motion.py`, with a fixed camera, gentle natural motion, same character identity and a four-second loop request. Loop continuity depends on the generated result.
 
 Upscaling source and license: https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan (MIT). Generated artwork is part of this LISA project; component licenses are listed in THIRD_PARTY_NOTICES.md.
+
+## Immersive scene and custom portrait rig, 1.10.0
+
+On October 9, 2026 the built-in imagegen tool created `assets/scenes/moonlit-room.png` and edited the evening master into `assets/avatar/blink.png` and `talk.png`, preserving its composition and transparent background. Exact prompts and roles are in `assets/art-generation-1.10.json`. The background is approximately 1672 × 941; the two face-state frames approximately 941 × 1672. They are not claimed to be native 4K assets. All four master portraits share the registered face position; shaders blend only local eye/mouth regions, leaving outfit artwork intact.
+
+`assets/avatar/rig.json` records the normalized overlay anchors. `ui/Avatar.qml` drives independent blink, mouth, head, nod and hair deformation controls. The mouth uses the current playback RMS envelope, with smoothing; waiting for a voice response does not move the mouth. The custom 2D texture rig is not an exported Cubism model or a skinned VRM/3D mesh, and does not infer phonemes or independent skeletal body actions. Original illustrated poses remain available. `tools/compile_shaders.py` creates shader packages for the supported graphics backends during builds.
+
+The user's Ani reference video was inspected locally for visual interaction and interface behavior. It is not bundled, reused as Lisa footage, uploaded to a provider or included in the public repository. Vidu and imported clips remain private local data. Green-screen removal is optional per clip; older cache entries default to unkeyed playback.
+
+## Interactive red-haired suite, October 11, 2026
+
+The user supplied outputs.zip with 142 painted poses and 31 reference/animatic sequences. It contains no deformable model. The local Blender rig has 52 bones, 48 skeletal clips and five facial controls; compatible mesh parts are combined into 33 mesh objects. Original expression and clothing reference textures are used unchanged. The editable blend, build and optimization scripts accompany the source archive.
+
+The built-in image generation tool removed the background from C-T01-P01.webp to create assets/suite/references/lisa-standing-approved.png. Prompt: Remove only the gray background; preserve the adult red-haired Lisa, face, wavy hair, black ribbed crop top, belt, pleated skirt, sandals and pose; full character in frame; transparent background; no text or added objects. The output is 767 by 2051 pixels and has not been represented as native 4K. It supplies controlled frontal idle appearance, with subtle runtime eye/mouth/breathing deformation. Walking and turning use skeletal 3D, whose complete production likeness remains unfinished.
