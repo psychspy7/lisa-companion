@@ -28,7 +28,7 @@ Important files:
 | Firebase desktop linking and private backend calls | gateway.py |
 | Lisa personality, settings and version | core.py, version.json |
 | Closed room commands | scene_actions.py |
-| Camera and room | assets/suite/runtime/room.js |
+| Camera and room | assets/suite/runtime/suite.js, cinematic-camera.js |
 | Walking, transitions and action cycles | assets/suite/runtime/room-avatar.js |
 | Props, sandals and sleeves | assets/suite/runtime/scene-props.js |
 | Painted idle appearance | assets/suite/runtime/painted-appearance.js |
