@@ -150,7 +150,7 @@ function update(now,delta){actor.visible=!suite.status.planMode;accumulator+=del
   morph('Smile',expression==='Smile'?.4:0);morph('Angry',expression==='Angry'?.85:0);morph('Sad',expression==='Sad'?.85:0);
   if((route.length||transition||phase==='gesture')&&now-lastShadow>200){suite.renderer.shadowMap.needsUpdate=true;lastShadow=now;}
  }
- painted.update(dt,{phase,posture,area,cycle:activeCycle?.name,elapsed},posture==='lying'?1:(elapsed-blinkStart)>=0&&(elapsed-blinkStart)<.2?Math.sin((elapsed-blinkStart)/.2*Math.PI):0,smoothedLevel,expression);
+ painted.update(dt,{phase,posture,area,cycle:activeCycle?.name,elapsed,barefoot:props.status.barefoot,sleevesOff:props.status.sleevesOff},posture==='lying'?1:(elapsed-blinkStart)>=0&&(elapsed-blinkStart)<.2?Math.sin((elapsed-blinkStart)/.2*Math.PI):0,smoothedLevel,expression);
  if(running&&follow)cinematic.update(now,dt,{phase,area});
  suite.setDoors(actor.position.x<-.45&&actor.position.x>-1.5&&actor.position.z<-.85,actor.position.x>4.65&&actor.position.z<-.60);
  if(drinking&&hand){actor.updateMatrixWorld(true);hand.getWorldPosition(handPosition);cup.position.copy(handPosition).add(new THREE.Vector3(-.015,.005,.025));}

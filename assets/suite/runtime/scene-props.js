@@ -15,10 +15,10 @@ export function createSceneProps(actor,suite){
  const shoes=new THREE.Group();shoes.visible=false;suite.scene.add(shoes);objects.shoes=shoes;
  for(const x of [-.1,.1]){const sole=new THREE.Mesh(new THREE.BoxGeometry(.07,.018,.20),handle.material);sole.position.set(x,.02,0);shoes.add(sole);const strap=new THREE.Mesh(new THREE.TorusGeometry(.029,.004,6,16,Math.PI),handle.material);strap.position.set(x,.03,.045);shoes.add(strap);}
  actor.traverse(o=>{if(o.isMesh&&o.material?.name==='Peach skin'){o.material=o.material.clone();wet.push(o.material);}});
- let held=null,hasWhip=false,barefoot=false,sweat=0;
+ let held=null,hasWhip=false,barefoot=false,sweat=0,sleevesOff=false;
  function hold(id){for(const [key,o] of Object.entries(objects))if(key!=='shoes')o.visible=key===id;held=id;hasWhip=id==='whip';}
  function sandals(on){actor.traverse(o=>{if(/^(Sandal_|Ankle_strap|Toe_strap|Heel_strap|Block_heel)/.test(o.name)){o.visible=on;o.userData.hiddenByClothing=!on;}});barefoot=!on;shoes.visible=!on;if(!on)shoes.position.copy(actor.position).add(new THREE.Vector3(.3,0,.2));}
- function sleeves(on){actor.traverse(o=>{if(o.name.startsWith('Sleeve.')){o.visible=on;o.userData.hiddenByClothing=!on;}});}
+ function sleeves(on){sleevesOff=!on;actor.traverse(o=>{if(/^Sleeve[._]?[LR]$/.test(o.name)){o.visible=on;o.userData.hiddenByClothing=!on;}});}
  function perspiration(value){sweat=value;for(const m of wet){m.roughness=value?.40:.72;}}
  function update(now){
   if(!held)return;const bone=held==='whip'?right:left;if(!bone)return;
@@ -27,5 +27,5 @@ export function createSceneProps(actor,suite){
   if(held==='book')prop.rotation.z+=Math.PI/2;
   if(held==='towel')prop.position.y+=.035;
  }
- return {hold,sandals,sleeves,perspiration,update,get status(){return {held,hasWhip,barefoot,sweat};},objects};
+ return {hold,sandals,sleeves,perspiration,update,get status(){return {held,hasWhip,barefoot,sweat,sleevesOff};},objects};
 }

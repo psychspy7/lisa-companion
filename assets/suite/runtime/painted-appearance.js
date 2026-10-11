@@ -24,7 +24,7 @@ export async function createPaintedAppearance(actor,suite){
  const plane=new THREE.Mesh(geometry,material);plane.position.z=.16;plane.castShadow=true;plane.customDepthMaterial=new THREE.MeshDepthMaterial({map:texture,alphaTest:.15,depthPacking:THREE.RGBADepthPacking});plane.renderOrder=2;actor.add(plane);let opacity=0;
  function update(dt,state,blink,speech,emotion){
   const camera=actor.worldToLocal(suite.camera.position.clone()),yaw=Math.atan2(camera.x,camera.z),front=Math.abs(yaw)<.16&&Math.abs(camera.y-1.0)<.6;
-  const eligible=front&&state.posture==='standing'&&state.phase==='idle'&&state.area==='room'&&!state.cycle&&emotion==='Smile'&&!suite.status.planMode;
+  const eligible=front&&state.posture==='standing'&&state.phase==='idle'&&state.area==='room'&&!state.cycle&&!state.barefoot&&!state.sleevesOff&&emotion==='Smile'&&!suite.status.planMode;
   opacity=THREE.MathUtils.damp(opacity,eligible?1:0,7,dt);material.uniforms.opacity.value=opacity;material.uniforms.time.value=state.elapsed;material.uniforms.blink.value=blink;material.uniforms.speech.value=speech;
   actor.traverse(o=>{if(o.isSkinnedMesh)o.visible=!o.userData.hiddenByClothing&&opacity<.5;});plane.visible=opacity>=.5;material.uniforms.opacity.value=plane.visible?1:0;
  }
