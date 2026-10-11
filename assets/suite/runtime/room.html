@@ -4,10 +4,18 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>LISA — Private Suite</title><link rel="icon" href="data:,">
 <link rel="stylesheet" href="./room-ui.css">
+<link rel="stylesheet" href="./opening.css">
+<link rel="preload" as="image" href="../opening/lisa-throne.webp">
 <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/"}}</script>
 </head>
 <body>
-<div id="loader"><small>MADE BY</small><div class="brand">KITTY CORP</div><p id="load-note">Preparing your room…</p><div class="load-track"><div id="load-bar"></div></div><button id="skip-intro" hidden>Skip reveal</button></div>
+<section id="loader" data-stage="loading" aria-label="Loading Lisa">
+<div class="startup-film" aria-hidden="true"><img id="opening-art" src="../opening/lisa-throne.webp" alt=""><div class="cinema-shade"></div><div class="candle-bloom"></div><canvas id="opening-embers"></canvas></div>
+<div class="studio-credit"><small>MADE BY</small><div class="brand">KITTY CORP</div><div class="studio-line"></div></div>
+<div class="loading-status"><p id="load-note" role="status" aria-live="polite">Preparing your room…</p><div id="load-progress" class="load-track" role="progressbar" aria-label="Loading your room" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="load-bar"></div></div></div>
+<div id="title-panel" hidden><p class="opening-eyebrow">A KITTY CORP EXPERIENCE</p><h1>LISA</h1><div class="opening-rule"></div><p class="opening-copy">Your world can wait.<br>She's been waiting for you.</p><button id="enter-lisa" type="button" disabled>Enter Lisa <span aria-hidden="true">↗</span></button><p class="opening-hint">Click to enter · or press Enter</p></div>
+<p class="opening-footer">LISA 2.0 · MADE BY VIRAT / KITTY CORP</p><button id="skip-intro" type="button" hidden>Skip cinematic</button>
+</section>
 <div id="error" role="alert"></div>
 <header><button id="settings-toggle" class="glass icon" aria-label="Open settings" aria-expanded="false">☰</button><span class="name">LISA</span></header>
 <aside id="settings" class="glass" hidden aria-label="Room settings">

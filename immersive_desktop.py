@@ -26,7 +26,7 @@ class ScenePage(QWebEnginePage):
 class SceneBridge(QObject):
  stateChanged=Signal(str);sceneAction=Signal(str)
  def __init__(self,backend,window):
-  super().__init__(window);self.backend=backend;self.window=window;self.scene_ready=False
+  super().__init__(window);self.backend=backend;self.window=window;self.scene_ready=False;self.session_entered=False
   backend.changed.connect(self.publish);backend.messagesChanged.connect(self.publish);backend.activityChanged.connect(self.publish);backend.updateChanged.connect(self.publish);backend.sceneAction.connect(self.sceneAction)
  @Slot(result=str)
  def snapshot(self):
@@ -60,12 +60,17 @@ class SceneBridge(QObject):
  @Slot()
  def studio(self):self.backend.studio()
  @Slot()
- def ready(self):self.scene_ready=True;self.backend.scene_enabled=True;self.publish();self.window.scene_loaded()
+ def ready(self):self.scene_ready=True;self.backend.scene_enabled=False;self.publish();self.window.scene_loaded()
+ @Slot()
+ def entered(self):
+  if self.session_entered:return
+  self.session_entered=True;self.backend.scene_enabled=True;self.window.session_started()
  @Slot(str)
  def send(self,text):
-  if isinstance(text,str) and len(text)<=4000:self.backend.send(text)
+  if self.session_entered and isinstance(text,str) and len(text)<=4000:self.backend.send(text)
  @Slot()
- def toggleVoice(self):self.backend.toggleConversation()
+ def toggleVoice(self):
+  if self.session_entered:self.backend.toggleConversation()
  @Slot()
  def interrupt(self):self.backend.stop();self.sceneAction.emit("stop")
  @Slot()
@@ -109,17 +114,19 @@ class SuiteWindow(QMainWindow):
   if self.acknowledged:return
   self.acknowledged=True
   if self.test:
-   QTimer.singleShot(1800,self.capture_test);return
+   QTimer.singleShot(100,lambda:self.page.runJavaScript("window.lisaOpening?.skip(); window.lisaOpening?.enter();"));return
   QTimer.singleShot(700,self.backend.recover_update_status)
   ack=os.environ.pop("LISA_UPDATE_ACK","");expected=os.environ.pop("LISA_UPDATE_VERSION","")
   if ack and expected==VERSION:
    path=Path(ack).resolve()
    if path.parent==(self.backend.store.directory/"updates").resolve() and path.name.startswith("launched-"):
     from updater_worker import write_json
-    write_json(path,{"version":VERSION,"pid":os.getpid(),"ui_loaded":True,"scene_loaded":True})
+    write_json(path,{"version":VERSION,"pid":os.getpid(),"ui_loaded":True,"scene_loaded":True,"title_ready":True})
+ def session_started(self):
+  if self.test:QTimer.singleShot(1800,self.capture_test)
  def capture_test(self):
   self.view.grab().save(str(self.backend.store.directory/"ui-self-test.png"));self.backend.close()
-  (self.backend.store.directory/"self-test.json").write_text(json.dumps({"version":VERSION,"ui_loaded":True,"scene_loaded":True,"microphone_closed":self.backend.audio.input_stream is None,"output_closed":self.backend.audio.output_stream is None,"native_bridge":True}))
+  (self.backend.store.directory/"self-test.json").write_text(json.dumps({"version":VERSION,"ui_loaded":True,"scene_loaded":True,"session_entered":self.bridge.session_entered,"microphone_closed":self.backend.audio.input_stream is None,"output_closed":self.backend.audio.output_stream is None,"native_bridge":True}))
   self.backend.app.quit()
  def closeEvent(self,event):self.backend.close();event.accept()
 def main(Backend):

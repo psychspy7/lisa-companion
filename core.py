@@ -16,7 +16,7 @@ import wave
 from persona import DEFAULT_PERSONALITY, LEGACY_PERSONALITY
 BLUE_PERSONALITY = DEFAULT_PERSONALITY.replace("long wavy burgundy-red hair, red-brown eyes", "midnight-blue hair fading to lavender, blue eyes")
 
-VERSION = "1.10.0"
+VERSION = "2.0.0"
 MOODS = ["smile", "shy", "tea", "sitting", "wave", "yawn", "stretch", "thinking", "listening",
          "commanding", "angry", "smirk", "excited", "laughing", "surprised", "proud", "cheering", "teasing",
          "kiss", "affectionate", "elegant_sitting", "thumbs_up", "blushing", "welcoming", "apologetic", "reassuring", "peace",

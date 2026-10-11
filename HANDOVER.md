@@ -1,11 +1,11 @@
-# Lisa 1.10: use, change and publish
+# Lisa 2.0: use, change and publish
 
 This release restores the companion after the 1.9.3 maintenance screen. It is an immersive development preview. The painted frontal idle appearance matches the red-haired reference; free movement uses the editable 3D approximation. Refining that model's likeness, cloth and contact poses remains separate artistic work. Do not describe the painted layer as a complete deformable avatar.
 
 ## Install this version
 
 1. Close Lisa and run LISA-Setup.exe. Keep the existing default destination. Setup offers a desktop shortcut and verifies the installed files.
-2. Open Lisa. The black Kitty Corp reveal waits for the room assets to load. The app opens fullscreen; the menu provides fullscreen/window and quality controls.
+2. Open Lisa. The black Kitty Corp loader waits for the room assets to load, then reveals the new candlelit throne artwork. Click Enter Lisa or press Enter to open the room. Skip and reduced motion are supported. The app opens fullscreen; the menu provides fullscreen/window and quality controls.
 3. Open the top-left menu and choose Sign in with Google. A private browser page opens. Sign in with the existing approved owner account and submit the six-digit code shown in the desktop app.
 4. Missing cloud provider keys migrate from this PC's saved encrypted keys after linking. Existing vault keys are preserved. Otherwise add and test keys in the private control center: https://lisa-control-center.kitty-ai.workers.dev.
 5. Choose chat, speech and transcription models available to your accounts. Quotas, model availability and provider permissions still apply. No real paid provider generation was used to validate this release.
@@ -53,7 +53,7 @@ Supply the specific feature you want changed after that instruction. Another AI 
 ## Publish the next update
 
 1. Create a branch from current main. Make and test the change.
-2. Increase core.VERSION and version.json together. 1.10.1 is a suitable next patch; do not publish 1.9.0 because users already have a newer version.
+2. Increase core.VERSION and version.json together. 2.0.1 is a suitable next patch; do not publish 1.9.0 because users already have a newer version.
 3. Build the portable app, installer and SHA256SUMS.txt. Keep the installer AppId and private data location unchanged.
 4. Verify a disposable clean install, shortcut, update from an older version, restarted room acknowledgment and preservation of personal settings. A successful compilation alone is insufficient.
 5. Push the source and create the matching GitHub release with the installer, portable executable and SHA256SUMS.txt. Mark it ready only when those exact files have passed verification.

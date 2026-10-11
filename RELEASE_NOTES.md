@@ -1,13 +1,11 @@
-# LISA 1.10.0 — Immersive suite preview
+# LISA 2.0.0 — cinematic entrance
 
-Lisa opens as a fullscreen Windows app with a furnished 3D room, a compact glass conversation bar and a small settings menu. The camera follows routed walking and settles into destination shots. Sofa/tea, bed/wake/lights, balcony, covered bathroom, sandals, exercise, grooming and prop cycles are connected.
+Lisa now starts with a black Kitty Corp loading screen reporting real room-asset progress. When the room and artwork are ready, a new candlelit throne scene reveals with a slow push-in, gentle light and bounded ember effects. It settles into a title screen that waits for **Enter Lisa**, by click or keyboard. Skip and reduced-motion support are included. The supplied Gemini video inspired the atmosphere; a new image was generated, without its logo. The reference video is not distributed.
 
-The approved red-haired artwork appears in controlled frontal idle shots. Walking and actions use a 52-bone rig with 48 authored clips, reduced to 33 mesh objects. This is a development preview: complete production likeness, detailed hand contacts and physical cloth/hair remain work in progress. Speech drives mouth opening by volume, without phoneme timing.
+The intro runs locally using a 347 KB WebP and small animation effects. It is silent and makes no provider or microphone call. The room's idle animation is paused behind the entrance, then resumes as the camera transitions into the existing room.
 
-Google sign-in and a separate private Lisa control center manage encrypted provider keys, models, voices and character prompt. Groq/Gemini/OpenRouter/Meta chat fallback and ElevenLabs/Fish speech fallback are retained. Continuous turn-taking and a reply interruption button use native Windows audio. Explicit Vidu jobs and private clip review remain available.
+The updater acknowledges that the assets/title are ready before the user presses Enter. This prevents the new entry gate from causing a false restart failure. Chat and voice stay gated until entry. The installer retains its identity, data location, shortcut option and payload verification.
 
-The per-user installer retains its existing identity, desktop-shortcut option, payload verification and updater restart path. It preserves your personal Lisa data. Version 1.10.0 follows the published 1.9.3 maintenance release.
+This release changes the startup experience. The companion, private control center and avatar from 1.10 remain in place. The full production 3D likeness, detailed contacts and cloth remain development work; the throne artwork is a cinematic background, not a newly deformable model.
 
-After installing, open the menu → Sign in with Google, then enter Lisa’s six-digit link code in the private console. The console owner login is already verified. Existing missing provider keys are migrated on the first desktop link; cloud keys stay private.
-
-Validation and any remaining live-provider limitations are recorded in the supplied verification report. No microphone recording or credit-spending video generation is part of automatic tests.
+Run LISA-Setup.exe, or use Check for updates in your existing Lisa. The native app version is 2.0.0; no account or backend-secret migration is required for this update.

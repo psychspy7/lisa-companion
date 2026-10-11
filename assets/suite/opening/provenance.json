@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0",
+  "origin": "built-in imagegen",
+  "role": "new cinematic background inspired by user reference; not a video copy",
+  "dimensions": [
+    1672,
+    941
+  ],
+  "runtime": "local image and code-native animation",
+  "reference_video_distributed": false,
+  "watermark": false,
+  "prompt_summary": "New adult red-haired Lisa, black crop top and pleated skirt, carved burgundy throne on the right, cinematic amber candlelit gothic reading chamber, moonlit arched window, dark title space on left, no text or logos."
+}

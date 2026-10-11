@@ -1,4 +1,4 @@
-# LISA 1.10 — immersive Windows companion
+# LISA 2.0 — cinematic Windows companion
 
 LISA is a separate Windows app made by Virat with the help of Kitty Corp organisation. It opens fullscreen into Lisa’s furnished room, with a small glass conversation bar and a settings menu at the top left. Closing it quits the app and releases microphone access.
 
@@ -6,7 +6,9 @@ This release is an **immersive development preview**. It combines the approved r
 
 ## Install and use
 
-Run LISA-Setup.exe. The per-user installer checks folder access and installed payload hashes, preserves personal data and offers a desktop shortcut. Start Lisa from its shortcut. Settings → Check for updates uses the retained verified installer/portable updater and restarts the application; success is acknowledged after the room opens. Private data remains in %LOCALAPPDATA%/LISA.
+Run LISA-Setup.exe. The per-user installer checks folder access and installed payload hashes, preserves personal data and offers a desktop shortcut. Start Lisa from its shortcut. Settings → Check for updates uses the retained verified installer/portable updater and restarts the application; success is acknowledged after the assets and title load. Private data remains in %LOCALAPPDATA%/LISA.
+
+Startup reports real loading progress, then plays a local candlelit throne reveal and waits for Enter Lisa. Click the button or press Enter to open the room. Skip bypasses the cinematic, while reduced motion uses a static title. The intro is silent. Chat and microphone remain inactive until entry. The updater acknowledges loaded assets and the title before human entry, so waiting at this screen does not fail the update.
 
 Type “go to the balcony”, “have tea”, “go to sleep”, “wake up”, “lights off”, “exercise”, “remove sandals”, “wear sandals”, “wash hands”, “go to the toilet”, “take a shower”, “brush teeth”, “read a book”, “check phone”, “touch hair”, “take the whip”, or “put the whip back”. Lisa follows routed walking paths, completes posture transitions and performs supported actions. Bath/toilet scenes remain covered. The whip gesture is directed at empty space. Camera following can be disabled in the menu; dragging the room gives manual camera control. Quality controls limit the rendering resolution.
 
@@ -36,7 +38,7 @@ The primary native entry is immersive_desktop.py. desktop.py retains chat, audio
 
 control-center contains the owner console and Worker. Use its project-local Node 24 or a compatible Node installation: npm ci, npm test, npm run build, then npm run deploy when you intend to publish. Deploy only the Lisa Worker and Lisa Firebase project. The OWNER_EMAIL and VAULT_KEY are deployment secrets; do not rotate the vault key without re-encrypting the existing provider vault. Firebase web configuration is public identity metadata, not a provider secret. Read control-center/README.md.
 
-Create changes in Lisa’s existing Git repository, preserve its history, test the result, increment version.json and core.VERSION together, then publish the installer, portable executable and SHA256SUMS.txt with the matching tag. The app refuses version downgrades; 1.10.0 follows public 1.9.3. A release should not be marked ready solely because it compiled. Test a disposable installation and the restart acknowledgment.
+Create changes in Lisa’s existing Git repository, preserve its history, test the result, increment version.json and core.VERSION together, then publish the installer, portable executable and SHA256SUMS.txt with the matching tag. The app refuses version downgrades; 2.0.0 follows public 1.10.0. A release should not be marked ready solely because it compiled. Test a disposable installation and the restart acknowledgment.
 
 Refresh Source File Zip/lisa/SOURCE-LATEST.zip with the workspace’s provided updater after verified changes. Never archive provider keys, Google refresh credentials, chats, personal notes, node_modules or build outputs. A handover archive contains source and editable assets, not a live credential or database backup. Restore deployment access separately through your own accounts.
 

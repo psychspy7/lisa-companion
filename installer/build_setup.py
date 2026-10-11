@@ -30,7 +30,7 @@ def prepare_payload(app, version, output):
         raise RuntimeError('Installed payload is incomplete: app, UI, version, icon and native updater are required.')
     if json.loads((app/'_internal/version.json').read_text())['version']!=version:
         raise RuntimeError('The built application version differs from version.json. Rebuild the app first.')
-    artwork=list((app/'_internal/assets').rglob('*.webp'))
+    artwork=list((app/'_internal/assets/portraits').glob('*.webp'))+list((app/'_internal/assets/poses').glob('*.webp'))
     if len(artwork)!=40:raise RuntimeError('The complete 40-file character artwork is required.')
     (app/'install-state.json').write_text(json.dumps({
         'application':'LISA','format':1,'version':version,'installer':'inno','verified_payload':1,
