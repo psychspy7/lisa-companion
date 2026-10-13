@@ -35,7 +35,7 @@ export default {async fetch(req,env){
  try{
   const url=new URL(req.url),path=url.pathname;
   if(req.headers.get('Origin')&&req.headers.get('Origin')!==url.origin)throw new HttpError(403,'Use the Lisa control center directly.');
-  if(path==='/health')return response({application:'LISA',version:'1.10.0',configured:!!(env.FIREBASE_PROJECT_ID&&env.FIREBASE_API_KEY&&env.VAULT_KEY&&env.DB&&env.OWNER_EMAIL)});
+  if(path==='/health')return response({application:'LISA',version:'2.1.0',configured:!!(env.FIREBASE_PROJECT_ID&&env.FIREBASE_API_KEY&&env.VAULT_KEY&&env.DB&&env.OWNER_EMAIL)});
   if(path==='/api/login-config')return response({projectId:env.FIREBASE_PROJECT_ID,apiKey:env.FIREBASE_API_KEY,authDomain:env.FIREBASE_PROJECT_ID+'.firebaseapp.com'});
   if(!path.startsWith('/api/')){
    const r=await env.ASSETS.fetch(req),headers=new Headers(r.headers);
@@ -83,19 +83,6 @@ export default {async fetch(req,env){
    const envelope=await seal(JSON.stringify({id_token:token.id_token,refresh_token:token.refresh_token,expires_in:token.expires_in,api_key:env.FIREBASE_API_KEY,project_id:env.FIREBASE_PROJECT_ID}),env.VAULT_KEY,'device:'+d.id);
    await env.DB.prepare('UPDATE devices SET envelope=? WHERE id=? AND envelope IS NULL').bind(envelope,d.id).run();
    return response({ok:true});
-  }
-  if(path==='/api/vidu/generate'&&req.method==='POST'){
-   await rate(env,'animation:'+user.uid,6,86400);const body=await jsonBody(req,6000000);
-   if(typeof body.image!=='string'||!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(body.image)||typeof body.prompt!=='string'||body.prompt.length>2000)throw new HttpError(400,'Choose a valid animation reference.');
-   const key=await providerKey(env,'vidu');if(!key)throw new HttpError(503,'Vidu is not configured.');
-   const r=await upstream('vidu','https://api.vidu.com/ent/v2/img2video',{method:'POST',headers:{Authorization:'Token '+key,'Content-Type':'application/json'},body:JSON.stringify({model:cfg.vidu_model,images:[body.image],prompt:body.prompt,duration:4,resolution:'1080p',audio:false,bgm:false,is_rec:false})});
-   const d=await r.json();if(!/^[A-Za-z0-9_.-]{1,100}$/.test(String(d.task_id||'')))throw new HttpError(502,'Vidu did not return a task ID.');return response({task_id:String(d.task_id)});
-  }
-  const videoTask=path.match(/^\/api\/vidu\/tasks\/([A-Za-z0-9_.-]{1,100})$/);
-  if(videoTask&&req.method==='GET'){
-   const key=await providerKey(env,'vidu');if(!key)throw new HttpError(503,'Vidu is not configured.');
-   const r=await upstream('vidu','https://api.vidu.com/ent/v2/tasks/'+videoTask[1]+'/creations',{headers:{Authorization:'Token '+key}});
-   const d=await r.json();return response({state:d.state,creations:(d.creations||[]).map(c=>({url:c.url}))});
   }
   if(path==='/api/chat'&&req.method==='POST'){
    const body=await jsonBody(req);if(typeof body.message!=='string'||!body.message.trim()||body.message.length>4000||!Array.isArray(body.history||[])||!Array.isArray(body.memories||[]))throw new HttpError(400,'Invalid message.');

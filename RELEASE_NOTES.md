@@ -1,11 +1,11 @@
-# LISA 2.0.0 — cinematic entrance
+LISA 2.1.0 runs the immersive room in **Godot 4.7.2 Standard**, bundled with the Windows application. A browser renderer or separate Godot installation is no longer needed.
 
-Lisa now starts with a black Kitty Corp loading screen reporting real room-asset progress. When the room and artwork are ready, a new candlelit throne scene reveals with a slow push-in, gentle light and bounded ember effects. It settles into a title screen that waits for **Enter Lisa**, by click or keyboard. Skip and reduced-motion support are included. The supplied Gemini video inspired the atmosphere; a new image was generated, without its logo. The reference video is not distributed.
+The companion uses illustrated directional and action frames throughout movement instead of revealing the earlier rough 3D model. The native room includes corridor walking, animated bathroom/balcony doors, cinematic close-ups, sitting and tea, sleeping with dimmed lights, wardrobe and exercise activities, gentle breathing, frontal blinking and an audio-driven illustrated mouth.
 
-The intro runs locally using a 347 KB WebP and small animation effects. It is silent and makes no provider or microphone call. The room's idle animation is paused behind the entrance, then resumes as the camera transitions into the existing room.
+The small transparent footer and compact menu keep the room visible. Follow Lisa persists across restarts and stays selected during camera dragging. Chat, continuous turn-taking, voice backups, saved memory, reviewed PC tools, protected local keys and the owner's Google-linked control center remain supported. Vidu generation, video playback and the Motion Studio controls are removed; older private clips and credentials are left on disk.
 
-The updater acknowledges that the assets/title are ready before the user presses Enter. This prevents the new entry gate from causing a false restart failure. Chat and voice stay gated until entry. The installer retains its identity, data location, shortcut option and payload verification.
+Setup preserves the existing installation identity and personal data. It offers a desktop shortcut. The updater closes the exact bundled engine, installs the replacement and checks that the new engine has loaded before reporting success.
 
-This release changes the startup experience. The companion, private control center and avatar from 1.10 remain in place. The full production 3D likeness, detailed contacts and cloth remain development work; the throne artwork is a cinematic background, not a newly deformable model.
+This is an illustrated **2.5D** companion in a real 3D room. It is not a newly sculpted, deformable 3D anime model or phoneme-accurate facial rig. Some actions use held painted poses, and the four-frame walk is an illustrated cycle. The test report distinguishes these limits from verified application behavior. Provider access and usage limits depend on your own accounts.
 
-Run LISA-Setup.exe, or use Check for updates in your existing Lisa. The native app version is 2.0.0; no account or backend-secret migration is required for this update.
+Godot's MIT license permits commercial distribution. Its notices are included. Voice-provider plans and rights to voices/artwork require their own checks; ElevenLabs' free plan does not grant commercial use.

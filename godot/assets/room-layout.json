@@ -1,0 +1,244 @@
+{
+  "anchors": {
+    "standing": {
+      "position": [
+        0,
+        0,
+        0.25
+      ],
+      "facing": 0
+    },
+    "sofa": {
+      "position": [
+        4.1,
+        0.58,
+        1.35
+      ],
+      "facing": -0.3
+    },
+    "bed": {
+      "position": [
+        2.03,
+        0.73,
+        -2.65
+      ],
+      "facing": 0
+    },
+    "wardrobe": {
+      "position": [
+        -4.45,
+        0,
+        -2.55
+      ],
+      "facing": 3.141592653589793
+    },
+    "washbasin": {
+      "position": [
+        -3.35,
+        0,
+        -1.6
+      ],
+      "facing": 3.141592653589793
+    },
+    "bathroom": {
+      "position": [
+        -1.7,
+        0.095,
+        -2.6
+      ],
+      "facing": 3.141592653589793
+    },
+    "balcony": {
+      "position": [
+        7.1,
+        0,
+        -0.7
+      ],
+      "facing": 1.5707963267948966
+    }
+  },
+  "views": {
+    "room": {
+      "pos": [
+        0.05,
+        1.85,
+        4.18
+      ],
+      "target": [
+        0,
+        1.32,
+        -2.2
+      ],
+      "fov": 68,
+      "title": "Make yourself comfortable.",
+      "description": "A private suite, with room for Lisa."
+    },
+    "sofa": {
+      "pos": [
+        1.45,
+        1.38,
+        3.52
+      ],
+      "target": [
+        4.2,
+        0.85,
+        1.1
+      ],
+      "fov": 54,
+      "title": "Stay a little longer.",
+      "description": "The sofa \u00b7 a place to sit and talk"
+    },
+    "bed": {
+      "pos": [
+        0.45,
+        1.62,
+        -0.1
+      ],
+      "target": [
+        2.1,
+        0.83,
+        -2.73
+      ],
+      "fov": 61,
+      "title": "A softer end to the day.",
+      "description": "The bed \u00b7 ready for lying-down and resting poses"
+    },
+    "wardrobe": {
+      "pos": [
+        -4.62,
+        1.5,
+        -1.2
+      ],
+      "target": [
+        -4.64,
+        1.42,
+        -3.89
+      ],
+      "fov": 62,
+      "title": "Her own little collection.",
+      "description": "Wardrobe \u00b7 clothes, sandals and accessories"
+    },
+    "bathroom": {
+      "pos": [
+        -1.05,
+        1.6,
+        0.5
+      ],
+      "target": [
+        -1.65,
+        1.35,
+        -3.12
+      ],
+      "fov": 58,
+      "title": "A moment to refresh.",
+      "description": "Glass bathroom \u00b7 shower, toilet and washbasin"
+    },
+    "balcony": {
+      "pos": [
+        5.17,
+        1.68,
+        0.45
+      ],
+      "target": [
+        7.5,
+        1.06,
+        -0.87
+      ],
+      "fov": 63,
+      "title": "Step outside. Breathe.",
+      "description": "The balcony \u00b7 quiet plants and evening air"
+    }
+  },
+  "fixtures": [
+    {
+      "id": "main-ceiling",
+      "position": [
+        0,
+        3.38,
+        0.1
+      ],
+      "target": [
+        0,
+        0,
+        -2
+      ],
+      "intensity": 58,
+      "color": "#ffcf9b"
+    },
+    {
+      "id": "bed-ceiling",
+      "position": [
+        2.2,
+        3.35,
+        -2.7
+      ],
+      "target": [
+        2.2,
+        0.5,
+        -2.7
+      ],
+      "intensity": 20,
+      "color": "#ffcf9b"
+    },
+    {
+      "id": "wardrobe-ceiling",
+      "position": [
+        -4.8,
+        3.2,
+        -2
+      ],
+      "target": [
+        -5,
+        0.7,
+        -2
+      ],
+      "intensity": 20,
+      "color": "#ffcf9b"
+    },
+    {
+      "id": "bathroom",
+      "position": [
+        -1.8,
+        3,
+        -3
+      ],
+      "target": [
+        -1.8,
+        0.5,
+        -3
+      ],
+      "intensity": 16,
+      "color": "#ffcf9b"
+    },
+    {
+      "id": "balcony-blue",
+      "position": [
+        6.7,
+        3,
+        -0.5
+      ],
+      "target": [
+        1,
+        1,
+        0
+      ],
+      "intensity": 24,
+      "color": "#a7bada"
+    },
+    {
+      "id": "balcony-fill",
+      "position": [
+        7.35,
+        2.85,
+        -0.75
+      ],
+      "target": [
+        7.6,
+        0.4,
+        -0.75
+      ],
+      "intensity": 10,
+      "color": "#b4c6df"
+    }
+  ]
+}

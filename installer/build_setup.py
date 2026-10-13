@@ -25,7 +25,7 @@ def find_compiler(explicit=None):
 def prepare_payload(app, version, output):
     app,output=Path(app).resolve(),Path(output).resolve()
     required=['LISA.exe','_internal/version.json','_internal/ui/Main.qml',
-        '_internal/updater/LISA-Updater.exe','_internal/assets/lisa.ico']
+        '_internal/updater/LISA-Updater.exe','_internal/assets/lisa.ico','engine/LISA-Engine.exe','licenses/GODOT-LICENSE.txt','licenses/GODOT-COPYRIGHT.txt']
     if any(not (app/name).is_file() for name in required):
         raise RuntimeError('Installed payload is incomplete: app, UI, version, icon and native updater are required.')
     if json.loads((app/'_internal/version.json').read_text())['version']!=version:

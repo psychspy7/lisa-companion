@@ -33,7 +33,7 @@ class ViduClient:
     def __init__(self,key,settings): self.key,self.settings=key,dict(settings)
 
     def submit(self,image,mood,green_screen=False):
-        model=identifier(self.settings["vidu_model"],"Vidu model")
+        model=identifier(self.settings.get("vidu_model","viduq3-pro-fast"),"Vidu model")
         response=decode_json(request("Vidu","https://api.vidu.com/ent/v2/img2video",self.key,
             {"model":model,"images":[stage_image(image,green_screen)],"prompt":motion_prompt(mood,green_screen),"duration":4,"resolution":"1080p","audio":False,"bgm":False,"is_rec":False}),"Vidu")
         return identifier(str(response.get("task_id","")),"Vidu task ID")

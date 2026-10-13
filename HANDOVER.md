@@ -1,77 +1,63 @@
-# Lisa 2.0: use, change and publish
+# LISA 2.1 continuation guide
 
-This release restores the companion after the 1.9.3 maintenance screen. It is an immersive development preview. The painted frontal idle appearance matches the red-haired reference; free movement uses the editable 3D approximation. Refining that model's likeness, cloth and contact poses remains separate artistic work. Do not describe the painted layer as a complete deformable avatar.
+## Install and use
 
-## Install this version
+1. Run LISA-Setup.exe. Setup uses your Windows account and preserves existing Lisa data. Select the desktop-shortcut option if wanted.
+2. Open Lisa. The Kitty Corp opening leads to Enter Lisa after the local room and artwork are ready.
+3. Open the top-left menu → Chat & voice settings. Enter your chat/voice keys there and use Test connection. Keys are protected with Windows DPAPI. Never paste keys into chats or source files.
+4. Alternatively, the approved owner can link Google and manage private credentials at https://lisa-control-center.kitty-ai.workers.dev. That console is owner-only, not a customer membership service. A fresh customer's app uses their own local keys.
+5. Type naturally, or press Talk for continuous turn-taking. Speech is transcribed after a pause. Listening pauses during Lisa's speech; Interrupt lets you speak over it manually. Stop talk or quitting closes the microphone.
+6. Room commands include go to the balcony, sit on the sofa, drink tea, go to sleep, wake up, lights on/off, go to the wardrobe, wash hands, exercise, stretch, read a book, use phone, wave, blow a kiss and wardrobe accessories. Private bathroom activities are not depicted explicitly.
+7. Follow Lisa is saved. Right-drag temporarily adjusts the camera without clearing that choice. Use the menu checkbox to turn following off.
 
-1. Close Lisa and run LISA-Setup.exe. Keep the existing default destination. Setup offers a desktop shortcut and verifies the installed files.
-2. Open Lisa. The black Kitty Corp loader waits for the room assets to load, then reveals the new candlelit throne artwork. Click Enter Lisa or press Enter to open the room. Skip and reduced motion are supported. The app opens fullscreen; the menu provides fullscreen/window and quality controls.
-3. Open the top-left menu and choose Sign in with Google. A private browser page opens. Sign in with the existing approved owner account and submit the six-digit code shown in the desktop app.
-4. Missing cloud provider keys migrate from this PC's saved encrypted keys after linking. Existing vault keys are preserved. Otherwise add and test keys in the private control center: https://lisa-control-center.kitty-ai.workers.dev.
-5. Choose chat, speech and transcription models available to your accounts. Quotas, model availability and provider permissions still apply. No real paid provider generation was used to validate this release.
-6. Type a direct room command, such as "go to the balcony" or "have tea". Tap the microphone to start continuous turns and tap again to stop. The square interrupt button stops Lisa's speech.
+## Files you will need
 
-Private memories, prompts, optional history and recovery keys remain under %LOCALAPPDATA%/LISA. Installer repair and updates preserve this folder. Closing Lisa stops its audio and microphone. The web room has no microphone permission.
+- godot/project.godot, room-edit.tscn, main.gd, character.gd, camera_director.gd, room_routes.gd and bridge.gd: editable native engine project.
+- godot/assets/: approved room GLB, layout, 32 pose frames arranged in eight atlases, provenance and intro artwork. The atlases are enhanced locally at 2x; they are not native 4K generations.
+- desktop.py, godot_desktop.py, core.py, providers.py, routing.py, audio.py and gateway.py: retained native application services. Only chat, voice and transcription providers are active.
+- persona.py and the Personality tab: default character guidance and private custom prompt. Saved notes remain separate from instructions.
+- control-center/: Firebase/Cloudflare owner console and protected provider proxy. Keep OWNER_EMAIL and VAULT_KEY private; never rotate the vault key without re-encrypting existing rows.
+- installer/, updates.py, updater_worker.py, installation.py and build.ps1: build, installer, update and restart behavior.
+- tests/, licenses/, THIRD_PARTY_NOTICES.md and VERIFICATION.json: checks, attribution and actual release evidence.
 
-## How to change Lisa yourself
+## Continue yourself or with another AI
 
-The clean source archive contains Source, 3D-Interaction-Review, Room-Review, a manifest and continuation tools. Extract it in a separate folder and read CONTINUE.md. For history, clone https://github.com/psychspy7/lisa-companion, then overlay Source onto that checkout without replacing its .git directory.
+Extract the complete/source ZIP into a separate working folder. Clone this project's own GitHub repository if you need history, then overlay clean source while preserving .git. Read AGENTS.md, README.md and this guide first. The canonical local source remains under the Downloads Kitty-Corp workspace.
 
-Use Python 3.12 on Windows. Install Source/requirements.txt into a virtual environment. Set LISA_DATA_DIR to a disposable folder before testing; run the desktop tests with python -m unittest discover -s tests -v. Start with python app.py. Build with Source/build.ps1 and a compatible Inno Setup compiler. Do not point test installs or test data at the user's real application.
+Install Python 3.12 dependencies from requirements.txt. Download Godot 4.7.2 Standard and matching Standard export templates. Use the editor to open godot/project.godot; .godot/ is a disposable import cache. Editing the room or character is separate from editing the native chat/voice service.
 
-Important files:
+For a source run, set LISA_GODOT to the engine executable and LISA_DATA_DIR to an isolated test folder, then run app.py. For an automated check run app.py --self-test; it records scene checks and screenshots without opening a microphone or spending provider credits.
 
-| Purpose | Location under Source |
-| --- | --- |
-| Native fullscreen window, web bridge, opening acknowledgment | immersive_desktop.py |
-| Conversation, continuous voice, memory, PC confirmations, updater | desktop.py |
-| Firebase desktop linking and private backend calls | gateway.py |
-| Lisa personality, settings and version | core.py, version.json |
-| Closed room commands | scene_actions.py |
-| Camera and room | assets/suite/runtime/suite.js, cinematic-camera.js |
-| Walking, transitions and action cycles | assets/suite/runtime/room-avatar.js |
-| Props, sandals and sleeves | assets/suite/runtime/scene-props.js |
-| Painted idle appearance | assets/suite/runtime/painted-appearance.js |
-| Black opening and reveal | assets/suite/runtime/opening.js |
-| Transparent conversation interface | assets/suite/runtime/room.html, native-bridge.js |
-| Local Vidu clip review | motion_preview.py |
-| Installer and payload verification | installer/LISA.iss, installer/build_setup.py |
-| Update download and safe install/restart | updates.py, updater_worker.py |
-| Owner console and Cloudflare API | control-center/src, control-center/public |
-| Desktop regression tests | tests |
+For a Windows build, use build.ps1 with -Python, -Godot, -Templates and optional -InnoCompiler arguments. Always build matching engine/templates. LISA.exe is the protected launcher/backend; engine/LISA-Engine.exe is its owned renderer. Keep them together.
 
-The editable Blender file and authoring scripts are in 3D-Interaction-Review/source. The current model has 52 bones and 48 clips. Keep the runtime bone/clip names compatible when exporting replacements. Test walking routes, sitting/standing, lying/getting up, sandals, sleeves, props, camera following, speech and interruption. Do not silently replace the current asset with a different character.
+The current appearance is illustrated 2.5D. Some actions are held pose cards, walking uses four illustrated frames, and facial animation is stylized. A complete deformable 3D likeness, continuous cloth/hair simulation, detailed hand contacts and all clothing combinations still need dedicated artist/rig work. Do not describe this build as a finished production 3D model.
 
-## Give another AI the project
+## Publish an update
 
-Give it the clean ZIP and this instruction:
+1. Make changes in the canonical Source repository, preserve personal data and the installer AppId.
+2. Increase core.VERSION, version.json, Godot application/export versions and release notes together.
+3. Run desktop/backend checks, Godot import/export, scene checks and the isolated clean-install plus real updater/restart test.
+4. Build the fresh installer and compute its SHA-256. Include the bundled engine and its licenses in payload-manifest.json.
+5. Commit verified source to this project's own repository, create a higher-version GitHub release and upload LISA-Setup.exe plus SHA256SUMS.txt. The installed updater prefers the installer.
+6. Verify release asset sizes/digests and discovery. Never overwrite a published version's assets to simulate an update.
+7. Refresh only Source File Zip/lisa using the provided archive updater after checks pass. Keep a verified complete ZIP for handover.
 
-"Continue this existing Lisa repository. Read README.md, HANDOVER.md, AGENTS.md and CONTROL-CENTER-SETUP.md before changes. Preserve its Git history and updater identity. Use an isolated data folder for tests. Provider keys, Google sessions, chats and deployment secrets are excluded; do not ask me to paste them into chat. First inspect the current implementation and verified reports. Keep fullscreen native chat, continuous turn-taking, explicit PC confirmations and the private console. The present avatar is a hybrid preview; improve the real 3D model without claiming the painted idle layer works at every angle. Make the requested changes, test a disposable install and real updater restart, refresh the source snapshot, then publish only to psychspy7/lisa-companion when I authorize a release."
+The updater's restart acknowledgment is emitted when Godot has loaded the room/title, before a human presses Enter. Closing the exact bundled engine releases its launcher and microphone. Private clips from older versions remain local but are no longer loaded.
 
-Supply the specific feature you want changed after that instruction. Another AI needs access to the existing repository and your deployment accounts only if the change affects them.
+## Commercial use
 
-## Publish the next update
+Godot is MIT and permits selling applications made with it. Keep GODOT-LICENSE.txt and GODOT-COPYRIGHT.txt with the application. The unmodified Python, Qt/PySide6 and other libraries keep their own notices and obligations. This build keeps Qt DLLs separate and supports rebuilding with compatible replacements.
 
-1. Create a branch from current main. Make and test the change.
-2. Increase core.VERSION and version.json together. 2.0.1 is a suitable next patch; do not publish 1.9.0 because users already have a newer version.
-3. Build the portable app, installer and SHA256SUMS.txt. Keep the installer AppId and private data location unchanged.
-4. Verify a disposable clean install, shortcut, update from an older version, restarted room acknowledgment and preservation of personal settings. A successful compilation alone is insufficient.
-5. Push the source and create the matching GitHub release with the installer, portable executable and SHA256SUMS.txt. Mark it ready only when those exact files have passed verification.
-6. The app's Check for updates reads the latest public release. It downloads and validates the payload, closes Lisa, installs, restarts it and acknowledges success after the room loads.
-7. Refresh Source File Zip/lisa/SOURCE-LATEST.zip using the workspace's provided updater after verified changes.
+The app does not contain company provider keys, a payment system or customer memberships. Customers can supply their own accounts. Check each provider's commercial API/voice terms and permission for any voice or artwork you distribute. ElevenLabs' free plan does not grant commercial audio use; eligible paid plans have separate terms: https://help.elevenlabs.io/hc/en-us/articles/13313564601361-Can-I-publish-the-content-I-generate-on-the-platform .
 
-## Backend changes and recovery
+Windows signing is separate from the engine and installer. This test installer is unsigned; it is not a signed commercial release. Add your own publisher certificate when preparing a store/customer release, without changing Lisa's update/installation identity.
 
-The deployed Worker is lisa-control-center on the kitty-ai.workers.dev account, using its own lisa-control-center D1 database. Firebase project: lisa-kittycorp-20261011. Use only these Lisa resources, separately from Kitty AI.
+## Private data and recovery
 
-In control-center use Node 24.12 or newer, npm ci, npm test and npm run build. npm run deploy publishes the Worker and requires your Cloudflare login. Firebase auth changes require Firebase CLI access to the dedicated project. Existing account sign-in has been verified.
+%LOCALAPPDATA%/LISA holds local settings, protected keys, optional history, saved notes and update recovery files. Clean source ZIPs exclude those files, sessions, environment variables and live databases. Preserve them in your own private backup. Uninstalling/updating does not erase them.
 
-OWNER_EMAIL and VAULT_KEY are Worker secrets. Never print them or commit them. Do not rotate VAULT_KEY unless the existing vault is re-encrypted first. Source backups cannot restore encrypted provider keys without the correct deployed secret. Back up or migrate live D1 and deployment access privately through your own account tools.
+The complete ZIP includes verified source, editable room/model references and original artwork inputs. The existing public GitHub repository preserves history; the ZIP intentionally omits .git and reproducible caches/dependencies.
 
-The ZIP excludes secrets, chats, personal memories, refresh tokens, dependency folders, build caches and the .git directory. Git history remains in the existing local and GitHub repository. A source ZIP is not a live database backup.
+## Release validation
 
-## What was verified and what remains
-
-Desktop/provider logic, cloud identity/vault validation, room routes/actions, native UI startup, clean installation and real installer/update/restart are covered by the supplied verification report. Room checks use a software renderer and accelerated simulation; they are functional checks, not a claim about frame rate on your PC.
-
-Real keys, paid TTS/STT, Vidu generation and physical microphone quality must be tested with your own accounts after desktop linking. Voice is continuous turn-taking with manual interruption, not simultaneous full-duplex recognition. Facial motion follows audio volume; it is not phoneme-based lip sync. The model's production likeness, garment simulation and precise hand contacts remain unfinished.
+89 desktop checks, 9 backend checks and 62 native pose/route/scene checks passed. A disposable installation verified the Desktop shortcut, file hashes, real GUI update callback, installer replacement, Godot restart acknowledgment and preservation of memory/custom prompt. Provider discovery was mocked for the update test; installation and restart were real. No account-funded API calls or actual microphone recording were made. The installer is unsigned. Performance was observed on Intel UHD Graphics under test/build load; no guaranteed frame rate on every PC. See packaged VERIFICATION.json.

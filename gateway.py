@@ -30,7 +30,7 @@ class Gateway:
    data=self._http("https://securetoken.googleapis.com/v1/token?key="+urllib.parse.quote(self.session["api_key"]),urllib.parse.urlencode({"grant_type":"refresh_token","refresh_token":self.session["refresh_token"]}).encode(),"application/x-www-form-urlencoded")
    self.save({**self.session,**json.loads(data)});return self.session["id_token"]
  def _http(self,url,body=None,content="application/json",headers=None,method=None):
-  req=urllib.request.Request(url,data=body,headers={"Content-Type":content,"User-Agent":"LISA/1.10.0",**(headers or {})},method=method or ("POST" if body is not None else "GET"))
+  req=urllib.request.Request(url,data=body,headers={"Content-Type":content,"User-Agent":"LISA/2.1.0",**(headers or {})},method=method or ("POST" if body is not None else "GET"))
   try:
    with urllib.request.build_opener(StrictRedirect()).open(req,timeout=65) as r:
     if urllib.parse.urlsplit(r.geturl()).netloc!=urllib.parse.urlsplit(url).netloc:raise ApiError("Lisa rejected an unexpected redirect.")
@@ -65,12 +65,8 @@ class Gateway:
  def migrate(self,keys,settings):
   cfg=self.config();existing={p["id"] for p in cfg["providers"] if p["configured"]};moved=[]
   for p,credential in keys.items():
-   if p in existing:continue
+   if p in existing or p not in {item["id"] for item in cfg["providers"]}:continue
    key=credential.get()
    if key:self.json("/api/admin/providers/"+p,{"key":key},method="PUT");moved.append(p)
   if moved:self.json("/api/admin/settings",settings)
   return moved
- def submit(self,image,mood,green_screen=False):
-  from motion import stage_image,motion_prompt
-  return self.json("/api/vidu/generate",{"image":stage_image(image,green_screen),"prompt":motion_prompt(mood,green_screen)})["task_id"]
- def result(self,task_id):return self.json("/api/vidu/tasks/"+urllib.parse.quote(task_id,safe=""))

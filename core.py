@@ -16,7 +16,7 @@ import wave
 from persona import DEFAULT_PERSONALITY, LEGACY_PERSONALITY
 BLUE_PERSONALITY = DEFAULT_PERSONALITY.replace("long wavy burgundy-red hair, red-brown eyes", "midnight-blue hair fading to lavender, blue eyes")
 
-VERSION = "2.0.0"
+VERSION = "2.1.0"
 MOODS = ["smile", "shy", "tea", "sitting", "wave", "yawn", "stretch", "thinking", "listening",
          "commanding", "angry", "smirk", "excited", "laughing", "surprised", "proud", "cheering", "teasing",
          "kiss", "affectionate", "elegant_sitting", "thumbs_up", "blushing", "welcoming", "apologetic", "reassuring", "peace",
@@ -61,7 +61,7 @@ DEFAULTS.update(chat_provider="groq",groq_model="openai/gpt-oss-120b",gemini_mod
                 voice_provider="elevenlabs",voice_fallback=True,fish_model="s2.1-pro-free",fish_voice_id="",
                 stt_provider="groq",groq_stt_model="whisper-large-v3-turbo",fish_stt_model="transcribe-1-pro",
                 personality_prompt=DEFAULT_PERSONALITY,
-                pc_actions=True,fullscreen=True,zoom=1.0,chat_width=390,ui_version=4,vidu_model="viduq3-pro-fast",motion_quality="balanced")
+                pc_actions=True,fullscreen=True,zoom=1.0,chat_width=390,ui_version=4,camera_follow=True)
 DEFAULTS.update(chat_fallback=True, openrouter_model="openrouter/free", meta_model="",
                 stt_fallback=True, gemini_stt_model="gemini-3.5-flash-lite",
                 windows_voice_fallback=True, speech_threshold="0.018", speech_pause="0.85", api_version=1)

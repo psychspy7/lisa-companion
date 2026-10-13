@@ -53,29 +53,17 @@ class ImmersiveBehavior(unittest.TestCase):
             self.assertTrue(restored.green_screen('evening','talking'))
             self.assertIsNotNone(restored.get('evening','talking'))
 
-    def test_motion_tracks_audio_state_with_idle_fallback_without_restarting_same_clip(self):
+    def test_archived_video_is_not_started_or_loaded_by_native_backend(self):
         with tempfile.TemporaryDirectory() as folder:
-            backend=self.backend(folder);backend.setOutfit('evening');root=Path(folder)
-            video=root/'example.mp4';video.write_bytes(b'fake-video')
-            backend.cache.import_clip(video,'evening','idle',True);backend.cache.import_clip(video,'evening','talking',True)
-            backend.select_motion();idle=backend.motionClip
-            from PySide6.QtTest import QSignalSpy
-            signal=QSignalSpy(backend.clipChanged)
-            backend.select_motion();self.assertEqual(signal.count(),0)
-            backend.audio.playing=True;backend.conversation_phase='speaking';backend.select_motion()
-            self.assertNotEqual(backend.motionClip,idle);self.assertTrue(backend.clipGreenScreen)
+            backend=self.backend(folder)
+            self.assertNotIn("vidu",backend.keys)
+            self.assertFalse(hasattr(backend,"motion_timer"))
+            self.assertFalse(hasattr(backend,"cache"))
+            backend.select_motion();self.assertEqual(backend.motionClip,"")
+            backend.speaking=True;self.assertFalse(backend.playingSpeech)
+            backend.audio.playing=True;backend.conversation_phase="speaking"
             self.assertTrue(backend.playingSpeech)
-            backend.audio.playing=False;backend.conversation_phase='idle';backend.select_motion()
-            self.assertEqual(backend.motionClip,idle);self.assertFalse(backend.playingSpeech);backend.close()
-
-    def test_preparing_voice_is_not_mouth_playback_and_broken_clips_fall_back(self):
-        with tempfile.TemporaryDirectory() as folder:
-            backend=self.backend(folder);backend.setOutfit('evening');backend.speaking=True
-            self.assertFalse(backend.playingSpeech)
-            video=Path(folder)/'example.mp4';video.write_bytes(b'fake-video')
-            backend.cache.import_clip(video,'evening','thinking');backend.select_motion()
-            failed=backend.motionClip;self.assertTrue(failed)
-            backend.clipFailed(failed);self.assertEqual(backend.motionClip,'');backend.close()
+            backend.close()
 
     def test_green_vidu_generation_remains_one_explicit_silent_job(self):
         with patch('motion.stage_image',return_value='data:image/png;base64,fake'),patch('motion.request',return_value=b'{"task_id":"task-123"}') as request:

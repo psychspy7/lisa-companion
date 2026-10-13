@@ -1,16 +1,27 @@
-LISA uses unmodified PySide6 / Qt 6.10.2, Python, Pillow, NumPy, sounddevice / PortAudio, FFmpeg through Qt Multimedia, and the PyInstaller bootloader. Their original licenses apply to those components. LISA's source license does not replace them.
+# Third-party notices — LISA 2.1
+LISA uses unmodified Godot 4.7.2 Standard, Python, PySide6/Qt, Pillow, NumPy, sounddevice/PortAudio and PyInstaller. Their licenses apply separately to those components.
 
-- PySide6 / Qt: https://doc.qt.io/qtforpython-6/licenses.html and https://www.qt.io/licensing/open-source-lgpl-obligations
-- Qt source: https://download.qt.io/archive/qt/6.10/6.10.2/ and https://code.qt.io/cgit/pyside/pyside-setup.git/tag/?h=v6.10.2
-- Python: https://docs.python.org/3/license.html
-- Pillow: https://github.com/python-pillow/Pillow/blob/main/LICENSE
-- NumPy: https://github.com/numpy/numpy/blob/main/LICENSE.txt
-- sounddevice / PortAudio: https://github.com/spatialaudio/python-sounddevice/blob/master/LICENSE and https://www.portaudio.com/license.html
-- FFmpeg: https://ffmpeg.org/legal.html
-- PyInstaller: https://pyinstaller.org/en/stable/license.html
+Godot is MIT licensed and permits commercial distribution. Its full license and bundled third-party copyright notices are supplied in licenses/GODOT-LICENSE.txt and licenses/GODOT-COPYRIGHT.txt, inside the installation and this source. The in-app Licenses dialog also shows the engine license.
+https://docs.godotengine.org/en/stable/about/complying_with_licenses.html
+https://github.com/godotengine/godot/tree/4.7.2-stable
 
-Qt libraries are loaded as separate DLLs, extracted at runtime by the one-file package. The build script and public source allow rebuilding the app using replacement compatible libraries; no restrictions are imposed on modifying those components or debugging such changes. Vendor license notices are included under `licenses/` inside the bundle and source repository.
+Qt libraries are separate DLLs in the installed application. Public build source supports replacing compatible libraries and debugging modifications. Godot owns the current room; Qt supplies native settings/dialogs. Qt WebEngine and Three.js are not active renderers in the 2.1 installed app. Historical Three.js authoring source is preserved under immersive/vendor with its MIT notice.
+https://doc.qt.io/qtforpython-6/licenses.html
+https://www.qt.io/licensing/open-source-lgpl-obligations
+https://download.qt.io/archive/qt/6.10/6.10.2/
+https://code.qt.io/cgit/pyside/pyside-setup.git/tag/?h=v6.10.2
+https://docs.python.org/3/license.html
+https://github.com/python-pillow/Pillow/blob/main/LICENSE
+https://github.com/numpy/numpy/blob/main/LICENSE.txt
+https://github.com/spatialaudio/python-sounddevice/blob/master/LICENSE
+https://www.portaudio.com/license.html
+https://pyinstaller.org/en/stable/license.html
 
-Artwork was generated with the built-in OpenAI image generation tool from the user's selected LISA references, then upscaled offline with unmodified Real-ESRGAN NCNN Vulkan using realesr-animevideov3. Upscaling tool: https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan (MIT). It is a production tool and is not included in LISA.exe. Artwork provenance and prompt details: ASSETS.md.
+Art was generated using the built-in OpenAI image tool from the user's selected Lisa references. Atlases were enhanced offline 2x using Real-ESRGAN NCNN Vulkan (MIT); original masters and provenance are retained. The upscaler and Blender are authoring tools, not bundled engine requirements. A 2x enlargement is not native 4K generation.
+https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan
+See ASSETS.md and godot/assets/provenance.json.
 
-The interactive suite also bundles Three.js and its unmodified addons (MIT), plus Qt WebEngine/Chromium through the existing Qt distribution. Three.js license and source: https://github.com/mrdoob/three.js/blob/dev/LICENSE . Qt WebEngine third-party attributions: https://doc.qt.io/qt-6/qtwebengine-3rdparty.html . Blender 4.5.3 LTS is an authoring tool, not included in the executable. The locally authored model and the supplied artwork retain their project provenance.
+Godot's license does not grant rights to other people's artwork, voices or service accounts. Use artwork you own and providers/voice plans that permit your intended commercial use. ElevenLabs free-plan output is not licensed for commercial use; eligible paid plans have their own terms. BYOK customers use their own providers; the private owner console is not a shared customer service.
+https://help.elevenlabs.io/hc/en-us/articles/13313564601361-Can-I-publish-the-content-I-generate-on-the-platform
+
+The current actor is illustrated 2.5D: directional cards, four walking frames and held action cards with subtle motion. It is not a completed deformable 3D/Live2D rig or a phoneme-accurate face.

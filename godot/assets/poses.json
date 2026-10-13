@@ -1,0 +1,354 @@
+{
+  "front": {
+    "sheet": "directions",
+    "rect": [
+      238,
+      12,
+      626,
+      1506
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "quarter": {
+    "sheet": "directions",
+    "rect": [
+      1180,
+      10,
+      582,
+      1510
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "profile": {
+    "sheet": "directions",
+    "rect": [
+      254,
+      1536,
+      486,
+      1512
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "back": {
+    "sheet": "directions",
+    "rect": [
+      1200,
+      1536,
+      648,
+      1510
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "seated": {
+    "sheet": "living",
+    "rect": [
+      254,
+      24,
+      710,
+      1558
+    ],
+    "height": 1.38,
+    "center": 0.69
+  },
+  "tea": {
+    "sheet": "living",
+    "rect": [
+      1106,
+      24,
+      764,
+      1558
+    ],
+    "height": 1.38,
+    "center": 0.69
+  },
+  "sleep": {
+    "sheet": "living",
+    "rect": [
+      0,
+      1850,
+      1288,
+      864
+    ],
+    "height": 0.75,
+    "center": 0.375
+  },
+  "wave": {
+    "sheet": "living",
+    "rect": [
+      1296,
+      1580,
+      580,
+      1484
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "command": {
+    "sheet": "actions",
+    "rect": [
+      300,
+      6,
+      682,
+      1530
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "angry": {
+    "sheet": "actions",
+    "rect": [
+      1152,
+      8,
+      598,
+      1528
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "squat": {
+    "sheet": "actions",
+    "rect": [
+      144,
+      1536,
+      880,
+      1480
+    ],
+    "height": 1.65,
+    "center": 0.825
+  },
+  "ankle": {
+    "sheet": "actions",
+    "rect": [
+      1024,
+      1536,
+      914,
+      1522
+    ],
+    "height": 1.38,
+    "center": 0.69
+  },
+  "wash": {
+    "sheet": "grooming",
+    "rect": [
+      288,
+      2,
+      620,
+      1534
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "hair": {
+    "sheet": "grooming",
+    "rect": [
+      1266,
+      2,
+      540,
+      1534
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "book": {
+    "sheet": "grooming",
+    "rect": [
+      114,
+      1536,
+      910,
+      1528
+    ],
+    "height": 1.38,
+    "center": 0.69
+  },
+  "phone": {
+    "sheet": "grooming",
+    "rect": [
+      1024,
+      1536,
+      936,
+      1534
+    ],
+    "height": 1.38,
+    "center": 0.69
+  },
+  "whip": {
+    "sheet": "props",
+    "rect": [
+      202,
+      0,
+      736,
+      1536
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "water": {
+    "sheet": "props",
+    "rect": [
+      1220,
+      4,
+      606,
+      1514
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "stretch": {
+    "sheet": "props",
+    "rect": [
+      346,
+      1536,
+      496,
+      1514
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "sweat": {
+    "sheet": "props",
+    "rect": [
+      1222,
+      1536,
+      600,
+      1514
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "sad": {
+    "sheet": "expressions",
+    "rect": [
+      374,
+      14,
+      484,
+      1522
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "kiss": {
+    "sheet": "expressions",
+    "rect": [
+      1178,
+      16,
+      608,
+      1520
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "brush": {
+    "sheet": "expressions",
+    "rect": [
+      314,
+      1536,
+      542,
+      1502
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "dryhair": {
+    "sheet": "expressions",
+    "rect": [
+      1194,
+      1536,
+      540,
+      1504
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "walk0": {
+    "sheet": "walk",
+    "rect": [
+      226,
+      16,
+      642,
+      1520
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "walk1": {
+    "sheet": "walk",
+    "rect": [
+      1160,
+      16,
+      648,
+      1474
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "walk2": {
+    "sheet": "walk",
+    "rect": [
+      242,
+      1536,
+      634,
+      1452
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "walk3": {
+    "sheet": "walk",
+    "rect": [
+      1210,
+      1536,
+      664,
+      1456
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "bare": {
+    "sheet": "clothes",
+    "rect": [
+      266,
+      2,
+      580,
+      1534
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "sleeveless": {
+    "sheet": "clothes",
+    "rect": [
+      1210,
+      2,
+      564,
+      1532
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "sleeveless_bare": {
+    "sheet": "clothes",
+    "rect": [
+      264,
+      1536,
+      584,
+      1522
+    ],
+    "height": 1.8,
+    "center": 0.9
+  },
+  "seated_bare": {
+    "sheet": "clothes",
+    "rect": [
+      1072,
+      1588,
+      960,
+      1452
+    ],
+    "height": 1.38,
+    "center": 0.69
+  }
+}

@@ -1,5 +1,6 @@
 """Private native configuration; secrets never enter QML or conversation history."""
 from PySide6.QtWidgets import (QDialog,QVBoxLayout,QHBoxLayout,QTabWidget,QWidget,QFormLayout,QLineEdit,QComboBox,QCheckBox,QPushButton,QLabel,QTextEdit,QDialogButtonBox,QMessageBox,QScrollArea)
+from PySide6.QtCore import Qt
 from core import DEFAULTS,VERSION
 
 STYLE="""QWidget{background:#171823;color:#eeeaf8;font:14px 'Segoe UI';} QLineEdit,QTextEdit,QComboBox{background:#232435;border:1px solid #41415c;border-radius:9px;padding:9px;} QLineEdit:focus,QTextEdit:focus,QComboBox:focus{border:1px solid #b49ad4;} QPushButton{background:#353048;border:1px solid #53506b;border-radius:9px;padding:10px 16px;} QPushButton:hover{background:#4c4568;} QPushButton:disabled{color:#777182;background:#242430;} QTabBar::tab{padding:12px;background:#222331;} QTabBar::tab:selected{background:#49405f;} QLabel{background:transparent;} QScrollArea{border:0;} QCheckBox{spacing:9px;padding:4px;} QDialogButtonBox{padding-top:8px;}"""
@@ -9,7 +10,7 @@ class SettingsDialog(QDialog):
     def __init__(self,backend):
         super().__init__(); self.backend=backend;self.fields={};self.keys={}
         self.finished.connect(lambda result:backend.stop())
-        self.setWindowTitle("Lisa · Settings");self.resize(770,750);self.setStyleSheet(STYLE)
+        self.setWindowFlag(Qt.WindowStaysOnTopHint,True);self.setWindowTitle("Lisa · Settings");self.resize(770,750);self.setStyleSheet(STYLE)
         layout=QVBoxLayout(self);layout.setContentsMargins(22,20,22,20);layout.setSpacing(14)
         title=QLabel("Make Lisa yours");title.setStyleSheet("font-size:24px;font-weight:600;");layout.addWidget(title)
         subtitle=QLabel("Chat, voice and the little details that make this your space.");subtitle.setStyleSheet("color:#a79bb9;");layout.addWidget(subtitle)
@@ -74,12 +75,9 @@ class SettingsDialog(QDialog):
         field(voice,"speech_pause","Pause before auto-send (seconds)")
         field(voice,"speech_threshold","Mic sensitivity threshold (0.003–0.15)")
         label=QLabel("Start talk enables hands-free turns: speak, pause, hear Lisa, speak again. Mic pauses during her reply to avoid echo. Mic / Interrupt lets you cut her off; Stop ends the session. Increase the threshold for a noisy room, lower it for a quiet voice.");label.setWordWrap(True);voice.addRow(label)
-        motion=page("Motion")
-        key(motion,"vidu","Vidu API key")
-        field(motion,"vidu_model","Vidu video model",["viduq3-pro-fast","viduq3-turbo","viduq3-pro"])
-        check(motion,"motion","Gentle breathing and character sway")
-        check(motion,"live_avatar","Live Lisa: blinking, head motion and voice-driven mouth; keep outfit during chat")
-        label=QLabel("Open Motion Studio to generate a 4-second 1080p action clip, or import an MP4/WebM. Clips stay on this PC. Each Generate click uses your Vidu credits; no videos are generated automatically.");label.setWordWrap(True);motion.addRow(label)
+        motion=page("Room")
+        check(motion,"motion","Gentle character breathing")
+        check(motion,"camera_follow","Follow Lisa with the cinematic camera")
         person=page("Personality")
         editor=QTextEdit();editor.setPlainText(backend.store.settings["personality_prompt"]);editor.setMinimumHeight(250);self.fields["personality_prompt"]=editor;person.addRow(editor)
         label=QLabel("Lisa's creator line: I am made by Virat by the help of Kitty Corp organisation.\n\nStyle changes the conversation. It cannot add PC tools or bypass a provider's rules.");label.setWordWrap(True);person.addRow(label)

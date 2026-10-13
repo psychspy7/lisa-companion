@@ -1,0 +1,19 @@
+{
+  "type": "illustrated 2.5D pose atlases",
+  "adult_character": true,
+  "source": "User-approved Lisa reference; generated using OpenAI image tool in this chat",
+  "poses": 32,
+  "deformable_model": false,
+  "method": "Opaque-body bounds inspected; artwork unchanged; engine crops UV regions at runtime",
+  "files": [
+    "directions",
+    "living",
+    "actions",
+    "grooming",
+    "props",
+    "expressions",
+    "walk",
+    "clothes"
+  ],
+  "enhancement": "Local RealESRGAN animevideov3 2x; original masters preserved in private authoring workspace. Enhanced output is not native 4K generation."
+}

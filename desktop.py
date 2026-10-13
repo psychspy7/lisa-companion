@@ -17,7 +17,6 @@ from providers import GroqClient,GeminiClient,ElevenLabsClient,FishClient,OpenRo
 from routing import configured_order,run_fallback,CHAT_ORDER,STT_ORDER,NAMES
 from audio import Audio
 from actions import validate_action,explicit_local_action,open_target
-from motion import MotionCache,ViduClient,MOTION_ROLES
 from settings_ui import SettingsDialog,STYLE
 import demo
 import updates
@@ -28,8 +27,7 @@ class Backend(QObject):
     activityChanged=Signal(); updateChanged=Signal(); downloadProgress=Signal(int,int); sceneAction=Signal(str)
     def __init__(self,app):
         super().__init__();self.app=app;self.store=Store();self.audio=Audio()
-        self.keys={p:Credentials(self.store.directory,p) for p in (*CHAT_ORDER,"elevenlabs","fish","vidu")}
-        self.cache=MotionCache(self.store.directory);self.jobs=self.store.load("motion-jobs.json",[])
+        self.keys={p:Credentials(self.store.directory,p) for p in (*CHAT_ORDER,"elevenlabs","fish")}
         self.mood="smile";self.outfit=outfit_for_hour(datetime.now().hour) if self.store.settings["auto_outfit"] else self.store.settings["outfit"]
         self._status="Ready, Sir";self._busy=False;self.closed=False;self.generation=0;self.cancel_event=threading.Event();self.speaking=False
         self._messages=list(self.store.history[-60:]);self.window=None;self.polling=False;self.started_recording=0
@@ -39,7 +37,6 @@ class Backend(QObject):
         self.completed.connect(self.dispatch)
         self.downloadProgress.connect(self.on_update_progress)
         self.timer=QTimer(self);self.timer.timeout.connect(self.tick);self.timer.start(100)
-        self.motion_timer=QTimer(self);self.motion_timer.timeout.connect(self.poll_job);self.motion_timer.start(10000)
         if not self._messages:self.add_message("assistant","Missed me, Sir? Make yourself comfortable.")
         self.gateway=None
         self.refresh()
@@ -112,7 +109,6 @@ class Backend(QObject):
         return path
     def image_url(self):return QUrl.fromLocalFile(str(self.image_path())).toString()
     def refresh(self):
-        self.motion_timer.start(10000)
         provider=self.store.settings["chat_provider"]
         available=self.provider_order("chat")
         self._mode_name=(NAMES.get(available[0],available[0])+" · auto backup" if self.store.settings["chat_fallback"] else NAMES.get(available[0],available[0])) if available else "Offline preview"
@@ -125,8 +121,8 @@ class Backend(QObject):
         self.store.history=list(self._messages);self.store.save()
 
     def client(self,provider,settings=None):
-        if self.gateway and self.gateway.connected and (provider=="cloud" or provider=="vidu"):return self.gateway
-        classes={"groq":GroqClient,"gemini":GeminiClient,"openrouter":OpenRouterClient,"meta":MetaClient,"elevenlabs":ElevenLabsClient,"fish":FishClient,"vidu":ViduClient}
+        if self.gateway and self.gateway.connected and provider=="cloud":return self.gateway
+        classes={"groq":GroqClient,"gemini":GeminiClient,"openrouter":OpenRouterClient,"meta":MetaClient,"elevenlabs":ElevenLabsClient,"fish":FishClient}
         if provider not in classes:raise ApiError("Choose a supported service in Settings.")
         return classes[provider](self.keys[provider].get(),settings if settings is not None else self.store.settings)
 
@@ -329,18 +325,9 @@ class Backend(QObject):
     @Slot()
     def liveCharacter(self):self._motion_preview=None;self.illustrated_pose=False;self.mood="smile";self.refresh()
     def select_motion(self):
-        if self.closed:return
-        role="talking" if self.audio.playing and self.conversation_phase=="speaking" else "listening" if self.audio.recording else "thinking" if self._busy or self.speaking else "idle"
-        choices=[self._motion_preview[1]] if self._motion_preview else [self.mood] if self.illustrated_pose else [role,self.mood,"idle","smile"]
-        clip=None;selected=""
-        if self.store.settings["motion"]:
-            for candidate in dict.fromkeys(choices):
-                found=self.cache.get(self.outfit,candidate)
-                if found and str(found) not in self._failed_clips:clip=found;selected=candidate;break
-        url=QUrl.fromLocalFile(str(clip)).toString() if clip else ""
-        if url!=self._clip_url:
-            self._clip_url=url;self._clip_green=self.cache.green_screen(self.outfit,selected) if clip else False
-            self.changed.emit();self.clipChanged.emit(url)
+        # Archived clips stay private on disk; v2.1 renders engine-native poses.
+        if self._clip_url:
+            self._clip_url="";self._clip_green=False;self.clipChanged.emit("")
     @Slot(str)
     def clipFailed(self,url):
         path=QUrl(url).toLocalFile()
@@ -392,66 +379,6 @@ class Backend(QObject):
         if QMessageBox.question(None,"Clear chat","Clear this conversation? Saved memories stay.") == QMessageBox.StandardButton.Yes:
             self.stop();self._messages=[];self.add_message("assistant","Fresh start, Sir. What’s on your mind?")
     @Slot()
-    def studio(self):
-        dialog=QDialog();dialog.setWindowTitle("Lisa · Motion Studio");dialog.resize(680,480);dialog.setStyleSheet(STYLE);layout=QVBoxLayout(dialog)
-        intro=QLabel("Create a 4-second action loop with Vidu, or import a clip. Idle, talking, listening and thinking slots follow the conversation automatically. A green background can be removed to blend Lisa into your room. Generation uses your account credits.");intro.setWordWrap(True);layout.addWidget(intro)
-        outfit=QComboBox();outfit.addItems(OUTFITS);outfit.setCurrentText(self.outfit);layout.addWidget(outfit)
-        mood=QComboBox();mood.addItems(MOTION_ROLES+MOODS);mood.setCurrentText("idle");layout.addWidget(mood)
-        green=QCheckBox("Generate / import a green-screen clip and remove its background");green.setChecked(True);layout.addWidget(green)
-        status=QLabel("Saved clips: "+str(len(self.cache.clips))+" · pending jobs: "+str(len(self.jobs)));status.setWordWrap(True);layout.addWidget(status)
-        generate=QPushButton("Generate with Vidu");importer=QPushButton("Import MP4 / WebM");preview=QPushButton("Play selected action");layout.addWidget(generate);layout.addWidget(importer);layout.addWidget(preview)
-        def submit():
-            m=mood.currentText();o=outfit.currentText() if m=="smile" or m in MOTION_ROLES else OUTFITS[MOODS.index(m)//9];keyed=green.isChecked()
-            if not ((self.gateway and self.gateway.connected) or self.keys["vidu"].get()):status.setText("Add your Vidu API key in Settings first.");return
-            if QMessageBox.question(dialog,"Generate video","Generate one 4-second 1080p Vidu clip for "+o+" / "+m+"? This spends Vidu credits.",QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No,QMessageBox.StandardButton.No)!=QMessageBox.StandardButton.Yes:return
-            image=resource("assets/poses/"+m+".webp") if m!="smile" and m not in MOTION_ROLES else resource("assets/portraits/"+o+".webp")
-            if getattr(self,"scene_enabled",False):image=resource("assets/suite/references/lisa-standing-approved.png")
-            client=self.client("vidu");generate.setEnabled(False);status.setText("Submitting…")
-            def done(result):
-                generate.setEnabled(True)
-                if isinstance(result,Exception):status.setText(str(result));return
-                self.jobs.append({"id":result,"outfit":o,"mood":m,"green_screen":keyed,"created":time.time()});self.store.write("motion-jobs.json",self.jobs);status.setText("Job saved. It will download when ready; you can close this studio.");self.set_status("Vidu generation queued")
-            self.work(lambda:client.submit(image,m,keyed),done)
-        def imported():
-            path,_=QFileDialog.getOpenFileName(dialog,"Import an action clip","","Video (*.mp4 *.webm)")
-            if not path:return
-            try:
-                m=mood.currentText();o=outfit.currentText() if m=="smile" or m in MOTION_ROLES else OUTFITS[MOODS.index(m)//9]
-                saved=self.cache.import_clip(path,o,m,green.isChecked());self._failed_clips.discard(str(saved));status.setText("Clip saved for "+o+" / "+m+". Use Play selected action.")
-            except ValueError as exc:status.setText(str(exc))
-        def play():
-            m=mood.currentText();self.stop();self.outfit=outfit.currentText()
-            if m in MOTION_ROLES:self.illustrated_pose=False;self._motion_preview=(self.outfit,m);self.refresh()
-            else:self.setMood(m)
-            if getattr(self,"scene_enabled",False):
-                saved=self.cache.get(outfit.currentText() if m=="smile" or m in MOTION_ROLES else OUTFITS[MOODS.index(m)//9],m)
-                if saved:
-                    from motion_preview import show_clip
-                    show_clip(saved,self.window)
-                else:status.setText("No clip saved for this selection yet. Generate or import one first.")
-        generate.clicked.connect(submit);importer.clicked.connect(imported);preview.clicked.connect(play);dialog.exec()
-    def poll_job(self):
-        if self.polling or not self.jobs or not ((self.gateway and self.gateway.connected) or self.keys["vidu"].get()):return
-        job=dict(self.jobs[0]);self.polling=True;client=self.client("vidu")
-        def poll():
-            result=client.result(job["id"])
-            if result.get("state")=="success":
-                creations=result.get("creations",[])
-                url=next((c.get("url") for c in creations if isinstance(c,dict) and c.get("url")),"")
-                if not url:raise ApiError("Vidu completed without a video URL.")
-                self.cache.download(url,job["outfit"],job["mood"],job.get("green_screen",False))
-            return result.get("state","")
-        def done(result):
-            self.polling=False
-            if isinstance(result,Exception):self.set_status(str(result));self.motion_timer.stop();return
-            if result in ("success","failed"):
-                self.jobs=[j for j in self.jobs if j["id"]!=job["id"]];self.store.write("motion-jobs.json",self.jobs);self.set_status("Motion clip ready" if result=="success" else "Vidu generation failed. Check your account.")
-                if result=="success":
-                    saved=self.cache.get(job["outfit"],job["mood"])
-                    if saved:self._failed_clips.discard(str(saved))
-                    self.select_motion()
-        self.work(poll,done)
-    @Slot()
     def checkUpdate(self):
         if self._updating:return
         self._updating=True;self._update_progress=-1;self._update_state="checking";self._update_note="Checking for a new Lisa…";self.updateChanged.emit();self.set_status("Checking updates…")
@@ -496,7 +423,7 @@ class Backend(QObject):
     def quit(self):self.app.quit()
     def close(self):
         if self.closed:return
-        self.stop();self.closed=True;self.timer.stop();self.motion_timer.stop();self.audio.close();self.store.save()
+        self.stop();self.closed=True;self.timer.stop();self.audio.close();self.store.save()
 
 
 def qml_main():
@@ -533,5 +460,5 @@ def qml_main():
 
 def main():
     if "--legacy-ui" in sys.argv:return qml_main()
-    from immersive_desktop import main as immersive_main
-    return immersive_main(Backend)
+    from godot_desktop import main as godot_main
+    return godot_main(Backend)

@@ -44,7 +44,11 @@ class Parent:
 
 
 def close_other_windows(target):
-    """Request a normal close only from windows owned by this exact Lisa executable."""
+    """Close only this installed Lisa launcher and its exact bundled Godot runtime."""
+    target=Path(target).resolve()
+    allowed={target}
+    engine=target.parent/"engine"/"LISA-Engine.exe"
+    if engine.is_file():allowed.add(engine.resolve())
     kernel=ctypes.WinDLL('kernel32',use_last_error=True)
     user=ctypes.WinDLL('user32',use_last_error=True)
     kernel.OpenProcess.argtypes=[wintypes.DWORD,wintypes.BOOL,wintypes.DWORD]
@@ -62,7 +66,7 @@ def close_other_windows(target):
         if handle:
             try:
                 size=wintypes.DWORD(32768);name=ctypes.create_unicode_buffer(size.value)
-                if kernel.QueryFullProcessImageNameW(handle,0,name,ctypes.byref(size)) and Path(name.value).resolve()==target:
+                if kernel.QueryFullProcessImageNameW(handle,0,name,ctypes.byref(size)) and Path(name.value).resolve() in allowed:
                     user.PostMessageW(window,0x0010,0,0) # WM_CLOSE: lets Lisa save and release the mic.
             finally:kernel.CloseHandle(handle)
         return True
