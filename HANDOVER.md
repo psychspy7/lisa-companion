@@ -1,63 +1,38 @@
-# LISA 2.1 continuation guide
+# LISA 2.2.0 handover
 
-## Install and use
+Read OWNER-GUIDE.md for use and updates, CONTINUATION-PROMPT.md for another AI, tools/ACTIVATION.md for private code administration, and VERIFICATION-SUMMARY.md for actual test limits.
 
-1. Run LISA-Setup.exe. Setup uses your Windows account and preserves existing Lisa data. Select the desktop-shortcut option if wanted.
-2. Open Lisa. The Kitty Corp opening leads to Enter Lisa after the local room and artwork are ready.
-3. Open the top-left menu → Chat & voice settings. Enter your chat/voice keys there and use Test connection. Keys are protected with Windows DPAPI. Never paste keys into chats or source files.
-4. Alternatively, the approved owner can link Google and manage private credentials at https://lisa-control-center.kitty-ai.workers.dev. That console is owner-only, not a customer membership service. A fresh customer's app uses their own local keys.
-5. Type naturally, or press Talk for continuous turn-taking. Speech is transcribed after a pause. Listening pauses during Lisa's speech; Interrupt lets you speak over it manually. Stop talk or quitting closes the microphone.
-6. Room commands include go to the balcony, sit on the sofa, drink tea, go to sleep, wake up, lights on/off, go to the wardrobe, wash hands, exercise, stretch, read a book, use phone, wave, blow a kiss and wardrobe accessories. Private bathroom activities are not depicted explicitly.
-7. Follow Lisa is saved. Right-drag temporarily adjusts the camera without clearing that choice. Use the menu checkbox to turn following off.
+## Architecture and important files
+- app.py -> desktop.py -> godot_desktop.py launches the native Godot Standard engine. Python owns keys, voice, history/memory, confirmations and updates.
+- godot/project.godot is the editable engine project; main.gd handles UI, intro, routes and activities; character.gd and artwork_common.gdshaderinc control illustrated motion; camera_director.gd follows Lisa; room_routes.gd contains walkable paths.
+- godot/assets contains the room, directional/pose atlases and poses.json. godot/media contains the supplied opening and original synthesized quiet effects.
+- persona.py is the full default character prompt; core.py holds factual/tool guardrails and private settings. Settings -> Character guidance overrides style. Saved Memory notes are selected data, never automatic training.
+- providers.py/routing.py/audio.py handle online chat, continuous turn-taking, voice and fallback. offline_companion.py supplies immediate grounded intents plus bounded local CPU inference. offline/manifest.json pins model/runtime provenance; tools/verify_offline.py verifies restored assets.
+- activation.py/activation_ui.py enforce the first-launch gate; activation-public.json pins public receipt verification. control-center/src/licensing.js and migrations/0002_activation.sql implement atomic redemption, proof/recovery and rate limits. tools/manage_activation.py is owner-only provisioning.
+- installer/LISA.iss, build_setup.py, build_godot.py, installation.py, updates.py and updater_worker.py preserve installer identity, payload/download integrity and verified restart.
+- control-center contains the existing separate Cloudflare/Firebase-protected owner site. Its Google login remains private administration; customers activate with a code and use BYOK/offline.
 
-## Files you will need
+## Build from the full handover
+Use Windows x64, Python3.12, Godot4.7.2 Standard official ed1daf0bf with matching Standard Windows export templates, and InnoSetup6.7+. No .NET runtime/editor is needed to run the installed app.
 
-- godot/project.godot, room-edit.tscn, main.gd, character.gd, camera_director.gd, room_routes.gd and bridge.gd: editable native engine project.
-- godot/assets/: approved room GLB, layout, 32 pose frames arranged in eight atlases, provenance and intro artwork. The atlases are enhanced locally at 2x; they are not native 4K generations.
-- desktop.py, godot_desktop.py, core.py, providers.py, routing.py, audio.py and gateway.py: retained native application services. Only chat, voice and transcription providers are active.
-- persona.py and the Personality tab: default character guidance and private custom prompt. Saved notes remain separate from instructions.
-- control-center/: Firebase/Cloudflare owner console and protected provider proxy. Keep OWNER_EMAIL and VAULT_KEY private; never rotate the vault key without re-encrypting existing rows.
-- installer/, updates.py, updater_worker.py, installation.py and build.ps1: build, installer, update and restart behavior.
-- tests/, licenses/, THIRD_PARTY_NOTICES.md and VERIFICATION.json: checks, attribution and actual release evidence.
+Extract Source/SOURCE-LATEST.zip; the editable Godot project is Source/godot. Extract Assets/LISA-Offline-Assets.zip into that Source folder so offline/model.gguf and offline/runtime exist. Run python tools/verify_offline.py. The clean source GitHub/archive intentionally omit the ~675MB model and runtime executables; their exact bytes are included separately in the full handover, not downloaded every launch.
 
-## Continue yourself or with another AI
+Create a Python3.12 venv; install requirements.txt. For owner console, install its package-lock.json with npm ci. Source run needs LISA_GODOT set to the verified editor EXE. Source run still needs valid device activation; no bypass is supplied. Use isolated LISA_DATA_DIR for QA and preserve an activated test identity.
 
-Extract the complete/source ZIP into a separate working folder. Clone this project's own GitHub repository if you need history, then overlay clean source while preserving .git. Read AGENTS.md, README.md and this guide first. The canonical local source remains under the Downloads Kitty-Corp workspace.
+Build:
+```powershell
+./build.ps1 -Python ./venv/Scripts/python.exe -Godot C:/Tools/Godot/Godot_v4.7.2-stable_win64.exe -Templates C:/Tools/Godot/4.7.2.stable -InnoCompiler "C:/Program Files (x86)/Inno Setup 6/ISCC.exe"
+```
+The matching templates directory needs windows_release_x86_64.exe and version.txt. Run backend tests in control-center. Test the installed EXE, native room, scene timers, cancellation, clean install and actual updater/helper/restart in a disposable folder before a public release. Never validate by replacing the owner's real install/data.
 
-Install Python 3.12 dependencies from requirements.txt. Download Godot 4.7.2 Standard and matching Standard export templates. Use the editor to open godot/project.godot; .godot/ is a disposable import cache. Editing the room or character is separate from editing the native chat/voice service.
+## Updating and preservation
+Use a higher semantic version next (e.g.2.2.1), update version.json/core.VERSION/Godot export/project/backend metadata consistently, retain Inno AppId A8F7C393-8F62-4CD1-ACE5-65F949F74543, build separate installer/portable, publish SHA256SUMS.txt to psychspy7/lisa-companion. Update must download/verify before close, run installer, restart backend+engine, and wait for native ready acknowledgment. Activation keys/receipt, provider credentials, saved notes/history/custom style stay in LocalAppData/LISA.
 
-For a source run, set LISA_GODOT to the engine executable and LISA_DATA_DIR to an isolated test folder, then run app.py. For an automated check run app.py --self-test; it records scene checks and screenshots without opening a microphone or spending provider credits.
+Owner secrets/live D1/Firebase data, the 50 sale codes, protected provider keys and user data are outside public source/packages. Keep private backups separately. Never rotate VAULT_KEY or the activation signing key during routine upgrades. A lost device identity requires owner replacement; a copied lifetime receipt cannot be used on another machine by the normal client. Offline DRM is not tamper-proof and does not revoke an already issued lifetime receipt.
 
-For a Windows build, use build.ps1 with -Python, -Godot, -Templates and optional -InnoCompiler arguments. Always build matching engine/templates. LISA.exe is the protected launcher/backend; engine/LISA-Engine.exe is its owned renderer. Keep them together.
+## Exact product limits
+Lisa is an illustrated2.5D actor in a real3D room, with small anchored deformation/crossfades, four walk frames and stylized frontal face motion. It is not a production 3D/Live2D likeness; no real bone/contact simulation is claimed. Midnight/Burgundy are two coordinated tint variants of the same outfit silhouette.
 
-The current appearance is illustrated 2.5D. Some actions are held pose cards, walking uses four illustrated frames, and facial animation is stylized. A complete deformable 3D likeness, continuous cloth/hair simulation, detailed hand contacts and all clothing combinations still need dedicated artist/rig work. Do not describe this build as a finished production 3D model.
+Offline text generation is a small CPU fallback, not cloud-quality intelligence or real human consciousness. Routines require the app to stay open; no background companion/microphone after quitting. Offline speech input is not included; transcription needs a configured service. Bathroom is a discreet10s privacy transition plus ordinary flush; shower15s privacy/water then alternate outfit and return walk. Affectionate autonomous gestures default off and respect conversation priority. No whip scene.
 
-## Publish an update
-
-1. Make changes in the canonical Source repository, preserve personal data and the installer AppId.
-2. Increase core.VERSION, version.json, Godot application/export versions and release notes together.
-3. Run desktop/backend checks, Godot import/export, scene checks and the isolated clean-install plus real updater/restart test.
-4. Build the fresh installer and compute its SHA-256. Include the bundled engine and its licenses in payload-manifest.json.
-5. Commit verified source to this project's own repository, create a higher-version GitHub release and upload LISA-Setup.exe plus SHA256SUMS.txt. The installed updater prefers the installer.
-6. Verify release asset sizes/digests and discovery. Never overwrite a published version's assets to simulate an update.
-7. Refresh only Source File Zip/lisa using the provided archive updater after checks pass. Keep a verified complete ZIP for handover.
-
-The updater's restart acknowledgment is emitted when Godot has loaded the room/title, before a human presses Enter. Closing the exact bundled engine releases its launcher and microphone. Private clips from older versions remain local but are no longer loaded.
-
-## Commercial use
-
-Godot is MIT and permits selling applications made with it. Keep GODOT-LICENSE.txt and GODOT-COPYRIGHT.txt with the application. The unmodified Python, Qt/PySide6 and other libraries keep their own notices and obligations. This build keeps Qt DLLs separate and supports rebuilding with compatible replacements.
-
-The app does not contain company provider keys, a payment system or customer memberships. Customers can supply their own accounts. Check each provider's commercial API/voice terms and permission for any voice or artwork you distribute. ElevenLabs' free plan does not grant commercial audio use; eligible paid plans have separate terms: https://help.elevenlabs.io/hc/en-us/articles/13313564601361-Can-I-publish-the-content-I-generate-on-the-platform .
-
-Windows signing is separate from the engine and installer. This test installer is unsigned; it is not a signed commercial release. Add your own publisher certificate when preparing a store/customer release, without changing Lisa's update/installation identity.
-
-## Private data and recovery
-
-%LOCALAPPDATA%/LISA holds local settings, protected keys, optional history, saved notes and update recovery files. Clean source ZIPs exclude those files, sessions, environment variables and live databases. Preserve them in your own private backup. Uninstalling/updating does not erase them.
-
-The complete ZIP includes verified source, editable room/model references and original artwork inputs. The existing public GitHub repository preserves history; the ZIP intentionally omits .git and reproducible caches/dependencies.
-
-## Release validation
-
-89 desktop checks, 9 backend checks and 62 native pose/route/scene checks passed. A disposable installation verified the Desktop shortcut, file hashes, real GUI update callback, installer replacement, Godot restart acknowledgment and preservation of memory/custom prompt. Provider discovery was mocked for the update test; installation and restart were real. No account-funded API calls or actual microphone recording were made. The installer is unsigned. Performance was observed on Intel UHD Graphics under test/build load; no guaranteed frame rate on every PC. See packaged VERIFICATION.json.
+The installer is unsigned. No real microphone capture or account-funded provider call is part of automated QA. Notices include Godot/llama.cpp MIT and Qwen Apache2.0; supplied artwork/video and chosen voice/provider distribution rights remain owner responsibilities.

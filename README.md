@@ -1,21 +1,10 @@
-# LISA 2.1 · Godot Standard
+# LISA 2.2.0
+A separate fullscreen Windows anime companion from Kitty Corp, built with bundled Godot4.7.2 Standard and a PySide6 chat/voice backend.
 
-A separate Windows companion app with an immersive 3D room, illustrated 2.5D Lisa, text chat, continuous turn-taking, cloud voice, saved memory and reviewed PC tools. Closing Lisa releases audio and exits its owned engine. Start-up keeps chat and the microphone off until you enter the room.
+Install the release's LISA-Setup.exe; choose the optional Desktop shortcut, activate your code online once, then enter the room after the supplied opening. Code holders can use the local companion offline on that Windows account/device. Google is not required for customers.
 
-Install **LISA-Setup.exe** from this project's release. Godot 4.7.2 Standard is built in; no editor or .NET installation is required. The portable ZIP must be extracted completely; its LISA.exe needs the adjacent engine and _internal folders.
+Lisa walks through the room, follows a local routine, has quiet optional effects, private timed bathroom/shower visits, two outfit looks and small speech/body gestures. Type in the transparent footer or configure transcription/voice keys for continuous turn-taking. Cloud chat falls through configured backups to local offline text generation. Memory is chosen by the user; supported PC actions require review.
 
-Use the compact top-left menu for chat/voice settings, memory, updates and the optional owner console. Customers can configure their own keys locally. The owner console remains restricted to the approved owner's Google identity; company keys and sessions are not shipped.
+Start with OWNER-GUIDE.md. Developers/another AI should read HANDOVER.md and CONTINUATION-PROMPT.md. Open godot/project.godot in the matching Standard editor. Restore separate Offline-Assets into offline/ before builds and verify tools/verify_offline.py. Python3.12 and InnoSetup6.7+ are required for authoring/builds; the installed app includes its runtime.
 
-The character is illustrated 2.5D, not a deformable 3D production likeness. Read RELEASE_NOTES.md and VERIFICATION.json for supported behavior and testing limits.
-
-## Development
-
-Use Python 3.12, dependencies in requirements.txt, Godot 4.7.2 **Standard** and matching Standard export templates. No C#/.NET dependency is used.
-
-Set LISA_GODOT to the official engine executable before running app.py. Run python -m unittest discover -s tests -v. Use a disposable LISA_DATA_DIR for self-tests; real provider calls and microphone tests need explicit user interaction.
-
-Build with build.ps1 -Python <python.exe> -Godot <Godot executable> -Templates <extracted templates folder> -InnoCompiler <ISCC.exe>. The result is an app folder, portable ZIP and Inno installer. Preserve AppId, private data and update acknowledgment.
-
-Editable engine project: godot/project.godot. Native protected services: desktop.py, godot_desktop.py, providers.py, audio.py, gateway.py. Private owner console: control-center/. Kept Three.js and Blender files are authoring/recovery references.
-
-Read HANDOVER.md before continuing with another AI, selling a build or publishing updates. This project uses its own psychspy7/lisa-companion repository. Never merge it into another Kitty Corp repository. Private credentials and live data are excluded from clean archives.
+The character is illustrated2.5D art, not a production deformable3D/Live2D model. Offline generation is a small model; speech transcription still needs internet. Customer codes/private keys/data are excluded from public source.

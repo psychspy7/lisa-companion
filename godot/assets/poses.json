@@ -8,7 +8,19 @@
       1506
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "quarter": {
     "sheet": "directions",
@@ -19,7 +31,19 @@
       1510
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "profile": {
     "sheet": "directions",
@@ -30,7 +54,19 @@
       1512
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "back": {
     "sheet": "directions",
@@ -41,7 +77,19 @@
       1510
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "seated": {
     "sheet": "living",
@@ -52,7 +100,19 @@
       1558
     ],
     "height": 1.38,
-    "center": 0.69
+    "center": 0.69,
+    "talk_region": [
+      0.08,
+      0.08,
+      0.84,
+      0.6
+    ],
+    "top_region": [
+      0.16,
+      0.22,
+      0.65,
+      0.3
+    ]
   },
   "tea": {
     "sheet": "living",
@@ -63,7 +123,19 @@
       1558
     ],
     "height": 1.38,
-    "center": 0.69
+    "center": 0.69,
+    "talk_region": [
+      0.08,
+      0.08,
+      0.84,
+      0.6
+    ],
+    "top_region": [
+      0.16,
+      0.22,
+      0.65,
+      0.3
+    ]
   },
   "sleep": {
     "sheet": "living",
@@ -74,7 +146,19 @@
       864
     ],
     "height": 0.75,
-    "center": 0.375
+    "center": 0.375,
+    "talk_region": [
+      0.08,
+      0.08,
+      0.84,
+      0.6
+    ],
+    "top_region": [
+      0.16,
+      0.22,
+      0.65,
+      0.3
+    ]
   },
   "wave": {
     "sheet": "living",
@@ -85,7 +169,19 @@
       1484
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "command": {
     "sheet": "actions",
@@ -96,7 +192,19 @@
       1530
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "angry": {
     "sheet": "actions",
@@ -107,29 +215,65 @@
       1528
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "squat": {
     "sheet": "actions",
     "rect": [
-      144,
-      1536,
-      880,
-      1480
+      100,
+      1740,
+      950,
+      1320
     ],
-    "height": 1.65,
-    "center": 0.825
+    "height": 1.25,
+    "center": 0.625,
+    "talk_region": [
+      0.08,
+      0.08,
+      0.84,
+      0.6
+    ],
+    "top_region": [
+      0.16,
+      0.22,
+      0.65,
+      0.3
+    ]
   },
   "ankle": {
     "sheet": "actions",
     "rect": [
-      1024,
-      1536,
-      914,
-      1522
+      1120,
+      1740,
+      900,
+      1320
     ],
     "height": 1.38,
-    "center": 0.69
+    "center": 0.69,
+    "talk_region": [
+      0.08,
+      0.08,
+      0.84,
+      0.6
+    ],
+    "top_region": [
+      0.16,
+      0.22,
+      0.65,
+      0.3
+    ]
   },
   "wash": {
     "sheet": "grooming",
@@ -140,7 +284,19 @@
       1534
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "hair": {
     "sheet": "grooming",
@@ -151,7 +307,19 @@
       1534
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "book": {
     "sheet": "grooming",
@@ -162,7 +330,19 @@
       1528
     ],
     "height": 1.38,
-    "center": 0.69
+    "center": 0.69,
+    "talk_region": [
+      0.08,
+      0.08,
+      0.84,
+      0.6
+    ],
+    "top_region": [
+      0.16,
+      0.22,
+      0.65,
+      0.3
+    ]
   },
   "phone": {
     "sheet": "grooming",
@@ -173,18 +353,19 @@
       1534
     ],
     "height": 1.38,
-    "center": 0.69
-  },
-  "whip": {
-    "sheet": "props",
-    "rect": [
-      202,
-      0,
-      736,
-      1536
+    "center": 0.69,
+    "talk_region": [
+      0.08,
+      0.08,
+      0.84,
+      0.6
     ],
-    "height": 1.8,
-    "center": 0.9
+    "top_region": [
+      0.16,
+      0.22,
+      0.65,
+      0.3
+    ]
   },
   "water": {
     "sheet": "props",
@@ -195,7 +376,19 @@
       1514
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "stretch": {
     "sheet": "props",
@@ -206,7 +399,19 @@
       1514
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "sweat": {
     "sheet": "props",
@@ -217,7 +422,19 @@
       1514
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "sad": {
     "sheet": "expressions",
@@ -228,7 +445,19 @@
       1522
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "kiss": {
     "sheet": "expressions",
@@ -239,7 +468,19 @@
       1520
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "brush": {
     "sheet": "expressions",
@@ -250,7 +491,19 @@
       1502
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "dryhair": {
     "sheet": "expressions",
@@ -261,7 +514,19 @@
       1504
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "walk0": {
     "sheet": "walk",
@@ -272,7 +537,19 @@
       1520
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "walk1": {
     "sheet": "walk",
@@ -283,7 +560,19 @@
       1474
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "walk2": {
     "sheet": "walk",
@@ -294,7 +583,19 @@
       1452
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "walk3": {
     "sheet": "walk",
@@ -305,7 +606,19 @@
       1456
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "bare": {
     "sheet": "clothes",
@@ -316,7 +629,19 @@
       1534
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "sleeveless": {
     "sheet": "clothes",
@@ -327,7 +652,19 @@
       1532
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "sleeveless_bare": {
     "sheet": "clothes",
@@ -338,7 +675,19 @@
       1522
     ],
     "height": 1.8,
-    "center": 0.9
+    "center": 0.9,
+    "talk_region": [
+      0.1,
+      0.18,
+      0.8,
+      0.44
+    ],
+    "top_region": [
+      0.12,
+      0.19,
+      0.76,
+      0.3
+    ]
   },
   "seated_bare": {
     "sheet": "clothes",
@@ -349,6 +698,18 @@
       1452
     ],
     "height": 1.38,
-    "center": 0.69
+    "center": 0.69,
+    "talk_region": [
+      0.08,
+      0.08,
+      0.84,
+      0.6
+    ],
+    "top_region": [
+      0.16,
+      0.22,
+      0.65,
+      0.3
+    ]
   }
 }

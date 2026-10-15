@@ -17,3 +17,12 @@ local-data/
 
 .godot/
 !godot/export_presets.cfg
+
+/offline/model.gguf
+/offline/runtime/
+*.part
+/private/
+*activation-codes*.csv
+*license-signing-private*.json
+
+/docs/reviews/ce-code-review/

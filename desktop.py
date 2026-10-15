@@ -19,6 +19,7 @@ from audio import Audio
 from actions import validate_action,explicit_local_action,open_target
 from settings_ui import SettingsDialog,STYLE
 import demo
+from offline_companion import OfflineCompanion
 import updates
 
 
@@ -31,14 +32,14 @@ class Backend(QObject):
         self.mood="smile";self.outfit=outfit_for_hour(datetime.now().hour) if self.store.settings["auto_outfit"] else self.store.settings["outfit"]
         self._status="Ready, Sir";self._busy=False;self.closed=False;self.generation=0;self.cancel_event=threading.Event();self.speaking=False
         self._messages=list(self.store.history[-60:]);self.window=None;self.polling=False;self.started_recording=0
-        self._mode_name="Offline preview";self._last_audio=None;self._updating=False;self._update_progress=-1;self._update_note="";self._update_state="idle"
+        self._mode_name="Offline companion";self._last_audio=None;self._updating=False;self._update_progress=-1;self._update_note="";self._update_state="idle"
         self._conversation=False;self.conversation_phase="idle";self.resume_at=0.
         self.illustrated_pose=False;self._clip_url="";self._clip_green=False;self._failed_clips=set();self._motion_preview=None
         self.completed.connect(self.dispatch)
         self.downloadProgress.connect(self.on_update_progress)
         self.timer=QTimer(self);self.timer.timeout.connect(self.tick);self.timer.start(100)
         if not self._messages:self.add_message("assistant","Missed me, Sir? Make yourself comfortable.")
-        self.gateway=None
+        self.gateway=None;self.offline=OfflineCompanion()
         self.refresh()
 
     @Property(str,notify=changed)
@@ -111,7 +112,7 @@ class Backend(QObject):
     def refresh(self):
         provider=self.store.settings["chat_provider"]
         available=self.provider_order("chat")
-        self._mode_name=(NAMES.get(available[0],available[0])+" · auto backup" if self.store.settings["chat_fallback"] else NAMES.get(available[0],available[0])) if available else "Offline preview"
+        self._mode_name=(NAMES.get(available[0],available[0])+" · auto backup" if self.store.settings["chat_fallback"] else NAMES.get(available[0],available[0])) if available else "Offline companion"
         if self.store.settings["auto_outfit"] and not self.illustrated_pose:self.outfit=outfit_for_hour(datetime.now().hour)
         self.changed.emit();self.imageChanged.emit(self.image_url())
         self.select_motion()
@@ -161,18 +162,27 @@ class Backend(QObject):
             self.finish_reply({"reply":"I am made by Virat by the help of Kitty Corp organisation.","mood":"proud"},token);return
         order=self.provider_order("chat")
         if not order:
-            if self.store.settings["demo_enabled"] and not self._conversation:self.finish_reply(demo.reply(text,self.store.memories),token)
-            else:self.finish_reply(ApiError("Add your chat API key in Settings, or enable the offline preview."),token)
+            self.offline_reply(text,history,token)
             return
         clients={p:self.client(p) for p in order};memories=list(self.store.memories);cancel=self.cancel_event
         def done(result):
             if token!=self.generation:return
-            if isinstance(result,Exception):self.finish_reply(result,token);return
+            if isinstance(result,Exception):self.offline_reply(text,history,token,failed=True);return
             answer,provider,failures=result
             self.finish_reply(answer,token)
             self._mode_name=NAMES.get(provider,"Lisa cloud")+(" · backup" if provider!=self.store.settings["chat_provider"] else "");self.changed.emit()
             if failures:self.add_message("system","Connected using "+NAMES[provider]+" backup. "+" | ".join(failures))
         self.work(lambda:run_fallback(order,lambda p:clients[p].chat(text,history,memories),cancel),done)
+
+    def offline_reply(self,text,history,token,failed=False):
+        cancel=self.cancel_event;memories=list(self.store.memories)
+        def done(answer):
+            if token!=self.generation:return
+            self.finish_reply(answer,token)
+            self._mode_name="Offline companion"
+            if not self.talking:self.set_status("Offline reply · cloud unavailable" if failed else "Offline reply · local model")
+            self.changed.emit()
+        self.work(lambda:self.offline.reply(text,history,memories,cancel_event=cancel),done)
 
     def finish_reply(self,result,token):
         if token!=self.generation:return
@@ -247,7 +257,7 @@ class Backend(QObject):
         self._conversation=False;self.conversation_phase="idle";self.resume_at=0.;self.cancel_turn()
     def cancel_turn(self):
         self._motion_preview=None
-        self.generation+=1;self.cancel_event.set();self.cancel_event=threading.Event();demo.cancel();self.audio.stop_playback()
+        self.generation+=1;self.cancel_event.set();self.cancel_event=threading.Event();demo.cancel();self.offline.cancel();self.audio.stop_playback()
         if self.audio.recording:self.audio.stop_recording()
         self._busy=False;self.speaking=False;self.set_status("Ready, Sir")
     def pause_conversation(self,message):
@@ -256,8 +266,8 @@ class Backend(QObject):
     @Slot()
     def toggleConversation(self):
         if self._conversation:self.stop();return
-        if not self.provider_order("chat") or not self.provider_order("stt"):
-            self.set_status("Add a chat key and a transcription key in Settings, then Test connection. Groq or Gemini can provide both.");return
+        if not self.provider_order("stt"):
+            self.set_status("Add a transcription key in Settings, then Test connection. Groq or Gemini can provide both.");return
         self.stop();self._conversation=True;self.listen_again()
     def listen_again(self):
         if not self._conversation or self.closed:return
@@ -428,7 +438,10 @@ class Backend(QObject):
 
 def qml_main():
     app=QApplication(sys.argv);app.setApplicationName("LISA");app.setOrganizationName("Kitty Corp");app.setWindowIcon(QIcon(str(resource("assets/lisa.ico"))))
-    QQuickStyle.setStyle("Basic");backend=Backend(app);engine=QQmlApplicationEngine();engine.rootContext().setContextProperty("lisa",backend);engine.load(QUrl.fromLocalFile(str(resource("ui/Main.qml"))))
+    QQuickStyle.setStyle("Basic");backend=Backend(app)
+    from activation_ui import require_activation
+    if not require_activation(backend):backend.close();return 3
+    engine=QQmlApplicationEngine();engine.rootContext().setContextProperty("lisa",backend);engine.load(QUrl.fromLocalFile(str(resource("ui/Main.qml"))))
     if not engine.rootObjects():return 2
     backend.window=engine.rootObjects()[0];app.aboutToQuit.connect(backend.close)
     if "--self-test" in sys.argv:
@@ -459,6 +472,5 @@ def qml_main():
 
 
 def main():
-    if "--legacy-ui" in sys.argv:return qml_main()
     from godot_desktop import main as godot_main
     return godot_main(Backend)

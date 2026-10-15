@@ -1,1 +1,6 @@
-{"version": "2.1.0", "repository": "psychspy7/lisa-companion", "channel": "release", "engine": "Godot 4.7.2 Standard"}
+{
+  "version": "2.2.0",
+  "repository": "psychspy7/lisa-companion",
+  "channel": "release",
+  "engine": "Godot 4.7.2 Standard"
+}

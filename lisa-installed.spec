@@ -6,7 +6,7 @@ from PyInstaller.utils.hooks import collect_all
 sound_data,sound_bins,sound_imports=collect_all("sounddevice")
 sound_data.append((os.environ.get('LISA_UPDATER_EXE','dist/LISA-Updater.exe'),'updater'))
 a=Analysis(["app.py"],pathex=[],binaries=sound_bins,
-    datas=[("assets/portraits/*.webp","assets/portraits"),("assets/poses/*.webp","assets/poses"),("assets/scenes/*.png","assets/scenes"),("assets/avatar","assets/avatar"),("assets/lisa.ico","assets"),("assets/lisa-logo.jpg","assets"),("ui","ui"),("licenses","licenses"),("THIRD_PARTY_NOTICES.md","."),("version.json","."),("control-center.json","."),("assets/suite","assets/suite")]+sound_data,
+    datas=[("assets/portraits/*.webp","assets/portraits"),("assets/poses/*.webp","assets/poses"),("assets/scenes/*.png","assets/scenes"),("assets/avatar","assets/avatar"),("assets/lisa.ico","assets"),("assets/lisa-logo.jpg","assets"),("ui","ui"),("licenses","licenses"),("THIRD_PARTY_NOTICES.md","."),("version.json","."),("control-center.json","."),("activation-public.json","."),("offline","offline"),("assets/suite","assets/suite")]+sound_data,
     hiddenimports=["PySide6.QtQuick","PySide6.QtQml","PySide6.QtMultimedia"]+sound_imports,
     hookspath=["build_hooks"],excludes=["tkinter","PySide6.QtWebEngineCore","PySide6.QtWebEngineWidgets","PySide6.QtWebEngineQuick","PySide6.QtWebChannel"],noarchive=False)
 a.binaries=[entry for entry in a.binaries if not (

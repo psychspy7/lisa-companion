@@ -1,8 +1,9 @@
+import {response} from './response.js';
 import {HttpError,verifyGoogle,seal,open,sha256,jsonBody,bytes} from './security.js';
 import {PROVIDERS,DEFAULTS,safeSettings,settings,providerKey,chat,fallback,modelList,speech,transcribe,upstream} from './providers.js';
+import {handleLicense} from './licensing.js';
 const enc=new TextEncoder();
 export function pcmWav(pcm){const wav=new Uint8Array(44+pcm.length),v=new DataView(wav.buffer);const text=(at,s)=>wav.set(enc.encode(s),at);text(0,'RIFF');v.setUint32(4,36+pcm.length,true);text(8,'WAVEfmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,24000,true);v.setUint32(28,48000,true);v.setUint16(32,2,true);v.setUint16(34,16,true);text(36,'data');v.setUint32(40,pcm.length,true);wav.set(pcm,44);return wav;}
-function response(value,status=200,extra={}){return new Response(JSON.stringify(value),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...extra}});}
 async function rate(env,id,max,seconds=86400){
  const now=Math.floor(Date.now()/1000),window=Math.floor(now/seconds),key=id+':'+window;
  const row=await env.DB.prepare('INSERT INTO counters(id,count,expires_at) VALUES(?,1,?) ON CONFLICT(id) DO UPDATE SET count=count+1 RETURNING count').bind(key,now+seconds*2).first();
@@ -35,7 +36,7 @@ export default {async fetch(req,env){
  try{
   const url=new URL(req.url),path=url.pathname;
   if(req.headers.get('Origin')&&req.headers.get('Origin')!==url.origin)throw new HttpError(403,'Use the Lisa control center directly.');
-  if(path==='/health')return response({application:'LISA',version:'2.1.0',configured:!!(env.FIREBASE_PROJECT_ID&&env.FIREBASE_API_KEY&&env.VAULT_KEY&&env.DB&&env.OWNER_EMAIL)});
+  if(path==='/health')return response({application:'LISA',version:'2.2.0',configured:!!(env.FIREBASE_PROJECT_ID&&env.FIREBASE_API_KEY&&env.VAULT_KEY&&env.DB&&env.OWNER_EMAIL)});
   if(path==='/api/login-config')return response({projectId:env.FIREBASE_PROJECT_ID,apiKey:env.FIREBASE_API_KEY,authDomain:env.FIREBASE_PROJECT_ID+'.firebaseapp.com'});
   if(!path.startsWith('/api/')){
    const r=await env.ASSETS.fetch(req),headers=new Headers(r.headers);
@@ -44,8 +45,11 @@ export default {async fetch(req,env){
    return new Response(r.body,{status:r.status,headers});
   }
   if(!env.DB||!env.VAULT_KEY)throw new HttpError(503,'Lisa backend setup is incomplete.');
+  if(path.startsWith('/api/license/'))return await handleLicense(req,env,path);
   const pair=await paired(req,env,path);if(pair)return pair;
-  const user=await verifyGoogle(req,env);const cfg=await settings(env);
+  const user=await verifyGoogle(req,env);
+  if(path==='/api/admin/licenses')return await handleLicense(req,env,path,{ownerAuthorized:true});
+  const cfg=await settings(env);
   if(path==='/api/config'&&req.method==='GET'){
    const rows=(await env.DB.prepare('SELECT provider,updated_at FROM vault').all()).results;
    return response({owner:{email:user.email},settings:cfg,providers:PROVIDERS.map(p=>({id:p,configured:rows.some(v=>v.provider===p)}))});

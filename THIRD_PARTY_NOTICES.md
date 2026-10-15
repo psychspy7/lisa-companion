@@ -25,3 +25,9 @@ Godot's license does not grant rights to other people's artwork, voices or servi
 https://help.elevenlabs.io/hc/en-us/articles/13313564601361-Can-I-publish-the-content-I-generate-on-the-platform
 
 The current actor is illustrated 2.5D: directional cards, four walking frames and held action cards with subtle motion. It is not a completed deformable 3D/Live2D rig or a phoneme-accurate face.
+
+
+## Offline companion
+Qwen2.5-0.5B-Instruct Q8_0 GGUF, official Qwen revision9217f5db79a29953eb74d5343926648285ec7e67, Apache2.0; see licenses/QWEN-MODEL-LICENSE.txt and offline/manifest.json. No fine-tuning on competitor or private chats.
+llama.cpp official Windows CPU binaries b11583, MIT; see licenses/LLAMA-CPP-LICENSE.txt. Weights/runtime are separate public release assets and included in the full handover.
+Opening video was supplied by the project owner; Godot-native conversion preserves it. Room effects are original synthesized audio.

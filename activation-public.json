@@ -1,0 +1,17 @@
+{
+  "base_url": "https://lisa-control-center.kitty-ai.workers.dev",
+  "issuer": "lisa-kittycorp",
+  "audience": "lisa-desktop",
+  "purchase_url": "https://kittycorp.vercel.app/",
+  "keys": [
+    {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "cJiQNzAuytjpwPzXrDP1XCdmxiOvPWAmZnh0IMAE6BM",
+      "y": "QxXS34v_10kfz7MYF5W_5w0nSlkGExAgtnYXexU2H-Q",
+      "kid": "lisa-license-2026-22",
+      "alg": "ES256",
+      "use": "sig"
+    }
+  ]
+}

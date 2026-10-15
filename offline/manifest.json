@@ -1,0 +1,53 @@
+{
+  "model": {
+    "repository": "Qwen/Qwen2.5-0.5B-Instruct-GGUF",
+    "revision": "9217f5db79a29953eb74d5343926648285ec7e67",
+    "file": "model.gguf",
+    "bytes": 675710816,
+    "sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+    "license": "Apache-2.0",
+    "role": "Local offline text-generation fallback; no training on competitor/user private data"
+  },
+  "runtime": {
+    "repository": "ggml-org/llama.cpp",
+    "tag": "b11583",
+    "asset": "llama-b11583-bin-win-cpu-x64.zip",
+    "asset_sha256": "2bceb716d9d93b950c008c9d81701650965c33e957de9e1d4da325c35c41abfe",
+    "license": "MIT",
+    "binaries": {
+      "ggml-base.dll": "4373ce332e713f110c86843555dd63c31613a380412ba92918f3130969981044",
+      "ggml-cpu-alderlake.dll": "ae334b53c3e38ddc50c30df043a3aa110ffcc2f6c4f09d44a27c50a9097f437e",
+      "ggml-cpu-cannonlake.dll": "d6198cfb51c30709022a1128132724764605d2f62d6a0dbfce1f348ce7d0df91",
+      "ggml-cpu-cascadelake.dll": "8724012badb96184a4c5f8372f80704bd81987e89676c525da7c99fe87ef9860",
+      "ggml-cpu-cooperlake.dll": "a9b215401804616aa7cbde0c398494709e6e5c4f25fe4e2e32567d0cf80b2af6",
+      "ggml-cpu-haswell.dll": "e7e2f1bb62c005815d2a15d41dfa7447e3c457bac546aee9561ec680375ee7ef",
+      "ggml-cpu-icelake.dll": "1a8598721b9f03e16bc6a1467171d6137038bbb928c9f472c4f045d16173d505",
+      "ggml-cpu-ivybridge.dll": "7493d5b6d40f54ca998ac757bb716e2b0721de5bd02ce7a2eb79b74c2b54d6fc",
+      "ggml-cpu-piledriver.dll": "3ca62f724340b2f89ccb2d2f781a353de45cf87cdd299ab46cee6e9c843b5145",
+      "ggml-cpu-sandybridge.dll": "46a67542ae0322d39409db284edb06ee143d4bd5c935c322036581744c88fb0f",
+      "ggml-cpu-sapphirerapids.dll": "42d28b979b67ca9750dc8d370a007205f44f04c4b12df31b1bcbe58464939d81",
+      "ggml-cpu-skylakex.dll": "1d6add46722b981dacdf0dcd2710e555da084331d5c1ceb0b9bb6d17352a098c",
+      "ggml-cpu-sse42.dll": "f19ab28955e001803086bccfa5ce86ab1cb19840a7cecdf509c0a6fc3bbe7b9f",
+      "ggml-cpu-x64.dll": "ec3ee896b250fdc95e95a77cec7f7915eb61dc509be6d889b742799df585808d",
+      "ggml-cpu-zen4.dll": "0bd6935f34651c0e57aa70a9b1ce45706f2cfafc5440edc4800062f6082723d7",
+      "ggml-rpc.dll": "5b4cbb42bb9b65b68aeb4350cff2ae2d1e06ee2c1ba1b3f57c5f8801fab502a8",
+      "ggml.dll": "6b9eb1fc5e290b137e213089975cd1d886877cdd5cab5a38062430b42c2dfe26",
+      "libomp.dll": "a12116ba72d1d6820407cf30be23da04ce79d6bb8a71a5ee71759c5a1faa6f1c",
+      "llama-batched-bench-impl.dll": "531914a75c26378e7a953f467e3b49f4fb7f193696beddfd6bc1161c7080c874",
+      "llama-bench-impl.dll": "e6c3807fa46a09ed286e160917ca8b72a0108be572dbdbcd5b5fd2b4734514d4",
+      "llama-cli-impl.dll": "723039fab4eb00f522ef27acace0b4157cfdd5dcdad59ea7c4e4f8c5b0b78e57",
+      "llama-cli.exe": "47dd9d7a9affb3e62bf45ca2c515c9d5c1c648b389149c892525f45911b2444d",
+      "llama-common.dll": "43dee7526662c19e20f37361324966c26939ec63dad108599aa30ebccbe0aa64",
+      "llama-completion-impl.dll": "fa4709fddce4f2ac76831de0b81af37b1c878bf450d13f5d82a3363d4c762f92",
+      "llama-fit-params-impl.dll": "df332a5619d937d7d54303b29e93db458b837e4c2ac00f09033b803d4fcd36be",
+      "llama-perplexity-impl.dll": "ee822f3e332e0880d5971fa7058f0f5c4678f9f3373c77263100a1249ac3d377",
+      "llama-quantize-impl.dll": "e7ff025293bb13c21d51639022ee5c78530ca7feb153667d41129459c98dbd7e",
+      "llama-server-impl.dll": "70133b6bb53c80ff7b4656a534aba713a0a7929733d2a66326a58a4461e7e4c5",
+      "llama-server.exe": "58a62d7f1693c3f15782de4bc66563b488296880ca59fd34c37e9eade8546f39",
+      "llama.dll": "6720cef3d4fba862b92a3ed5a9ba4f137bcc7f8c5e80226b7d55037dc1e7f07e",
+      "mtmd.dll": "0365d608a55923d5206d0810e97abfdf2b3ef1dc93be4827ca344dada85eaab1",
+      "llama-completion.exe": "faca40d44f17e9ebfb11d995a3fa804a093f938b0c8632ad1d742c3a0817b9ea"
+    }
+  },
+  "privacy": "Inference is on this PC. Idle routine uses no model CPU; provider keys and private licensing secrets are not bundled."
+}

@@ -1,14 +1,15 @@
 import json,tempfile,unittest,urllib.request,urllib.error
 from pathlib import Path
 from unittest.mock import patch
-from scene_actions import scene_intent,validate_scene_action
+from scene_actions import scene_intent,validate_scene_action,SCENE_ACTIONS
 from scene_server import SceneServer
 from gateway import Gateway,StrictRedirect
 from core import ApiError
 class SceneAndGateway(unittest.TestCase):
  def test_closed_actions_and_conditional_invitation(self):
   self.assertEqual(scene_intent("Lisa go to the balcony"),"balcony")
-  self.assertEqual(scene_intent("Put the whip back"),"put_whip_back")
+  self.assertIsNone(scene_intent("Put the whip back"))
+  self.assertNotIn("whip",SCENE_ACTIONS)
   self.assertIsNone(scene_intent("Go to bed if you want"))
   self.assertIsNone(scene_intent("I like banana bread"))
   self.assertIsNone(scene_intent("I had tea earlier"))

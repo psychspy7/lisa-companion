@@ -48,7 +48,7 @@ class SettingsDialog(QDialog):
             load.clicked.connect(lambda checked=False,p=provider,m=model,b=load:self.load_models(m,b,p))
             test.clicked.connect(lambda checked=False,p=provider,b=test:self.test_connection(p,b))
         field(chat,"language","Conversation language",["Auto","English","Hindi","Hinglish"])
-        check(chat,"demo_enabled","Use clearly labelled offline preview when chat key is missing")
+
         label=QLabel("A key alone does not guarantee model access or quota. Test each service separately. OpenRouter defaults to its free router; paid models use your account credits. Meta requires a Llama developer key, not a Facebook/WhatsApp token. Backups receive the same chat context and saved notes.");label.setWordWrap(True);chat.addRow(label)
         voice=page("Voice")
         check(voice,"voice_enabled","Speak Lisa's replies")

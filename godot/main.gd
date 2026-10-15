@@ -3,6 +3,8 @@ const Bridge = preload("res://bridge.gd")
 const Character = preload("res://character.gd")
 const Director = preload("res://camera_director.gd")
 const Routes = preload("res://room_routes.gd")
+const Life = preload("res://life.gd")
+const Effects = preload("res://effects.gd")
 var bridge
 var actor
 var camera
@@ -11,13 +13,21 @@ var lighting:Node3D
 var canvas:CanvasLayer
 var menu:PanelContainer
 var footer_root:VBoxContainer
+var footer_width := -1.0
 var reply:Label
 var status:Label
 var input:LineEdit
 var mic:Button
 var follow:CheckButton
 var intro:Control
-var intro_art:TextureRect
+var intro_art:VideoStreamPlayer
+var life = Life.new()
+var effects
+var routine_toggle:CheckButton
+var affection_toggle:CheckButton
+var effects_toggle:CheckButton
+var privacy:PanelContainer
+var outfit_button:Button
 var intro_title:Label
 var intro_credit:Label
 var enter:Button
@@ -56,6 +66,8 @@ func _ready():
  Engine.max_fps = 60
  canvas = CanvasLayer.new()
  add_child(canvas)
+ effects = Effects.new()
+ add_child(effects)
  setup_theme()
  build_interface()
  build_intro()
@@ -136,12 +148,25 @@ func build_interface():
  follow.toggled.connect(func(value): camera.following = value; bridge.send("follow",value))
  button("Room lights",func(): set_lights(not lights_on),list)
  button("Chat & voice settings",func(): bridge.send("settings"),list)
- button("Private control center",func(): bridge.send("console"),list)
- button("Link owner's Google account",func(): bridge.send("login"),list)
+
  button("Saved memories",func(): bridge.send("memory"),list)
  button("Check for an update",func(): bridge.send("update"),list)
  button("Add desktop shortcut",func(): bridge.send("shortcut"),list)
  button("Fullscreen / window",toggle_fullscreen,list)
+ routine_toggle = CheckButton.new()
+ routine_toggle.text = "Daily routines"
+ list.add_child(routine_toggle)
+ routine_toggle.toggled.connect(func(value):bridge.send("routines",value))
+ affection_toggle = CheckButton.new()
+ affection_toggle.text = "Occasional affectionate gestures"
+ list.add_child(affection_toggle)
+ affection_toggle.toggled.connect(func(value):bridge.send("affection",value))
+ effects_toggle = CheckButton.new()
+ effects_toggle.text = "Room sound effects"
+ list.add_child(effects_toggle)
+ effects_toggle.toggled.connect(func(value):bridge.send("effects",value))
+ outfit_button = button("Outfit · Midnight",func():bridge.send("outfit",1-actor.outfit),list)
+ button("Buy Lisa · Kitty Corp",func():bridge.send("buy"),list)
  button("Licenses",show_licenses,list)
  button("Quit Lisa",quit_app,list)
  var footer = VBoxContainer.new()
@@ -182,7 +207,7 @@ func build_interface():
  button("Send",func(): send_message(input.text),row)
  button("Interrupt",func(): bridge.send("barge"),row)
  status = Label.new()
- status.text = "LISA 2.1 · Kitty Corp"
+ status.text = "LISA 2.2 · Kitty Corp"
  status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
  status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
  status.add_theme_font_size_override("font_size",12)
@@ -198,10 +223,11 @@ func build_intro():
  black.color = Color.BLACK
  black.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
  intro.add_child(black)
- intro_art = TextureRect.new()
- intro_art.texture = load("res://assets/opening.webp")
- intro_art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
- intro_art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+ intro_art = VideoStreamPlayer.new()
+ intro_art.stream = load("res://media/kitty-opening.ogv")
+ intro_art.expand = true
+ intro_art.volume_db = -18
+ intro_art.autoplay = true
  intro_art.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
  intro_art.modulate.a = 0
  intro.add_child(intro_art)
@@ -246,6 +272,7 @@ func send_message(text:String):
  if message.is_empty():
   return
  input.clear()
+ life.touched()
  bridge.send("send",message)
 func snapshot(state:Dictionary):
  reply.text = str(state.get("reply",""))
@@ -254,11 +281,28 @@ func snapshot(state:Dictionary):
  status.text = status.tooltip_text.left(220)
  mic.text = "Stop talk" if state.get("conversation",false) else "Talk"
  actor.speaking = float(state.get("speechLevel",0))
+ actor.talking = bool(state.get("talking",false))
+ actor.outfit = int(state.get("outfit",0))
+ life.routines = bool(state.get("routines",true))
+ life.affection = bool(state.get("affection",false))
+ effects.enabled = bool(state.get("effects",true))
+ effects.ducked = actor.talking or bool(state.get("recording",false))
+ if routine_toggle.button_pressed!=life.routines:
+  routine_toggle.set_pressed_no_signal(life.routines)
+ if affection_toggle.button_pressed!=life.affection:
+  affection_toggle.set_pressed_no_signal(life.affection)
+ if effects_toggle.button_pressed!=effects.enabled:
+  effects_toggle.set_pressed_no_signal(effects.enabled)
+ var outfit_label = "Outfit · "+("Midnight" if actor.outfit==0 else "Burgundy")
+ if outfit_button.text!=outfit_label:
+  outfit_button.text = outfit_label
  actor.motion = bool(state.get("motion",true))
  var selected = bool(state.get("follow",true))
  follow.set_pressed_no_signal(selected)
  camera.following = selected
  var mood = str(state.get("mood","smile"))
+ if busy or actor.talking or bool(state.get("recording",false)):
+  life.touched()
  if mood != last_mood:
   last_mood = mood
   actor.expression = "angry" if mood in ["angry","cold_angry"] else "sad" if mood in ["sad","crying"] else "front"
@@ -266,10 +310,24 @@ func snapshot(state:Dictionary):
   test_started = true
   run_tests()
 func _process(dt):
+ if entered:
+  effects.tick(dt,actor.walking)
+  var activity:String = life.tick(dt,not test_mode and not busy and not effects.ducked and phase=="idle",last_mood,actor.state=="sleeping")
+  if not activity.is_empty():
+   command(activity,false)
  if footer_root:
   var minimum = footer_root.get_combined_minimum_size()
-  footer_root.size = Vector2(720,minimum.y)
-  footer_root.position = Vector2((get_viewport().get_visible_rect().size.x-720)/2,get_viewport().get_visible_rect().size.y-minimum.y-24)
+  var width = minf(720,get_viewport().get_visible_rect().size.x-40)
+  if width!=footer_width:
+   footer_width = width
+   footer_root.custom_minimum_size.x = width
+   reply.custom_minimum_size.x = width
+  var new_size = Vector2(width,minimum.y)
+  var new_position = Vector2((get_viewport().get_visible_rect().size.x-width)/2,get_viewport().get_visible_rect().size.y-minimum.y-24)
+  if footer_root.size!=new_size:
+   footer_root.size = new_size
+  if footer_root.position!=new_position:
+   footer_root.position = new_position
  frame_times.append(dt*1000)
  if frame_times.size()>3600:
   frame_times.pop_front()
@@ -289,7 +347,7 @@ func _process(dt):
  intro_time += dt
  if not entered:
   intro_art.modulate.a = clampf((intro_time-1.2)/2.0,0,1)
-  if (intro_time>7.5 or skipped) and loaded:
+  if (intro_time>10.8 or skipped) and loaded:
    intro_credit.visible = false
    intro_title.visible = true
    load_note.text = "Your world can wait. She's been waiting for you."
@@ -332,7 +390,7 @@ func setup_room():
  sun.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL
  sun.directional_shadow_max_distance = 18
  lighting.add_child(sun)
- # One shadow source and one orthogonal shadow pass; no video decoder.
+ # One shadow pass. Intro decoder is stopped after entry.
 func open_doors(next:String):
  var doors = create_tween().set_parallel(true)
  if balcony_door:
@@ -343,6 +401,8 @@ func enter_room():
  if not loaded or entered:
   return
  entered = true
+ intro_art.stop()
+ effects.play("enter")
  bridge.send("enter")
  camera.enabled = true
  canvas.get_node("UI").visible = true
@@ -356,17 +416,23 @@ func set_lights(value:bool):
   for light in lighting.get_children():
    if light is Light3D:
     fade.tween_property(light,"light_energy",0.12 if not value else 0.30 if light is DirectionalLight3D else 1.6 if light.omni_range>5 else 0.8,0.8)
-func command(action:String):
+func command(action:String,user_requested:bool=true):
  if not entered:
   return
+ if user_requested:
+  life.touched()
  generation += 1
+ actor.visible = true
+ effects.shower(false)
+ if privacy:
+  privacy.visible = false
  var was_walking = actor.walking
  if tween:
   tween.kill()
  path.clear()
  actor.walking = false
  phase = "action"
- var move_actions = {"room":"room","sofa":"sofa","tea":"sofa","sleep":"bed","bathroom":"bathroom","toilet":"toilet","wardrobe":"wardrobe","balcony":"balcony","wash_hands":"washbasin","brush_teeth":"washbasin","covered_bath":"shower","whip":"wardrobe","put_whip_back":"wardrobe","exercise":"room","read":"sofa","phone":"sofa","sandals_off":"sofa","sandals_on":"sofa","sleeves_off":"wardrobe","sleeves_on":"wardrobe","skirt_change":"wardrobe"}
+ var move_actions = {"room":"room","sofa":"sofa","tea":"sofa","sleep":"bed","bathroom":"bathroom","toilet":"toilet","wardrobe":"wardrobe","balcony":"balcony","wash_hands":"washbasin","brush_teeth":"washbasin","covered_bath":"shower","exercise":"room","read":"sofa","phone":"sofa","sandals_off":"sofa","sandals_on":"sofa","sleeves_off":"wardrobe","sleeves_on":"wardrobe","skirt_change":"wardrobe"}
  if action == "lights_on" or action == "lights_off":
   set_lights(action=="lights_on")
   phase = "idle"
@@ -377,6 +443,7 @@ func command(action:String):
   phase = "idle"
   return
  if action == "wake":
+  set_lights(true)
   await leave_seat()
   phase = "idle"
   return
@@ -402,6 +469,8 @@ func command(action:String):
   if gesture_generation != generation:
    return
   actor.state = action
+  if action=="kiss":
+   effects.play("kiss")
   var id = generation
   await get_tree().create_timer(3.0).timeout
   if id == generation:
@@ -455,21 +524,57 @@ func arrived():
   actor.state = "standing"
  elif after_walk=="skirt_change":
   actor.state = "standing"
-  status.text = "Lisa's approved black outfit is already selected."
- elif after_walk=="toilet":
-  actor.state = "standing"
-  status.text = "Lisa is in the bathroom. Private activities stay off camera."
-  camera.area = "bathroom"
- elif after_walk=="put_whip_back":
-  actor.state = "standing"
+  bridge.send("outfit",1-actor.outfit)
+  effects.play("cloth")
+ elif after_walk in ["toilet","bathroom","covered_bath"]:
+  await private_activity(after_walk,id)
+  return
  else:
   actor.state = after_walk if actor.pose_map.has(after_walk) else "standing"
+  if after_walk=="exercise":
+   await get_tree().create_timer(8.0 if not test_mode else 1.0).timeout
+   if id==generation:
+    actor.state = "wipe_sweat"
   if after_walk=="balcony":
    actor.facing = PI/2
   elif after_walk in ["wardrobe","bathroom","wash_hands","brush_teeth"]:
    actor.facing = PI
  if id == generation:
   phase = "idle"
+func private_activity(action:String,id:int):
+ phase = "private"
+ actor.visible = false
+ camera.area = "room"
+ if not privacy:
+  privacy = PanelContainer.new()
+  privacy.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+  privacy.position = Vector2(-240,-70)
+  privacy.custom_minimum_size = Vector2(480,100)
+  privacy.mouse_filter = Control.MOUSE_FILTER_IGNORE
+  var note = Label.new()
+  note.name = "Note"
+  note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+  note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+  privacy.add_child(note)
+  canvas.add_child(privacy)
+ privacy.visible = true
+ privacy.get_node("Note").text = "A quiet moment…\nLisa will be back shortly."
+ var showering = action=="covered_bath"
+ effects.shower(showering)
+ await get_tree().create_timer(15.0 if showering else 10.0).timeout
+ if id!=generation:
+  return
+ effects.shower(false)
+ if showering:
+  bridge.send("outfit",1-actor.outfit)
+  effects.play("cloth")
+ else:
+  effects.play("flush")
+ actor.visible = true
+ privacy.visible = false
+ actor.state = "dry_hair" if showering else "standing"
+ # Use the same navigation graph for the return walk; no teleport.
+ command("room",false)
 func toggle_fullscreen():
  DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if DisplayServer.window_get_mode()==DisplayServer.WINDOW_MODE_FULLSCREEN else DisplayServer.WINDOW_MODE_FULLSCREEN)
 func show_licenses():
@@ -496,8 +601,10 @@ func quit_app():
  await get_tree().create_timer(0.15).timeout
  get_tree().quit()
 func run_tests():
+ await get_tree().create_timer(3.0).timeout
+ get_viewport().get_texture().get_image().save_png(OS.get_environment("LISA_ENGINE_DATA").path_join("opening.png"))
  skipped = true
- await get_tree().create_timer(1.0).timeout
+ await get_tree().create_timer(0.1).timeout
  enter_room()
  await get_tree().create_timer(2.0).timeout
  test_results.append({"check":"startup","passed":loaded and entered})
@@ -510,6 +617,13 @@ func run_tests():
  for pose in actor.poses.keys():
   actor.set_pose(pose)
   test_results.append({"check":"pose_"+pose,"passed":actor.current_pose==pose})
+ bridge.state_changed.disconnect(snapshot)
+ actor.talking = true
+ await get_tree().create_timer(0.6).timeout
+ test_results.append({"check":"talking_body_gesture","passed":actor.gesture_level>0.5})
+ actor.talking = false
+ bridge.state_changed.connect(snapshot)
+ test_results.append({"check":"supplied_video","passed":intro_art.stream is VideoStreamTheora})
  for dest in Routes.NODES.keys():
   var points = Routes.route(Routes.NODES.room,dest)
   test_results.append({"check":"route_"+dest,"passed":dest=="room" or not points.is_empty()})
@@ -522,16 +636,21 @@ func run_tests():
  await get_tree().process_frame
  get_viewport().get_texture().get_image().save_png(folder.path_join("character-only.png"))
  room.visible = true
- for scenario in ["tea","sleep","balcony","wash_hands","whip","exercise","room"]:
+ for scenario in ["tea","sleep","balcony","wash_hands","exercise","kiss","bathroom","covered_bath","room"]:
   var before = actor.position
   command(scenario)
+  var captured_squat = false
   var maximum_step = 0.0
   var previous = actor.position
   var previous_time = Time.get_ticks_msec()
   var max_speed = 0.0
   var started_at = Time.get_ticks_msec()
-  while (not path.is_empty() or phase!="idle") and Time.get_ticks_msec()-started_at<25000:
+  while (not path.is_empty() or phase!="idle") and Time.get_ticks_msec()-started_at<35000:
    await get_tree().process_frame
+   if scenario=="exercise" and actor.state=="exercise" and not captured_squat:
+    await get_tree().create_timer(0.2).timeout
+    get_viewport().get_texture().get_image().save_png(folder.path_join("exercise-active.png"))
+    captured_squat = true
    var step_distance = actor.position.distance_to(previous)
    maximum_step = maxf(maximum_step,step_distance)
    max_speed = maxf(max_speed,step_distance/maxf((Time.get_ticks_msec()-previous_time)/1000.0,0.005))
@@ -539,6 +658,8 @@ func run_tests():
    previous = actor.position
   await get_tree().create_timer(0.8).timeout
   test_results.append({"check":"scene_"+scenario,"passed":path.is_empty() and phase=="idle" and not actor.walking and maximum_step<=0.20,"largest_step":maximum_step,"appearance":actor.status()})
+  if scenario in ["bathroom","covered_bath"]:
+   test_results.append({"check":"private_returns_"+scenario,"passed":actor.visible and actor.position.distance_to(Routes.NODES.room)<0.03 and (Time.get_ticks_msec()-started_at)>=10000})
   get_viewport().get_texture().get_image().save_png(folder.path_join("scene-"+scenario+".png"))
  actor.walking = false
  path.clear()
@@ -546,6 +667,18 @@ func run_tests():
  actor.position = Routes.NODES.room
  camera.area = "room"
  set_lights(true)
+ var waking = Life.new()
+ waking.elapsed = 200
+ waking.next_activity = 0
+ test_results.append({"check":"morning_wakes_after_sleep","passed":waking.tick(0,true,"smile",true,8)=="wake"})
+ var scheduler = Life.new()
+ scheduler.next_activity = 0
+ scheduler.elapsed = 200
+ test_results.append({"check":"routine_runs_when_idle","passed":not scheduler.tick(0,true,"smile").is_empty()})
+ scheduler.touched()
+ test_results.append({"check":"routine_respects_user_priority","passed":scheduler.tick(1,true,"smile").is_empty()})
+ scheduler.elapsed += 200
+ test_results.append({"check":"routine_during_talk_paused","passed":scheduler.tick(1,false,"smile").is_empty()})
  actor.state = "seated"
  command("stop")
  test_results.append({"check":"interrupt_keeps_seated_pose","passed":actor.state=="seated" and phase=="idle"})
@@ -564,6 +697,8 @@ func run_tests():
  camera.area = "room"
  await get_tree().create_timer(1.0).timeout
  get_viewport().get_texture().get_image().save_png(folder.path_join("ui-self-test.png"))
+ test_results.append({"check":"exercise_crop_safe","passed":actor.poses.squat.rect[1]>=1735 and float(actor.poses.squat.height)<=1.3})
+ test_results.append({"check":"whip_removed","passed":not actor.pose_map.has("whip") and not actor.poses.has("whip")})
  var record = {"testing_note":"Room movement is accelerated 3x for this test. Each walk step is capped at 0.135 m; seat/bed transitions are real tweens.","engine":Engine.get_version_info().string,"renderer":RenderingServer.get_current_rendering_method(),"godot_loaded":true,"tests":test_results,"appearance":actor.status(),"fps":Engine.get_frames_per_second(),"draw_calls":Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),"video_memory_bytes":Performance.get_monitor(Performance.RENDER_VIDEO_MEM_USED),"frame_times_ms":frame_times}
  var file = FileAccess.open(folder.path_join("self-test.json"),FileAccess.WRITE)
  file.store_string(JSON.stringify(record,"  "))

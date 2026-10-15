@@ -1,11 +1,5 @@
-LISA 2.1.0 runs the immersive room in **Godot 4.7.2 Standard**, bundled with the Windows application. A browser renderer or separate Godot installation is no longer needed.
+LISA2.2 adds illustrated talking motion, fixes the stray-feet exercise crop, uses the supplied opening video, and adds quiet room effects. Bathroom/shower visits are discreet timed routines with a return walk; shower alternates two outfit looks. Daily routines work locally, affectionate gestures are opt-in, and whip/smoking actions are removed.
 
-The companion uses illustrated directional and action frames throughout movement instead of revealing the earlier rough 3D model. The native room includes corridor walking, animated bathroom/balcony doors, cinematic close-ups, sitting and tea, sleeping with dimmed lights, wardrobe and exercise activities, gentle breathing, frontal blinking and an audio-driven illustrated mouth.
+Cloud chat failures now fall back to a bundled~675MB local CPU model and grounded companion replies. Continuous online transcription/voice and reviewed PC tools remain. Customers activate with a one-time device-bound code; later local use does not require Google or internet. Owner administration remains protected on the separate website. Existing private keys/memory/style and installer identity are preserved.
 
-The small transparent footer and compact menu keep the room visible. Follow Lisa persists across restarts and stays selected during camera dragging. Chat, continuous turn-taking, voice backups, saved memory, reviewed PC tools, protected local keys and the owner's Google-linked control center remain supported. Vidu generation, video playback and the Motion Studio controls are removed; older private clips and credentials are left on disk.
-
-Setup preserves the existing installation identity and personal data. It offers a desktop shortcut. The updater closes the exact bundled engine, installs the replacement and checks that the new engine has loaded before reporting success.
-
-This is an illustrated **2.5D** companion in a real 3D room. It is not a newly sculpted, deformable 3D anime model or phoneme-accurate facial rig. Some actions use held painted poses, and the four-frame walk is an illustrated cycle. The test report distinguishes these limits from verified application behavior. Provider access and usage limits depend on your own accounts.
-
-Godot's MIT license permits commercial distribution. Its notices are included. Voice-provider plans and rights to voices/artwork require their own checks; ElevenLabs' free plan does not grant commercial use.
+Includes Godot Standard runtime, clean source, editable Godot project, offline assets, continuation prompt and owner guides. See VERIFICATION.json for actual checks and limitations: illustrated2.5D, basic offline generation, no real microphone/paidAPI test, unsigned installer.

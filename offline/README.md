@@ -1,0 +1,5 @@
+# Offline companion
+The installer bundles a verified 675,710,816-byte Qwen2.5-0.5B-Instruct Q8_0 model (Apache-2.0), plus official llama.cpp CPU runtime (MIT). See manifest.json and licenses/. Idle routines do not run the model or use internet. Common greetings, memory recall, comfort and local actions respond immediately. Other messages use bounded local inference, then a conversational fallback if inference is unavailable or too slow.
+The small model has lower capability than cloud chat. It cannot fetch live facts; Hindi quality varies. It is a fictional AI companion, not a human mind. PC actions still use reviewed app controls. --offline prevents the runtime from downloading anything.
+Generated model output supplies text/mood only; actions are discarded. Inputs are not logged by the model process. Cancellation terminates only the owned inference process; no persistent daemon remains.
+For source builds, restore model.gguf and runtime/ from the separately packaged Offline Assets ZIP or the pinned official URLs in manifest.json. Large weights/executables are excluded from Git.

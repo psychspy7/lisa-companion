@@ -3,14 +3,14 @@ from __future__ import annotations
 import json,os,secrets,sys,threading,time,subprocess
 from pathlib import Path
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
-from PySide6.QtCore import QObject,Signal,QTimer,Qt
+from PySide6.QtCore import QObject,Signal,QTimer
 from PySide6.QtGui import QIcon,QDesktopServices
 from PySide6.QtWidgets import QApplication,QMessageBox
 from PySide6.QtCore import QUrl
 from core import resource,VERSION
 from gateway import Gateway
 
-COMMANDS=frozenset(("ready","enter","send","voice","interrupt","quit","settings","memory","update","shortcut","console","login","logout","follow","motion","barge"))
+COMMANDS=frozenset(("ready","enter","send","voice","interrupt","quit","settings","memory","update","shortcut","console","login","logout","follow","motion","barge","routines","affection","effects","outfit","buy"))
 class EngineBridge(QObject):
     requested=Signal(str,object)
     def __init__(self,backend):
@@ -22,16 +22,16 @@ class EngineBridge(QObject):
             self.seq+=1;self.events.append({"id":self.seq,"action":action});self.events=self.events[-80:]
     def publish(self):
         b=self.backend
-        with self.lock:self.state={"version":VERSION,"reply":b.lastReply,"status":b.status,"busy":b.busy,"recording":b.recording,"talking":b.talking,"conversation":b.conversation,"speechLevel":b.audioLevel,"mood":b.moodId,"updateProgress":b.updateProgress,"updateNote":b.updateNote,"updateState":b.updateState,"follow":bool(b.store.settings.get("camera_follow",True)),"motion":bool(b.store.settings.get("motion",True))}
+        with self.lock:self.state={"version":VERSION,"reply":b.lastReply,"status":b.status,"busy":b.busy,"recording":b.recording,"talking":b.talking,"conversation":b.conversation,"speechLevel":b.audioLevel,"mood":b.moodId,"updateProgress":b.updateProgress,"updateNote":b.updateNote,"updateState":b.updateState,"follow":bool(b.store.settings.get("camera_follow",True)),"motion":bool(b.store.settings.get("motion",True)),"routines":bool(b.store.settings.get("routines",True)),"affection":bool(b.store.settings.get("affection",False)),"effects":bool(b.store.settings.get("effects",True)),"outfit":int(b.store.settings.get("illustrated_outfit",0))}
     def snapshot(self,since=0):
         with self.lock:return {**self.state,"events":[e for e in self.events if e["id"]>since]}
-    def acknowledge(self):
+    def acknowledge(self,activation_required=False):
         ack=os.environ.pop("LISA_UPDATE_ACK","");expected=os.environ.pop("LISA_UPDATE_VERSION","")
         if ack and expected==VERSION:
             path=Path(ack).resolve()
             if path.parent==(self.backend.store.directory/"updates").resolve() and path.name.startswith("launched-"):
                 from updater_worker import write_json
-                write_json(path,{"version":VERSION,"pid":os.getpid(),"ui_loaded":True,"scene_loaded":True,"title_ready":True,"engine":"Godot Standard"})
+                write_json(path,{"version":VERSION,"pid":os.getpid(),"ui_loaded":True,"scene_loaded":not activation_required,"title_ready":True,"activation_required":activation_required,"engine":"Activation screen" if activation_required else "Godot Standard"})
     def dispatch(self,name,value):
         b=self.backend
         if name=="ready":
@@ -51,6 +51,11 @@ class EngineBridge(QObject):
         elif name=="console":QDesktopServices.openUrl(QUrl(b.gateway.url))
         elif name=="logout":b.stop();b.gateway.logout();b.refresh()
         elif name=="login":self.login()
+        elif name=="buy":QDesktopServices.openUrl(QUrl("https://kittycorp.vercel.app/"))
+        elif name=="outfit":
+            b.store.settings["illustrated_outfit"]=value;b.store.save();b.refresh()
+        elif name in ("routines","affection","effects"):
+            b.store.settings[name]=value;b.store.save();b.refresh()
         elif name in ("follow","motion"):
             b.store.settings["camera_follow" if name=="follow" else "motion"]=bool(value);b.store.save();b.refresh()
         self.publish()
@@ -98,8 +103,9 @@ class EngineServer:
                     data=json.loads(self.rfile.read(length));name=data["name"];value=data.get("value")
                     if name not in COMMANDS:raise ValueError()
                     if name=="send" and (not isinstance(value,str) or len(value)>4000):raise ValueError()
-                    if name in ("follow","motion") and not isinstance(value,bool):raise ValueError()
-                    if name not in ("send","follow","motion") and value is not None:raise ValueError()
+                    if name in ("follow","motion","routines","affection","effects") and not isinstance(value,bool):raise ValueError()
+                    if name=="outfit" and (type(value) is not int or value not in (0,1)):raise ValueError()
+                    if name not in ("send","follow","motion","routines","affection","effects","outfit") and value is not None:raise ValueError()
                 except (ValueError,KeyError,TypeError):return self.respond(400,{"error":"Invalid command"})
                 bridge.requested.emit(name,value);self.respond(202,{"accepted":True})
         self.http=ThreadingHTTPServer(("127.0.0.1",0),Handler);self.http.daemon_threads=True
@@ -110,7 +116,11 @@ class EngineServer:
 def main(Backend):
     app=QApplication(sys.argv);app.setQuitOnLastWindowClosed(False);app.setApplicationName("LISA");app.setOrganizationName("Kitty Corp");app.setWindowIcon(QIcon(str(resource("assets/lisa.ico"))))
     backend=Backend(app);backend.gateway=Gateway(backend.store.directory);backend.scene_enabled=False
-    bridge=EngineBridge(backend);server=EngineServer(bridge);engine=None
+    from activation_ui import require_activation
+    bridge=EngineBridge(backend)
+    if not require_activation(backend,lambda:bridge.acknowledge(True)):
+        bridge.timer.stop();backend.close();return 3
+    server=EngineServer(bridge);engine=None
     test="--self-test" in sys.argv
     try:
         env=os.environ.copy();env.update(LISA_ENGINE_URL=server.url,LISA_ENGINE_TOKEN=server.token,LISA_ENGINE_DATA=str(backend.store.directory))
