@@ -1,0 +1,139 @@
+name: Assemble verified Lisa 2.2 release assets
+on:
+  push:
+    branches: [release/lisa-2.2-asset-transfer]
+    paths: [.github/workflows/assemble-verified-assets.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: lisa-2-2-verified-assets
+  cancel-in-progress: false
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Reassemble the exact verified packages and leave the release a draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          """Join only pinned, verified Lisa release assets. Never execute the binaries."""
+          import concurrent.futures
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+          import tempfile
+
+          REPO = "psychspy7/lisa-companion"
+          RELEASE_ID = 414207583
+          PRODUCT_SHA = "0bfd5a007f0bca5678eb46ad824deb536391275d"
+          PREFIX = "lisa22-transfer-"
+          EXPECTED = {
+              "LISA-Setup.exe": (879791884, "3594ad931ce642a6676172a5ef7f28a6a355e86770d68508ef4298fa8961bd67"),
+              "LISA-Portable.zip": (959286164, "67538524269dd770fc7458410162dfabe6c1a1b81b51df76d58d65b06886ab98"),
+          }
+          SMALL = {
+              "LISA-Godot-2.2.0.zip": (71135509, "062900bdf96df6c7494a70d0175759d584b38ec678001d5dca28af14dba067ba"),
+              "SHA256SUMS.txt": (346, "4b0808b3de70c6198f400f8cefde5e1d235d9df46be1305b004234fc1c46b87b"),
+              "VERIFICATION.json": (11974, "54f37d5fcd56d8126ff3592c089fd2944c29e63a2ac6f309a313ef93820b9789"),
+          }
+
+          def api(path):
+              result = subprocess.run(["gh", "api", "--method", "GET", "repos/" + REPO + path],
+                                      check=True, capture_output=True, timeout=60)
+              return json.loads(result.stdout)
+
+          def draft():
+              result = api("/releases/" + str(RELEASE_ID))
+              assert result["draft"] is True and result["tag_name"] == "v2.2.0"
+              return result
+
+          def hash_file(path):
+              with path.open("rb") as stream:
+                  return hashlib.file_digest(stream, "sha256").hexdigest()
+
+          def check_asset(asset, size, digest):
+              assert asset["state"] == "uploaded"
+              assert asset["size"] == size and asset.get("digest") == "sha256:" + digest
+              assert isinstance(asset["id"], int) and asset["id"] > 0
+
+          def download(asset, target):
+              assert isinstance(asset["id"], int) and asset["id"] > 0
+              with target.open("wb") as stream:
+                  subprocess.run(["gh", "api", "--method", "GET", "-H",
+                                  "Accept: application/octet-stream",
+                                  "repos/" + REPO + "/releases/assets/" + str(asset["id"])],
+                                 stdout=stream, check=True, timeout=300)
+              assert target.stat().st_size == asset["size"]
+              assert "sha256:" + hash_file(target) == asset["digest"]
+
+          def validate_manifest(manifest):
+              assert manifest["version"] == "2.2.0"
+              assert manifest["source_commit"] == PRODUCT_SHA and manifest["release_id"] == RELEASE_ID
+              files = manifest["files"]
+              assert len(files) == 2 and {f["name"] for f in files} == set(EXPECTED)
+              for item in files:
+                  filename = item["name"]
+                  assert (item["size"], item["sha256"]) == EXPECTED[filename]
+                  parts = item["parts"]
+                  assert 1 <= len(parts) <= 25
+                  assert sum(part["size"] for part in parts) == item["size"]
+                  for index, part in enumerate(parts):
+                      assert part["name"] == PREFIX + filename + ".part" + str(index).zfill(2)
+                      assert isinstance(part["size"], int) and 0 < part["size"] <= 80000000
+                      assert re.fullmatch("[0-9a-f]{64}", part["sha256"])
+              return files
+
+          def main():
+              release = draft()
+              assets = {a["name"]: a for a in release["assets"]}
+              for name, (size, digest) in SMALL.items():
+                  check_asset(assets[name], size, digest)
+              manifest_asset = assets[PREFIX + "manifest.json"]
+              assert 0 < manifest_asset["size"] < 262144 and manifest_asset["state"] == "uploaded"
+              with tempfile.TemporaryDirectory(prefix="lisa-verified-release-") as directory:
+                  root = Path(directory)
+                  manifest_file = root / "manifest.json"
+                  download(manifest_asset, manifest_file)
+                  files = validate_manifest(json.loads(manifest_file.read_text()))
+                  part_jobs = []
+                  for item in files:
+                      for part in item["parts"]:
+                          asset = assets[part["name"]]
+                          check_asset(asset, part["size"], part["sha256"])
+                          part_jobs.append((asset, root / part["name"]))
+                  with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+                      futures = [pool.submit(download, asset, target) for asset, target in part_jobs]
+                      for future in concurrent.futures.as_completed(futures):
+                          future.result()
+                  for item in files:
+                      target = root / item["name"]
+                      with target.open("wb") as output:
+                          for part in item["parts"]:
+                              with (root / part["name"]).open("rb") as stream:
+                                  while chunk := stream.read(1024 * 1024):
+                                      output.write(chunk)
+                      assert target.stat().st_size == item["size"] and hash_file(target) == item["sha256"]
+                      current = draft()
+                      existing = next((a for a in current["assets"] if a["name"] == item["name"]), None)
+                      if existing is not None:
+                          check_asset(existing, item["size"], item["sha256"])
+                      else:
+                          subprocess.run(["gh", "release", "upload", "v2.2.0", str(target),
+                                          "--repo", REPO], check=True, timeout=600)
+                      print("Reassembled and uploaded " + item["name"], flush=True)
+                  final = draft()
+                  byname = {a["name"]: a for a in final["assets"]}
+                  for name, (size, digest) in {**EXPECTED, **SMALL}.items():
+                      check_asset(byname[name], size, digest)
+                  print("Both exact verified Windows packages are ready in the unpublished draft.", flush=True)
+
+          if __name__ == "__main__":
+              main()
+          PY
